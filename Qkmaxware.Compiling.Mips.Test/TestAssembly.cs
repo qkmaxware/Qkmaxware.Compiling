@@ -20,10 +20,27 @@ public class TestAssembly {
 
     [TestMethod]
     public void TestLexing() {
-        AsmLexer lexer = new AsmLexer();
+        Lexer lexer = new Lexer();
         var tokens = lexer.Tokenize(asm).ToArray();
-        System.Console.WriteLine(string.Join(',', (IEnumerable<Token>)tokens));
-        Assert.Fail();
+        Assert.AreEqual(35, tokens.Length);
+        Assert.IsInstanceOfType(tokens.First(), typeof(DirectiveToken));
+        Assert.IsInstanceOfType(tokens.Last(), typeof(CloseParenthesisToken));
     }
+
+    [TestMethod]
+    public void TestParsing() {
+        var lexer = new Lexer();
+        var parser = new Parser();
+        var program = parser.Parse(lexer.Tokenize(asm));
+
+        Assert.IsNotNull(program);
+        Assert.AreEqual(2, program.Sections.Count);
+        
+        Assert.IsInstanceOfType(program.Sections[0], typeof(DataSection));
+        Assert.AreEqual(3, program.DataSections.First().Data.Count);
+
+        Assert.IsInstanceOfType(program.Sections[1], typeof(TextSection));
+        //Assert.AreEqual(3, program.TextSections.First().Instructions.Count);
+    } 
 
 }

@@ -7,8 +7,10 @@ namespace Qkmaxware.Compiling.Mips.Assembly;
 /// <summary>
 /// A peekable stream of tokens
 /// </summary>
-public class BufferedTokenStream {
+internal class BufferedTokenStream {
 
+    private long _position = 0;
+    public long SourcePosition => _position;
     private List<Token?> lookaheads = new List<Token?>(3);
 
     private IEnumerator<Token> source;
@@ -21,7 +23,8 @@ public class BufferedTokenStream {
 
     protected Token? MakeToken() {
         if (source.MoveNext()) {
-            return source.Current;
+            var current = source.Current;
+            return current;
         } else {
             return null;
         }
@@ -51,6 +54,11 @@ public class BufferedTokenStream {
             this.lookaheads[i - 1] = this.lookaheads[i];
         }
 
+        var first = this.lookaheads[0];
+        if (first != null) {
+            this._position = first.Position;
+        }
+
         return last;
     }
 
@@ -58,5 +66,12 @@ public class BufferedTokenStream {
         ensureCapacity(offset + 1);
         var x = this.lookaheads[offset];
         return x;
+    }
+
+    public bool IsLookahead<T>(int offset) {
+        var tok = Peek(offset);
+        if (tok == null)
+            return false;
+        return tok is T;
     }
 }
