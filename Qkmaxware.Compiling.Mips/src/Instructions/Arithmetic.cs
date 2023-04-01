@@ -1,6 +1,6 @@
 namespace Qkmaxware.Compiling.Mips.InstructionSet;
 
-public class Add : ThreeAddressInstruction {
+public class AddSigned : ThreeAddressInstruction {
     public override string InstrName() => "add";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
@@ -9,7 +9,7 @@ public class Add : ThreeAddressInstruction {
     }
 }
 
-public class Subtract : ThreeAddressInstruction {
+public class SubtractSigned : ThreeAddressInstruction {
     public override string InstrName() => "sub";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
@@ -18,7 +18,7 @@ public class Subtract : ThreeAddressInstruction {
     }
 }
 
-public class AddImmediate : TwoAddressImmediateInstruction<int> {
+public class AddSignedImmediate : TwoAddressImmediateInstruction<int> {
     public override string InstrName() => "addi";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
@@ -27,7 +27,7 @@ public class AddImmediate : TwoAddressImmediateInstruction<int> {
     }
 }
 
-public class SubtractImmediate : TwoAddressImmediateInstruction<int> {
+public class SubtractSignedImmediate : TwoAddressImmediateInstruction<int> {
     public override string InstrName() => "subi";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
@@ -54,7 +54,7 @@ public class SubtractUnsigned : ThreeAddressInstruction {
     }
 }
 
-public class AddImmediateUnsigned : TwoAddressImmediateInstruction<uint> {
+public class AddUnsignedImmediate : TwoAddressImmediateInstruction<uint> {
     public override string InstrName() => "addiu";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = u32(cpu.Registers[this.LhsOperandRegister]);
@@ -63,7 +63,7 @@ public class AddImmediateUnsigned : TwoAddressImmediateInstruction<uint> {
     }
 }
 
-public class SubtractImmediateUnsigned : TwoAddressImmediateInstruction<uint> {
+public class SubtractUnsignedImmediate : TwoAddressImmediateInstruction<uint> {
     public override string InstrName() => "subiu";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = u32(cpu.Registers[this.LhsOperandRegister]);
@@ -81,7 +81,7 @@ public class MultiplyWithoutOverflow : ThreeAddressInstruction {
     }
 }
 
-public class MultiplyWithOverflow : ThreeAddressInstruction {
+public class MultiplyWithOverflow : TwoAddressBinaryInstruction {
     public override string InstrName() => "mult";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
@@ -96,7 +96,7 @@ public class MultiplyWithOverflow : ThreeAddressInstruction {
     }
 }
 
-public class DivideWithRemainder : ThreeAddressInstruction {
+public class DivideWithRemainder : TwoAddressBinaryInstruction {
     public override string InstrName() => "div";
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);

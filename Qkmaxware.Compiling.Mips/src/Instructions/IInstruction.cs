@@ -69,6 +69,20 @@ public abstract class BaseInstruction : IInstruction {
     protected UInt64 u64(double d) {
         return BitConverter.ToUInt32(BitConverter.GetBytes(d));
     }
+
+    public override string ToString() => InstrName();
+}
+
+/// <summary>
+/// Base class for binary instructions
+/// </summary>
+public abstract class TwoAddressBinaryInstruction : BaseInstruction {
+    public RegisterIndex LhsOperandRegister;
+    public RegisterIndex RhsOperandRegister;
+
+    public override string ToString() {
+        return $"${InstrName()} ${this.LhsOperandRegister},${this.RhsOperandRegister}";
+    }
 }
 
 /// <summary>
