@@ -77,8 +77,8 @@ public class Lexer {
 
             // Id or Label
             if (char.IsLetter(next)) {
-                reader.Read(); pos++;
                 StringBuilder sb = new StringBuilder();
+                sb.Append((char)reader.Read()); pos++;
                 while (reader.Peek() != -1 && isIdentifierChar((char)reader.Peek())) {
                     sb.Append((char)reader.Read());
                 }
@@ -333,7 +333,7 @@ public class Lexer {
             }
 
             // Numbers
-            if (char.IsDigit(next)) {
+            if (char.IsDigit(next) || next == '+' || next == '-') {
                 yield return readConstant(now, reader);
                 continue;
             }
@@ -366,13 +366,13 @@ public class Lexer {
         var first = (char)reader.Read(); // Read first char
 
         // For binary numbers
-        if (reader.Peek() == 'b') {
+        if (first == '0' && reader.Peek() == 'b') {
             reader.Read(); // Ignore first 2 chars
 
             while (reader.Peek() == '0' || reader.Peek() == '1') {
                 sb.Append((char)reader.Read());
             }
-            return new ScalarConstantToken(startsAt, Convert.ToUInt32(sb.ToString(), 2));
+            return new ScalarConstantToken(startsAt, Convert.ToInt32(sb.ToString(), 2));
         }
         // For hexadecimal numbers
         else if (reader.Peek() == 'x' || reader.Peek() == 'X') {
@@ -381,7 +381,7 @@ public class Lexer {
             while (isDigit(reader.Peek()) || isHexChar(reader.Peek())) {
                 sb.Append((char)reader.Read());
             }
-            return new ScalarConstantToken(startsAt, Convert.ToUInt32(sb.ToString(), 16));
+            return new ScalarConstantToken(startsAt, Convert.ToInt32(sb.ToString(), 16));
         } 
         // For standard base 10 numbers
         else {
@@ -395,7 +395,7 @@ public class Lexer {
 
             isFractional = reader.Peek() == '.';
             if (!isFractional) {
-                return new ScalarConstantToken(startsAt, uint.Parse(sb.ToString(), System.Globalization.CultureInfo.InvariantCulture));
+                return new ScalarConstantToken(startsAt, int.Parse(sb.ToString(), System.Globalization.CultureInfo.InvariantCulture));
             }
 
             // Read the rest of the exponent

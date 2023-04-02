@@ -48,18 +48,19 @@ internal class BufferedTokenStream {
     public bool HasNext() => this.lookaheads.Count > 0 && this.lookaheads[0] != null;
 
     public Token? Advance() {
-        var last = lookaheads[0];
+        var prev_first = lookaheads[0];
 
         for (var i = 1; i < this.lookaheads.Count; i++) {
             this.lookaheads[i - 1] = this.lookaheads[i];
         }
+        this.lookaheads[lookaheads.Count - 1] = MakeToken();
 
         var first = this.lookaheads[0];
         if (first != null) {
             this._position = first.Position;
         }
 
-        return last;
+        return prev_first;
     }
 
     public Token? Peek(int offset) {

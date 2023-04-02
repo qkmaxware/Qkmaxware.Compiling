@@ -4,6 +4,6 @@ using System.Collections.Generic;
 
 namespace Qkmaxware.Compiling.Mips.Assembly;
 
-public class ScalarConstantToken : Token<uint> {
-    public ScalarConstantToken(long pos, uint value) : base(pos, value) {}
+public class ScalarConstantToken : Token<int> {
+    public ScalarConstantToken(long pos, int value) : base(pos, value) {}
 }

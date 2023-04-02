@@ -85,5 +85,6 @@ public class CpuRegisterSet {
 /// MIPS 32 CPU
 /// </summary>
 public class Cpu {
+    public int PC;
     public CpuRegisterSet Registers {get; private set;} = new CpuRegisterSet();
 }

@@ -142,10 +142,10 @@ public class Parser {
                 if (maybe<ColonToken>(tokens)) {
                     // Is Array
                     var size = require<ScalarConstantToken>(tokens, "data length");
-                    return new Data<uint>(label, directive, Enumerable.Repeat(integer.Value, (int)size.Value).ToArray());
+                    return new Data<int>(label, directive, Enumerable.Repeat(integer.Value, (int)size.Value).ToArray());
                 } else {
                     // Not Array
-                    return new Data<uint>(label, directive, integer.Value);
+                    return new Data<int>(label, directive, integer.Value);
                 }
             case "float":
                 var real = require<FloatingPointConstantToken>(tokens, "floating point quantity");
@@ -241,14 +241,77 @@ public class Parser {
                 case "ori":
                     yield return parseOri(tokens);
                     break;
+                case "sll":
+                    yield return parseSll(tokens);
+                    break;
+                case "srl":
+                    yield return parseSrl(tokens);
+                    break;
 
                 // Data Transfer
+                case "lw":
+                    yield return parseLw(tokens);
+                    break;
+                case "sw":
+                    yield return parseSw(tokens);
+                    break;
+                case "lui":
+                    yield return parseLui(tokens);
+                    break;
+                case "la":
+                    yield return parseLa(tokens);
+                    break;
+                case "li":
+                    yield return parseLi(tokens);
+                    break;
+                case "mfhi":
+                    yield return parseMfhi(tokens);
+                    break;
+                case "mflo":
+                    yield return parseMflo(tokens);
+                    break;
+                case "move":
+                    yield return parseMove(tokens);
+                    break;
 
                 // Conditional Branch
+                case "beq":
+                    yield return parseBeq(tokens);
+                    break;
+                case "bne":
+                    yield return parseBne(tokens);
+                    break;
+                case "bgt":
+                    yield return parseBgt(tokens);
+                    break;
+                case "bge":
+                    yield return parseBge(tokens);
+                    break;
+                case "blt":
+                    yield return parseBlt(tokens);
+                    break;
+                case "ble":
+                    yield return parseBle(tokens);
+                    break;
 
                 // Comparison
+                case "slt":
+                    yield return parseSlt(tokens);
+                    break;
+                case "slti":
+                    yield return parseSlti(tokens);
+                    break;
 
                 // Unconditional Jump
+                case "j":
+                    yield return parseJ(tokens);
+                    break;
+                case "jr":
+                    yield return parseJr(tokens);
+                    break;
+                case "jal":
+                    yield return parseJal(tokens);
+                    break;
 
                 // System Calls
                 case "syscall":
@@ -335,7 +398,7 @@ public class Parser {
         (res, lhs, rhs) => new AddUnsignedImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = rhs.Value,
+            RhsOperand = (uint)rhs.Value,
         }); 
 
     private MultiplyWithoutOverflow parseMul(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, MultiplyWithoutOverflow>(
@@ -380,7 +443,7 @@ public class Parser {
         (res, lhs, rhs) => new AndImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = rhs.Value,
+            RhsOperand = (uint)rhs.Value,
         }); 
         
     private OrImmediate parseOri(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, OrImmediate>(
@@ -388,6 +451,189 @@ public class Parser {
         (res, lhs, rhs) => new OrImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = rhs.Value,
+            RhsOperand = (uint)rhs.Value,
         }); 
+
+    private ShiftLeftLogical parseSll(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftLeftLogical>(
+        tokens, 
+        (res, lhs, rhs) => new ShiftLeftLogical {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
+
+    private ShiftRightLogical parseSrl(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftRightLogical>(
+        tokens, 
+        (res, lhs, rhs) => new ShiftRightLogical {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        });
+
+    private LoadWord parseLw(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        require<CommaToken>(tokens, "comma");
+        var offset = require<ScalarConstantToken>(tokens, "memory offset");
+        require<OpenParenthesisToken>(tokens, "open parenthesis");
+        var root = require<RegisterToken>(tokens, "base register");
+        require<CloseParenthesisToken>(tokens, "close parenthesis");
+        return new LoadWord {
+            ResultRegister = res.Value,
+            BaseRegister = root.Value,
+            Offset = (uint)offset.Value
+        };
+    }
+
+    private StoreWord parseSw(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "source register");
+        require<CommaToken>(tokens, "comma");
+        var offset = require<ScalarConstantToken>(tokens, "memory offset");
+        require<OpenParenthesisToken>(tokens, "open parenthesis");
+        var root = require<RegisterToken>(tokens, "base register");
+        require<CloseParenthesisToken>(tokens, "close parenthesis");
+        return new StoreWord {
+            SourceRegister = res.Value,
+            BaseRegister = root.Value,
+            Offset = (uint)offset.Value
+        };
+    }
+
+    private LoadUpperImmediate parseLui(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        require<CommaToken>(tokens, "comma");
+        var label = require<ScalarConstantToken>(tokens, "immediate value");
+        return new LoadUpperImmediate {
+            ResultRegister = res.Value,
+            Constant = (uint)label.Value
+        };
+    }
+
+    private LoadAddress parseLa(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        require<CommaToken>(tokens, "comma");
+        var label = require<IdentifierToken>(tokens, "label identifier");
+        return new LoadAddress {
+            ResultRegister = res.Value,
+            Label = label.Value
+        };
+    }
+
+    private LoadImmediate parseLi(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        require<CommaToken>(tokens, "comma");
+        var label = require<ScalarConstantToken>(tokens, "immediate value");
+        return new LoadImmediate {
+            ResultRegister = res.Value,
+            Constant = (uint)label.Value
+        };
+    }
+
+    private MoveFromHi parseMfhi(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        return new MoveFromHi {
+            ResultRegister = res.Value
+        };
+    }
+
+    private MoveFromLo parseMflo(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        return new MoveFromLo {
+            ResultRegister = res.Value
+        };
+    }
+
+    private Move parseMove(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        require<CommaToken>(tokens, "comma");
+        var from = require<RegisterToken>(tokens, "source register");
+        return new Move {
+            ResultRegister = res.Value,
+            SourceRegister = from.Value
+        };
+    }
+
+    private BranchOnEqual parseBeq(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnEqual>(
+        tokens, 
+        (res, lhs, rhs) => new BranchOnEqual {
+            LhsOperandRegister = res.Value,
+            RhsOperandRegister = lhs.Value,
+            Offset = rhs.Value
+        });
+
+    private BranchOnNotEqual parseBne(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnNotEqual>(
+        tokens, 
+        (res, lhs, rhs) => new BranchOnNotEqual {
+            LhsOperandRegister = res.Value,
+            RhsOperandRegister = lhs.Value,
+            Offset = rhs.Value
+        });
+
+    private BranchOnGreater parseBgt(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnGreater>(
+        tokens, 
+        (res, lhs, rhs) => new BranchOnGreater {
+            LhsOperandRegister = res.Value,
+            RhsOperandRegister = lhs.Value,
+            Offset = rhs.Value
+        });
+
+    private BranchOnGreaterOrEqual parseBge(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnGreaterOrEqual>(
+        tokens, 
+        (res, lhs, rhs) => new BranchOnGreaterOrEqual {
+            LhsOperandRegister = res.Value,
+            RhsOperandRegister = lhs.Value,
+            Offset = rhs.Value
+        });
+
+    private BranchOnLess parseBlt(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnLess>(
+        tokens, 
+        (res, lhs, rhs) => new BranchOnLess {
+            LhsOperandRegister = res.Value,
+            RhsOperandRegister = lhs.Value,
+            Offset = rhs.Value
+        });
+
+    private BranchOnLessOrEqual parseBle(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnLessOrEqual>(
+        tokens, 
+        (res, lhs, rhs) => new BranchOnLessOrEqual {
+            LhsOperandRegister = res.Value,
+            RhsOperandRegister = lhs.Value,
+            Offset = rhs.Value
+        });
+
+    private SetOnLessThan parseSlt(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, SetOnLessThan>(
+        tokens, 
+        (res, lhs, rhs) => new SetOnLessThan {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value
+        });
+
+    private SetOnLessThanImmediate parseSlti(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, SetOnLessThanImmediate>(
+        tokens, 
+        (res, lhs, rhs) => new SetOnLessThanImmediate {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            Constant = rhs.Value
+        }); 
+
+    private JumpTo parseJ(BufferedTokenStream tokens) {
+        var from = require<ScalarConstantToken>(tokens, "target address");
+        return new JumpTo {
+            Address = (uint)from.Value
+        };
+    }
+
+    private JumpRegister parseJr(BufferedTokenStream tokens) {
+        var from = require<RegisterToken>(tokens, "target address register");
+        return new JumpRegister {
+            Register = from.Value
+        };
+    }
+
+    private JumpAndLink parseJal(BufferedTokenStream tokens) {
+        var from = require<ScalarConstantToken>(tokens, "target address");
+        return new JumpAndLink {
+            Address = (uint)from.Value
+        };
+    }
 }

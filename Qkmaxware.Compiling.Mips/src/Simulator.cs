@@ -21,9 +21,26 @@ public class Simulator {
         instr.Invoke(cpu, fpu, memory);
     }
     
-    public void Execute (IEnumerable<InstructionSet.IInstruction> instrs) {
-        foreach (var instr in instrs) {
-            Execute(instr);
+    public int Execute (List<InstructionSet.IInstruction> instrs) {
+        while (true) {
+            if (cpu.PC < 0 || cpu.PC >= instrs.Count)
+                break;
+            var instr = instrs[cpu.PC];
+            cpu.PC++;
+            try {
+                Execute(instr);
+            } catch (ExitException exit) {
+                return exit.ExitCode;
+            }
         }
+        return 0;
+    }
+}
+
+public class ExitException : System.Exception {
+    public int ExitCode {get; private set;}
+    public ExitException() : this(0) {}
+    public ExitException(int code) {
+        this.ExitCode = code;
     }
 }

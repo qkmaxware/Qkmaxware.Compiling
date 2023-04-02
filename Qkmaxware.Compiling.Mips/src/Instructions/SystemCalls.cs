@@ -59,8 +59,7 @@ public class Syscall : BaseInstruction {
             case 10:
                 // exit
                 // TODO stop the program
-                
-                break;
+                throw new ExitException();
             case 11:
                 // read_char $v0
                 {
@@ -70,7 +69,7 @@ public class Syscall : BaseInstruction {
                 break;
             case 17:
                 // exit2 (exit with integer return)
-                break;
+                throw new ExitException((int)cpu.Registers.A0.Read());
             default:
                 throw new NotImplementedException($"System call {system_call} is not implemented.");
         }

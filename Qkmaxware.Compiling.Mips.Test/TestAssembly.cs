@@ -31,7 +31,8 @@ public class TestAssembly {
     public void TestParsing() {
         var lexer = new Lexer();
         var parser = new Parser();
-        var program = parser.Parse(lexer.Tokenize(asm));
+        var lexemes = lexer.Tokenize(asm);
+        var program = parser.Parse(lexemes);
 
         Assert.IsNotNull(program);
         Assert.AreEqual(2, program.Sections.Count);
@@ -40,7 +41,7 @@ public class TestAssembly {
         Assert.AreEqual(3, program.DataSections.First().Data.Count);
 
         Assert.IsInstanceOfType(program.Sections[1], typeof(TextSection));
-        //Assert.AreEqual(3, program.TextSections.First().Instructions.Count);
+        Assert.AreEqual(3, program.TextSections.First().Code.Count);
     } 
 
 }
