@@ -1,7 +1,9 @@
-namespace Qkmaxware.Compiling.Mips.InstructionSet;
+namespace Qkmaxware.Compiling.Mips.Assembly;
 
 public class AddSigned : ThreeAddressInstruction {
     public override string InstrName() => "add";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = i32(cpu.Registers[this.RhsOperandRegister]);
@@ -11,6 +13,8 @@ public class AddSigned : ThreeAddressInstruction {
 
 public class SubtractSigned : ThreeAddressInstruction {
     public override string InstrName() => "sub";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = i32(cpu.Registers[this.RhsOperandRegister]);
@@ -20,6 +24,8 @@ public class SubtractSigned : ThreeAddressInstruction {
 
 public class AddSignedImmediate : TwoAddressImmediateInstruction<int> {
     public override string InstrName() => "addi";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = this.RhsOperand;
@@ -29,6 +35,8 @@ public class AddSignedImmediate : TwoAddressImmediateInstruction<int> {
 
 public class SubtractSignedImmediate : TwoAddressImmediateInstruction<int> {
     public override string InstrName() => "subi";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = this.RhsOperand;
@@ -38,6 +46,8 @@ public class SubtractSignedImmediate : TwoAddressImmediateInstruction<int> {
 
 public class AddUnsigned : ThreeAddressInstruction {
     public override string InstrName() => "addu";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = u32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = u32(cpu.Registers[this.RhsOperandRegister]);
@@ -47,6 +57,8 @@ public class AddUnsigned : ThreeAddressInstruction {
 
 public class SubtractUnsigned : ThreeAddressInstruction {
     public override string InstrName() => "subu";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = u32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = u32(cpu.Registers[this.RhsOperandRegister]);
@@ -56,6 +68,8 @@ public class SubtractUnsigned : ThreeAddressInstruction {
 
 public class AddUnsignedImmediate : TwoAddressImmediateInstruction<uint> {
     public override string InstrName() => "addiu";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = u32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = this.RhsOperand;
@@ -65,6 +79,8 @@ public class AddUnsignedImmediate : TwoAddressImmediateInstruction<uint> {
 
 public class SubtractUnsignedImmediate : TwoAddressImmediateInstruction<uint> {
     public override string InstrName() => "subiu";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = u32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = this.RhsOperand;
@@ -74,6 +90,8 @@ public class SubtractUnsignedImmediate : TwoAddressImmediateInstruction<uint> {
 
 public class MultiplyWithoutOverflow : ThreeAddressInstruction {
     public override string InstrName() => "mul";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = i32(cpu.Registers[this.RhsOperandRegister]);
@@ -83,6 +101,8 @@ public class MultiplyWithoutOverflow : ThreeAddressInstruction {
 
 public class MultiplyWithOverflow : TwoAddressBinaryInstruction {
     public override string InstrName() => "mult";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = i32(cpu.Registers[this.RhsOperandRegister]);
@@ -98,6 +118,8 @@ public class MultiplyWithOverflow : TwoAddressBinaryInstruction {
 
 public class DivideWithRemainder : TwoAddressBinaryInstruction {
     public override string InstrName() => "div";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = i32(cpu.Registers[this.RhsOperandRegister]);

@@ -68,7 +68,7 @@ public class Lexer {
                 reader.Read(); pos++;
                 StringBuilder sb = new StringBuilder();
                 while (reader.Peek() != -1 && isIdentifierChar((char)reader.Peek())) {
-                    sb.Append((char)reader.Read());
+                    sb.Append((char)reader.Read()); pos++;
                 }
                 var s = sb.ToString();
                 yield return new DirectiveToken(now, s);
@@ -80,7 +80,7 @@ public class Lexer {
                 StringBuilder sb = new StringBuilder();
                 sb.Append((char)reader.Read()); pos++;
                 while (reader.Peek() != -1 && isIdentifierChar((char)reader.Peek())) {
-                    sb.Append((char)reader.Read());
+                    sb.Append((char)reader.Read()); pos++;
                 }
                 var s = sb.ToString();
 
@@ -124,7 +124,7 @@ public class Lexer {
                 reader.Read(); pos++;
                 StringBuilder sb = new StringBuilder();
                 while (reader.Peek() != -1 && isIdentifierChar((char)reader.Peek())) {
-                    sb.Append((char)reader.Read());
+                    sb.Append((char)reader.Read()); pos++;
                 }
                 var s = sb.ToString();
                 switch (s) {
@@ -334,7 +334,7 @@ public class Lexer {
 
             // Numbers
             if (char.IsDigit(next) || next == '+' || next == '-') {
-                yield return readConstant(now, reader);
+                yield return readConstant(now, ref pos, reader);
                 continue;
             }
 
@@ -344,7 +344,7 @@ public class Lexer {
 
                 var sb = new StringBuilder();
                 while (reader.Peek() != '"') {
-                    sb.Append((char)reader.Read());
+                    sb.Append((char)reader.Read()); pos++;
                 }
                 var s = sb.ToString();
 
@@ -361,25 +361,28 @@ public class Lexer {
         }
     }
 
-    private static Token readConstant(long startsAt, TextReader reader) {
+    private static Token readConstant(long startsAt, ref long position, TextReader reader) {
         StringBuilder sb = new StringBuilder();
         var first = (char)reader.Read(); // Read first char
+        position++;
 
         // For binary numbers
         if (first == '0' && reader.Peek() == 'b') {
             reader.Read(); // Ignore first 2 chars
+            position++;
 
             while (reader.Peek() == '0' || reader.Peek() == '1') {
-                sb.Append((char)reader.Read());
+                sb.Append((char)reader.Read()); position++;
             }
             return new ScalarConstantToken(startsAt, Convert.ToInt32(sb.ToString(), 2));
         }
         // For hexadecimal numbers
         else if (reader.Peek() == 'x' || reader.Peek() == 'X') {
             reader.Read(); // Ignore first 2 chars
+            position++;
 
             while (isDigit(reader.Peek()) || isHexChar(reader.Peek())) {
-                sb.Append((char)reader.Read());
+                sb.Append((char)reader.Read()); position++;
             }
             return new ScalarConstantToken(startsAt, Convert.ToInt32(sb.ToString(), 16));
         } 
@@ -391,6 +394,7 @@ public class Lexer {
             // Read the rest of the whole numbers
             while (isDigit(reader.Peek())) {
                 sb.Append((char)reader.Read());
+                position++;
             }
 
             isFractional = reader.Peek() == '.';
@@ -399,21 +403,21 @@ public class Lexer {
             }
 
             // Read the rest of the exponent
-            sb.Append((char)reader.Read()); // .
+            sb.Append((char)reader.Read()); position++; // .
             while (isDigit(reader.Peek())) {
-                sb.Append((char)reader.Read());
+                sb.Append((char)reader.Read()); position++;
             }
 
             // Read the exponential form
             if (!(reader.Peek() == 'e' || reader.Peek() == 'E')) {
                 return new FloatingPointConstantToken(startsAt, float.Parse(sb.ToString()));
             }
-            sb.Append((char)reader.Read());
+            sb.Append((char)reader.Read()); position++;
             if (reader.Peek() == '-' || reader.Peek() == '+') {
-                sb.Append((char)reader.Read());
+                sb.Append((char)reader.Read()); position++;
             }
             while (isDigit(reader.Peek())) {
-                sb.Append((char)reader.Read());
+                sb.Append((char)reader.Read()); position++;
             }
 
             return new FloatingPointConstantToken(startsAt, float.Parse(sb.ToString(), System.Globalization.CultureInfo.InvariantCulture));

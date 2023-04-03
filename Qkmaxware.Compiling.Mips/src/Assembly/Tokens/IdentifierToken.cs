@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace Qkmaxware.Compiling.Mips.Assembly;
 
-public class IdentifierToken : Token<string> {
+public class IdentifierToken : Token<string>, IAddressLike {
     public IdentifierToken(long pos, string directive) : base(pos, directive) {}
+
+    public override string ToString() {
+        return this.Value;
+    }
 }

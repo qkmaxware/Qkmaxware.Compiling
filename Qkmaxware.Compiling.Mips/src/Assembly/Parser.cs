@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using Qkmaxware.Compiling.Mips.InstructionSet;
+using Qkmaxware.Compiling.Mips.Assembly;
 
 namespace Qkmaxware.Compiling.Mips.Assembly;
 
@@ -15,7 +15,12 @@ public class Parser {
         AssemblyProgram program = new AssemblyProgram();
 
         while (tokens.HasNext()) {
-            program.Sections.Add(parseSection(tokens));
+            // Eat newlines
+            eatNewlines(tokens);
+            if (tokens.HasNext())
+                program.Sections.Add(parseSection(tokens));
+            else
+                break;
         }
 
         return program;
@@ -45,18 +50,26 @@ public class Parser {
             }
 
             // Eat extra newlines
-            while (tokens.HasNext() && tokens.IsLookahead<StatementBreakToken>(0)) {
-                tokens.Advance();
-            }
+            eatNewlines(tokens);
         }
     }
 
-    private static T require<T>(BufferedTokenStream tokens,string type) where T:Token  {
+    private static void eatNewlines(BufferedTokenStream tokens) {
+        while (tokens.HasNext() && tokens.IsLookahead<StatementBreakToken>(0)) {
+            tokens.Advance();
+        }
+    }
+
+    private static T require<T>(BufferedTokenStream tokens,string type) {
         if (tokens.IsLookahead<T>(0)) {
             var maybeT = tokens.Advance();
-            if (maybeT == null || maybeT is not T)
+            if (maybeT == null)
                 throw new AssemblyException(tokens.SourcePosition, "Failed to fetch token from token stream.");
-            return (T)maybeT;
+            if (maybeT is T tmaybe) {
+                return tmaybe;
+            } else {
+                throw new AssemblyException(tokens.SourcePosition, "Failed to fetch token from token stream.");
+            }
         } else {
             throw new AssemblyException(tokens.SourcePosition, $"Missing required {type}.");
         }
@@ -143,6 +156,14 @@ public class Parser {
                     // Is Array
                     var size = require<ScalarConstantToken>(tokens, "data length");
                     return new Data<int>(label, directive, Enumerable.Repeat(integer.Value, (int)size.Value).ToArray());
+                } else if (maybe<CommaToken>(tokens)) {
+                    List<int> values = new List<int>();
+                    values.Add(integer.Value);
+                    while (maybe<CommaToken>(tokens)) {
+                        var v = require<ScalarConstantToken>(tokens, "value");
+                        values.Add(v.Value);
+                    }
+                    return new Data<int>(label, directive, values.ToArray());
                 } else {
                     // Not Array
                     return new Data<int>(label, directive, integer.Value);
@@ -153,6 +174,14 @@ public class Parser {
                     // Is Array
                     var size = require<ScalarConstantToken>(tokens, "data length");
                     return new Data<float>(label, directive, Enumerable.Repeat(real.Value, (int)size.Value).ToArray());
+                } else if (maybe<CommaToken>(tokens)) {
+                    List<float> values = new List<float>();
+                    values.Add(real.Value);
+                    while (maybe<CommaToken>(tokens)) {
+                        var v = require<FloatingPointConstantToken>(tokens, "value");
+                        values.Add(v.Value);
+                    }
+                    return new Data<float>(label, directive, values.ToArray());
                 } else {
                     // Not Array
                     return new Data<float>(label, directive, real.Value);
@@ -183,11 +212,11 @@ public class Parser {
         return section;
     }
 
-    private IEnumerable<IAssembleable> parseInstruction(BufferedTokenStream tokens) {
+    private IEnumerable<IAssemblyInstruction> parseInstruction(BufferedTokenStream tokens) {
         // Label (can be on its own line)
         if (tokens.IsLookahead<LabelToken>(0)) {
             var label = require<LabelToken>(tokens, "code label");
-            // TODO return a label instruction
+            yield return new LabelMarker(label.Value);
         }
 
         // Operation
@@ -278,6 +307,12 @@ public class Parser {
                 case "beq":
                     yield return parseBeq(tokens);
                     break;
+                case "bgtz":
+                    yield return parseBgtz(tokens);
+                    break;
+                case "blez":
+                    yield return parseBlez(tokens);
+                    break;
                 case "bne":
                     yield return parseBne(tokens);
                     break;
@@ -328,14 +363,14 @@ public class Parser {
         eol(tokens);
     }
 
-    private static T parseNoResultOp<Lhs,Rhs, T>(BufferedTokenStream tokens, Func<Lhs, Rhs, T> convert) where Lhs:Token where Rhs:Token where T:IAssembleable {
+    private static T parseNoResultOp<Lhs,Rhs, T>(BufferedTokenStream tokens, Func<Lhs, Rhs, T> convert) where Lhs:Token where Rhs:Token where T:IAssemblyInstruction {
         var lhs = require<Lhs>(tokens, "left-hand operand");
         require<CommaToken>(tokens, "comma");
         var rhs = require<Rhs>(tokens, "right-hand operand");
         return convert(lhs, rhs);
     }
 
-    private static T parseOp<Lhs,Rhs, T>(BufferedTokenStream tokens, Func<RegisterToken, Lhs, Rhs, T> convert) where Lhs:Token where Rhs:Token where T:IAssembleable {
+    private static T parseOp<Lhs,Rhs, T>(BufferedTokenStream tokens, Func<RegisterToken, Lhs, Rhs, T> convert) where Lhs:Token where Rhs:Token where T:IAssemblyInstruction {
         var res = require<RegisterToken>(tokens, "result register");
         require<CommaToken>(tokens, "comma");
         var lhs = require<Lhs>(tokens, "left-hand operand");
@@ -617,9 +652,9 @@ public class Parser {
         }); 
 
     private JumpTo parseJ(BufferedTokenStream tokens) {
-        var from = require<ScalarConstantToken>(tokens, "target address");
+        var from = require<IAddressLike>(tokens, "target address");
         return new JumpTo {
-            Address = (uint)from.Value
+            Address = from
         };
     }
 
@@ -631,9 +666,29 @@ public class Parser {
     }
 
     private JumpAndLink parseJal(BufferedTokenStream tokens) {
-        var from = require<ScalarConstantToken>(tokens, "target address");
+        var from = require<IAddressLike>(tokens, "target address");
         return new JumpAndLink {
-            Address = (uint)from.Value
+            Address = from
+        };
+    }
+
+    private BranchGreaterThan0 parseBgtz(BufferedTokenStream tokens) {
+        var reg = require<RegisterToken>(tokens, "register");
+        require<CommaToken>(tokens, "comma");
+        var from = require<IAddressLike>(tokens, "target address");
+        return new BranchGreaterThan0 {
+            LhsOperandRegister = reg.Value,
+            Address = from
+        };
+    }
+
+    private BranchLessThanOrEqual0 parseBlez(BufferedTokenStream tokens) {
+        var reg = require<RegisterToken>(tokens, "register");
+        require<CommaToken>(tokens, "comma");
+        var from = require<IAddressLike>(tokens, "target address");
+        return new BranchLessThanOrEqual0 {
+            LhsOperandRegister = reg.Value,
+            Address = from
         };
     }
 }

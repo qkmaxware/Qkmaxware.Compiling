@@ -17,11 +17,11 @@ public class Simulator {
         this.memory = memory;
     }    
 
-    public void Execute(InstructionSet.IInstruction instr) {
+    public void Execute(Bytecode.IBytecodeInstruction instr) {
         instr.Invoke(cpu, fpu, memory);
     }
     
-    public int Execute (List<InstructionSet.IInstruction> instrs) {
+    public int Execute (List<Bytecode.IBytecodeInstruction> instrs) {
         while (true) {
             if (cpu.PC < 0 || cpu.PC >= instrs.Count)
                 break;
@@ -37,6 +37,9 @@ public class Simulator {
     }
 }
 
+/// <summary>
+/// Exception thrown when a simulated program exits using the exit system call
+/// </summary>
 public class ExitException : System.Exception {
     public int ExitCode {get; private set;}
     public ExitException() : this(0) {}

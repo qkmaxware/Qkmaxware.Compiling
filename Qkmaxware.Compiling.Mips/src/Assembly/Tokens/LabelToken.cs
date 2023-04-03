@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace Qkmaxware.Compiling.Mips.Assembly;
 
-public class LabelToken : Token<string> {
+public class LabelToken : Token<string>, IAddressLike {
     public LabelToken(long pos, string directive) : base(pos, directive) {}
+
+    public override string ToString() {
+        return this.Value + ":";
+    }
 }

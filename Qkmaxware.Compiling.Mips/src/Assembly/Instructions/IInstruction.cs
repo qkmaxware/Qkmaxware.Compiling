@@ -1,22 +1,13 @@
 using System;
 
-namespace Qkmaxware.Compiling.Mips.InstructionSet;
-
-public interface IAssembleable {
-
-}
+namespace Qkmaxware.Compiling.Mips.Assembly;
 
 /// <summary>
 /// Base interface for all MIPS instructions
 /// </summary>
-public interface IInstruction : IAssembleable {
-    /// <summary>
-    /// Perform this instruction on the given simulator
-    /// </summary>
-    /// <param name="cpu">mips cpu</param>
-    /// <param name="fpu">mips fpu</param>
-    /// <param name="memory">permanent storage</param>
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory);
+public interface IAssemblyInstruction {
+    public void Visit(IInstructionVisitor visitor);
+    public T Visit<T>(IInstructionVisitor<T> visitor);
     /// <summary>
     /// Pretty-print the instruction
     /// </summary>
@@ -25,16 +16,9 @@ public interface IInstruction : IAssembleable {
 }
 
 /// <summary>
-/// Base interface for a pseudo instruction handled by the assembler
-/// </summary>
-public interface IPseudoInstruction : IAssembleable {
-
-}
-
-/// <summary>
 /// Base class for all instructions with shared functionality
 /// </summary>
-public abstract class BaseInstruction : IInstruction {
+public abstract class BaseAssemblyInstruction : IAssemblyInstruction {
     public abstract string InstrName();
     public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory);
 
@@ -70,56 +54,59 @@ public abstract class BaseInstruction : IInstruction {
         return BitConverter.ToUInt32(BitConverter.GetBytes(d));
     }
 
+    public abstract void Visit(IInstructionVisitor visitor);
+    public abstract T Visit<T>(IInstructionVisitor<T> visitor);
+
     public override string ToString() => InstrName();
 }
 
 /// <summary>
 /// Base class for binary instructions
 /// </summary>
-public abstract class TwoAddressBinaryInstruction : BaseInstruction {
+public abstract class TwoAddressBinaryInstruction : BaseAssemblyInstruction {
     public RegisterIndex LhsOperandRegister;
     public RegisterIndex RhsOperandRegister;
 
     public override string ToString() {
-        return $"${InstrName()} ${this.LhsOperandRegister},${this.RhsOperandRegister}";
+        return $"{InstrName()} {this.LhsOperandRegister},{this.RhsOperandRegister}";
     }
 }
 
 /// <summary>
 /// Base class for binary instructions
 /// </summary>
-public abstract class ThreeAddressInstruction : BaseInstruction {
+public abstract class ThreeAddressInstruction : BaseAssemblyInstruction {
     public RegisterIndex ResultRegister;
     public RegisterIndex LhsOperandRegister;
     public RegisterIndex RhsOperandRegister;
 
     public override string ToString() {
-        return $"${InstrName()} ${this.ResultRegister},${this.LhsOperandRegister},${this.RhsOperandRegister}";
+        return $"{InstrName()} {this.ResultRegister},{this.LhsOperandRegister},{this.RhsOperandRegister}";
     }
 }
 
 /// <summary>
 /// Base class for binary instructions
 /// </summary>
-public abstract class TwoAddressImmediateInstruction<T> : BaseInstruction {
+public abstract class TwoAddressImmediateInstruction<T> : BaseAssemblyInstruction {
     public RegisterIndex ResultRegister;
     public RegisterIndex LhsOperandRegister;
     public T? RhsOperand;
 
     public override string ToString() {
-        return $"${InstrName()} ${this.ResultRegister},${this.LhsOperandRegister},${this.RhsOperand}";
+        return $"{InstrName()} {this.ResultRegister},{this.LhsOperandRegister},{this.RhsOperand}";
     }
 }
 
 /// <summary>
 /// 
 /// </summary>
-public abstract class OneAddressImmediateInstruction<T> : BaseInstruction {
+public abstract class OneAddressImmediateInstruction<T> : BaseAssemblyInstruction {
     public RegisterIndex ResultRegister;
     public T? RhsOperand;
 
     public override string ToString() {
-        return $"${InstrName()} ${this.ResultRegister},${this.RhsOperand}";
+        return $"{InstrName()} {this.ResultRegister},{this.RhsOperand}";
     }
 }
 

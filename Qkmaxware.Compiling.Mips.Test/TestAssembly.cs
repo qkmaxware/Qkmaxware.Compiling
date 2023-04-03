@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Qkmaxware.Compiling.Mips.Assembly;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Qkmaxware.Compiling.Mips.Test;
@@ -44,4 +45,27 @@ public class TestAssembly {
         Assert.AreEqual(3, program.TextSections.First().Code.Count);
     } 
 
+    [TestMethod]
+    public void TestWriting() {
+        var asm = "fibonacci.asm".ReadEmbeddedFile();
+        Assert.AreNotEqual(string.Empty, asm);
+        var lexer = new Lexer();
+        var parser = new Parser();
+        var lexemes = lexer.Tokenize(asm);
+        try {
+            var program = parser.Parse(lexemes);
+
+            using (var writer = new StreamWriter("fibonacci.re_emitted.asm")) {
+                var w = new AssemblyWriter(writer);
+                w.Emit(program);
+            }
+        } catch (AssemblyException ex) {
+            var line = 0;
+            for (var i = 0; i < ex.SourcePosition; i++) {
+                if (asm[i] == '\n')
+                    line++;
+            }
+            throw new System.Exception(ex.Message + " @line " + (line) + " " + asm.GetLine(line), ex);
+        }
+    }
 }

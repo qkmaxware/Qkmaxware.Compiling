@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Qkmaxware.Compiling.Mips\Qkmaxware.Compiling.Mips.csproj" />
+    <EmbeddedResource Include="examples\**\*"/>
   </ItemGroup>
 
 </Project>

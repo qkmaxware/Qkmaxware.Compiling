@@ -20,8 +20,22 @@ public class Data<T> : Data {
     public Data(LabelToken name, DirectiveToken storage, T[] values) : base(name, storage, true) {
         this.Values = values;
     }
+
+    public override string ToString() {
+        if (this.StorageClass.Value == ("ascii") && Values is byte[] ascii) {
+            return $"{VariableName} .{StorageClass.Value} \"{System.Text.Encoding.ASCII.GetString(ascii)}\"";
+        } else if (this.StorageClass.Value == ("asciiz") && Values is byte[] asciiz) {
+            return $"{VariableName} .{StorageClass.Value} \"{System.Text.Encoding.ASCII.GetString(asciiz.SkipLast(1).ToArray())}\"";
+        } else {
+            return $"{VariableName} .{StorageClass.Value} {string.Join(',', Values)}";
+        }
+    }
 }
 
 public class DataSection : Section {
     public List<Data> Data {get; private set;} = new List<Data>();
+
+    public override string ToString() {
+        return ".data";
+    }
 }

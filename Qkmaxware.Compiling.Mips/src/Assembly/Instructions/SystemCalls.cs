@@ -1,6 +1,6 @@
-namespace Qkmaxware.Compiling.Mips.InstructionSet;
+namespace Qkmaxware.Compiling.Mips.Assembly;
 
-public class Syscall : BaseInstruction {
+public class Syscall : BaseAssemblyInstruction {
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
         // Behaviour changes depending on $v0
         var system_call = cpu.Registers.V0.Read();
@@ -58,7 +58,6 @@ public class Syscall : BaseInstruction {
                 goto default;
             case 10:
                 // exit
-                // TODO stop the program
                 throw new ExitException();
             case 11:
                 // read_char $v0
@@ -74,6 +73,7 @@ public class Syscall : BaseInstruction {
                 throw new NotImplementedException($"System call {system_call} is not implemented.");
         }
     }
-
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
     public override string InstrName() => "syscall";
 }
