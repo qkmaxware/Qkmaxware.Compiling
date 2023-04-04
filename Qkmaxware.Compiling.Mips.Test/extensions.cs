@@ -8,10 +8,14 @@ public static class Extensions {
 
         foreach (var asm in assembly.GetManifestResourceNames()) {
             if (asm.EndsWith(filename)) {
-                using (Stream stream = assembly.GetManifestResourceStream(asm))
-                using (StreamReader reader = new StreamReader(stream)) {
-                    string result = reader.ReadToEnd();
-                    return result;
+                using (Stream? stream = assembly.GetManifestResourceStream(asm)) {
+                    if (stream == null) {
+                        continue;
+                    }
+                    using (StreamReader reader = new StreamReader(stream)) {
+                        string result = reader.ReadToEnd();
+                        return result;
+                    }
                 }
             }
         }

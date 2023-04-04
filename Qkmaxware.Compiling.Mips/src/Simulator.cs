@@ -5,11 +5,11 @@ namespace Qkmaxware.Compiling.Mips;
 /// <summary>
 /// MIPS 32 simulator
 /// </summary>
-public class Simulator {
-    private Cpu cpu;
-    private Fpu fpu;
-    private IMemory memory;
-    private Fpu coprocessor0 => fpu;
+public class Simulator : ISimulator {
+    protected Cpu cpu {get; private set;}
+    protected Fpu fpu {get; private set;}
+    protected IMemory memory {get; private set;}
+    protected Fpu coprocessor0 => fpu;
 
     public Simulator(IMemory memory) {
         this.cpu = new Cpu();
@@ -28,13 +28,18 @@ public class Simulator {
             var instr = instrs[cpu.PC];
             cpu.PC++;
             try {
+                OnBeforeInstruction(instr);
                 Execute(instr);
+                OnAfterInstruction(instr);
             } catch (ExitException exit) {
                 return exit.ExitCode;
             }
         }
         return 0;
     }
+
+    public virtual void OnBeforeInstruction(Bytecode.IBytecodeInstruction instr) {}
+    public virtual void OnAfterInstruction(Bytecode.IBytecodeInstruction instr) {}
 }
 
 /// <summary>

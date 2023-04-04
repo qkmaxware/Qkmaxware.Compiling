@@ -253,8 +253,14 @@ public class Parser {
                 case "mult":
                     yield return parseMult(tokens);
                     break;
+                case "multu":
+                    yield return parseMultu(tokens);
+                    break;
                 case "div":
                     yield return parseDiv(tokens);
+                    break;
+                case "divu":
+                    yield return parseDivu(tokens);
                     break;
 
                 // Logical
@@ -443,16 +449,29 @@ public class Parser {
             LhsOperandRegister = lhs.Value,
             RhsOperandRegister = rhs.Value,
         }); 
-    private MultiplyWithOverflow parseMult(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, MultiplyWithOverflow>(
+    private MultiplySignedWithOverflow parseMult(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, MultiplySignedWithOverflow>(
         tokens, 
-        (lhs, rhs) => new MultiplyWithOverflow {
+        (lhs, rhs) => new MultiplySignedWithOverflow {
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
+    private MultiplyUnsignedWithOverflow parseMultu(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, MultiplyUnsignedWithOverflow>(
+        tokens, 
+        (lhs, rhs) => new MultiplyUnsignedWithOverflow {
             LhsOperandRegister = lhs.Value,
             RhsOperandRegister = rhs.Value,
         }); 
 
-    private DivideWithRemainder parseDiv(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, DivideWithRemainder>(
+    private DivideSignedWithRemainder parseDiv(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, DivideSignedWithRemainder>(
         tokens, 
-        (lhs, rhs) => new DivideWithRemainder {
+        (lhs, rhs) => new DivideSignedWithRemainder {
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
+
+    private DivideUnsignedWithRemainder parseDivu(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, DivideUnsignedWithRemainder>(
+        tokens, 
+        (lhs, rhs) => new DivideUnsignedWithRemainder {
             LhsOperandRegister = lhs.Value,
             RhsOperandRegister = rhs.Value,
         }); 

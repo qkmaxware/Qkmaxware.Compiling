@@ -9,7 +9,7 @@ public abstract class RegisterEncodedInstruction : IBytecodeInstruction {
     public abstract uint Encode32();
 
     protected uint Encode32(uint source, uint target, uint dest, uint amount, uint function) {
-        // Register Encoding
+        // Encoding
         // 000000ss sssttttt dddddaaa aaffffff
         uint encoded = 0;
         encoded |= (source  & 0b11111U) << 21;
@@ -18,6 +18,14 @@ public abstract class RegisterEncodedInstruction : IBytecodeInstruction {
         encoded |= (amount  & 0b11111U) << 6;
         encoded |= function & 0b111111U;
         return encoded;
+    }
+
+    public static void Decode32(uint instruction, out uint source, out uint target, out uint dest, out uint amount, out uint function) {
+        source = (instruction >> 21) & 0b11111U;
+        target = (instruction >> 16) & 0b11111U;
+        dest   = (instruction >> 11) & 0b11111U;
+        amount = (instruction >> 6)  & 0b11111U;
+        function=(instruction)       & 0b111111U;
     }
 }
 

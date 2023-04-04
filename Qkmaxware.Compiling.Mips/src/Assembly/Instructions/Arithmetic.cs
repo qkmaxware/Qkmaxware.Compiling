@@ -99,7 +99,7 @@ public class MultiplyWithoutOverflow : ThreeAddressInstruction {
     }
 }
 
-public class MultiplyWithOverflow : TwoAddressBinaryInstruction {
+public class MultiplySignedWithOverflow : TwoAddressBinaryInstruction {
     public override string InstrName() => "mult";
     public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
@@ -116,7 +116,24 @@ public class MultiplyWithOverflow : TwoAddressBinaryInstruction {
     }
 }
 
-public class DivideWithRemainder : TwoAddressBinaryInstruction {
+public class MultiplyUnsignedWithOverflow : TwoAddressBinaryInstruction {
+    public override string InstrName() => "multu";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+        var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
+        var rhs = i32(cpu.Registers[this.RhsOperandRegister]);
+        var result = (long)lhs * (long)rhs;
+
+        var hi = (int)(result >> 32);
+        var lo = (int)(result & 0xFFFFFFFF);
+
+        cpu.Registers.HI.Write(u32(hi));
+        cpu.Registers.LO.Write(u32(lo));
+    }
+}
+
+public class DivideSignedWithRemainder : TwoAddressBinaryInstruction {
     public override string InstrName() => "div";
     public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
@@ -124,7 +141,22 @@ public class DivideWithRemainder : TwoAddressBinaryInstruction {
         var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
         var rhs = i32(cpu.Registers[this.RhsOperandRegister]);
         var quotient = lhs / rhs;
-        var remainder = lhs & rhs;
+        var remainder = lhs % rhs;
+
+        cpu.Registers.HI.Write(u32(remainder));
+        cpu.Registers.LO.Write(u32(quotient));
+    }
+}
+
+public class DivideUnsignedWithRemainder : TwoAddressBinaryInstruction {
+    public override string InstrName() => "divu";
+    public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
+    public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+        var lhs = i32(cpu.Registers[this.LhsOperandRegister]);
+        var rhs = i32(cpu.Registers[this.RhsOperandRegister]);
+        var quotient = lhs / rhs;
+        var remainder = lhs % rhs;
 
         cpu.Registers.HI.Write(u32(remainder));
         cpu.Registers.LO.Write(u32(quotient));

@@ -1,10 +1,10 @@
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>
-/// Signed addition of two registers (MIPS add)
+/// Signed multiplication of two registers (MIPS mult)
 /// </summary>
-public class AddSigned : ArithLogInstruction {
-    public static readonly uint BinaryCode = 100000U;
+public class MultSigned : DivMultInstruction {
+    public static readonly uint BinaryCode = 011000U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -20,6 +20,9 @@ public class AddSigned : ArithLogInstruction {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsInt32();
         var rhs = cpu.Registers[this.RhsOperand].ReadAsInt32();
 
-        cpu.Registers[this.Destination].WriteInt32(lhs + rhs);
+        var product = (long)lhs * (long)rhs;
+
+        cpu.Registers.LO.WriteInt32((int)(product >> 32));
+        cpu.Registers.HI.WriteInt32((int)(product & 0xFFFFFFFF));
     }
 }

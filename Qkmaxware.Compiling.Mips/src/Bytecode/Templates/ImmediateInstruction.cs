@@ -9,14 +9,21 @@ public abstract class ImmediateEncodedInstruction : IBytecodeInstruction {
     public abstract uint Encode32();
 
     protected uint Encode32(uint opcode, uint source, uint target, uint imm) {
-        // Register Encoding
+        // Encoding
         // ooooooss sssttttt iiiiiiii iiiiiiii
         uint encoded = 0;
-        encoded |= (opcode  & 0b111111U) << 16;
+        encoded |= (opcode  & 0b111111U) << 26;
         encoded |= (source  & 0b11111U)  << 21;
         encoded |= (target  & 0b11111U)  << 16;
         encoded |= (imm     & 0b11111111_11111111U);
         return encoded;
+    }
+
+    public static void Decode32(uint instruction, out uint opcode, out uint source, out uint target, out uint imm) {
+        opcode = (instruction >> 26) & 0b111111U;
+        source = (instruction >> 21) & 0b11111U;
+        target = (instruction >> 16) & 0b11111U;
+        imm    = (instruction & 0b11111111_11111111U);
     }
 }
 

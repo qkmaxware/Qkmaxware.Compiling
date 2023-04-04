@@ -14,8 +14,10 @@ public interface IInstructionVisitor {
     public void Accept(SubtractUnsigned instr);
     public void Accept(SubtractUnsignedImmediate instr);
     public void Accept(MultiplyWithoutOverflow instr);
-    public void Accept(MultiplyWithOverflow instr);
-    public void Accept(DivideWithRemainder instr);
+    public void Accept(MultiplySignedWithOverflow instr);
+    public void Accept(MultiplyUnsignedWithOverflow instr);
+    public void Accept(DivideSignedWithRemainder instr);
+    public void Accept(DivideUnsignedWithRemainder instr);
 
     public void Accept(SetOnLessThan instr);
     public void Accept(SetOnLessThanImmediate instr);
@@ -66,8 +68,10 @@ public interface IInstructionVisitor<T> {
     public T Accept(SubtractUnsigned instr);
     public T Accept(SubtractUnsignedImmediate instr);
     public T Accept(MultiplyWithoutOverflow instr);
-    public T Accept(MultiplyWithOverflow instr);
-    public T Accept(DivideWithRemainder instr);
+    public T Accept(MultiplySignedWithOverflow instr);
+    public T Accept(MultiplyUnsignedWithOverflow instr);
+    public T Accept(DivideSignedWithRemainder instr);
+    public T Accept(DivideUnsignedWithRemainder instr);
 
     public T Accept(SetOnLessThan instr);
     public T Accept(SetOnLessThanImmediate instr);

@@ -9,12 +9,17 @@ public abstract class JumpEncodedInstruction : IBytecodeInstruction {
     public abstract uint Encode32();
 
     protected uint Encode32(uint opcode, uint imm) {
-        // Register Encoding
+        // Encoding
         // ooooooii iiiiiiii iiiiiiii iiiiiiii
         uint encoded = 0;
-        encoded |= (opcode  & 0b111111U) << 16;
+        encoded |= (opcode  & 0b111111U) << 26;
         encoded |= (imm     & 0b00000011_11111111_11111111_11111111U);
         return encoded;
+    }
+
+    public static void Decode32(uint instruction, out uint opcode, out uint imm) {
+        opcode = (instruction >> 26) & 0b111111U;
+        imm    = (instruction & 0b00000011_11111111_11111111_11111111U);
     }
 }
 
