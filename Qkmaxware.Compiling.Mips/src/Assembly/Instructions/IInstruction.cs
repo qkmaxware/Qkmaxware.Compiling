@@ -20,40 +20,6 @@ public interface IAssemblyInstruction {
 /// </summary>
 public abstract class BaseAssemblyInstruction : IAssemblyInstruction {
     public abstract string InstrName();
-    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory);
-
-    protected Int32 i32(Register<uint> reg) {
-        return BitConverter.ToInt32(BitConverter.GetBytes(reg.Read()));
-    }
-
-    protected UInt32 u32(Register<uint> reg) {
-        return (reg.Read());
-    }
-
-    protected Single f32(Register<uint> reg) {
-        return BitConverter.ToSingle(BitConverter.GetBytes(reg.Read()));
-    }
-
-    protected Single f32(Register<float> reg) {
-        return reg.Read();
-    }
-
-    protected UInt32 u32(Register<float> reg) {
-        return BitConverter.ToUInt32(BitConverter.GetBytes(reg.Read()));
-    }
-
-    protected UInt32 u32(UInt32 i) {
-        return BitConverter.ToUInt32(BitConverter.GetBytes(i));
-    }
-
-    protected UInt32 u32(int i) {
-        return BitConverter.ToUInt32(BitConverter.GetBytes(i));
-    }
-
-    protected UInt64 u64(double d) {
-        return BitConverter.ToUInt32(BitConverter.GetBytes(d));
-    }
-
     public abstract void Visit(IInstructionVisitor visitor);
     public abstract T Visit<T>(IInstructionVisitor<T> visitor);
 

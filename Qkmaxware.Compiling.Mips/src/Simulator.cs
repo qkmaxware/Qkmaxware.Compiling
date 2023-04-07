@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Qkmaxware.Compiling.Mips.Hardware;
 
 namespace Qkmaxware.Compiling.Mips;
 

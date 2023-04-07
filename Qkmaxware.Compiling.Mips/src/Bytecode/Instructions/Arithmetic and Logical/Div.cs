@@ -1,10 +1,12 @@
+using Qkmaxware.Compiling.Mips.Hardware;
+
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>
-/// Signed multiplication of two registers (MIPS mult)
+/// Signed division of two registers (MIPS div)
 /// </summary>
-public class MultSigned : DivMultInstruction {
-    public static readonly uint BinaryCode = 011000U;
+public class DivSigned : DivMultInstruction {
+    public static readonly uint BinaryCode = 011010U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -20,9 +22,10 @@ public class MultSigned : DivMultInstruction {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsInt32();
         var rhs = cpu.Registers[this.RhsOperand].ReadAsInt32();
 
-        var product = (long)lhs * (long)rhs;
+        var quotient = lhs / rhs;
+        var remainder = lhs % rhs;
 
-        cpu.Registers.LO.WriteInt32((int)(product >> 32));
-        cpu.Registers.HI.WriteInt32((int)(product & 0xFFFFFFFF));
+        cpu.Registers.LO.WriteInt32(quotient);
+        cpu.Registers.HI.WriteInt32(remainder);
     }
 }

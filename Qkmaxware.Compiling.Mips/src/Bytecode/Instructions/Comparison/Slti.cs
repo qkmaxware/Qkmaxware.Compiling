@@ -1,10 +1,12 @@
+using Qkmaxware.Compiling.Mips.Hardware;
+
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>
-/// Signed addition of a register and an immediate value (MIPS addi)
+/// Set on less than for signed numbers and an immediate value (MIPS slti)
 /// </summary>
-public class AddSignedImmediate : ArithLogIInstruction {
-    public static readonly uint BinaryCode = 001000U;
+public class Slti : ArithLogIInstruction {
+    public static readonly uint BinaryCode = 001010U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -20,6 +22,6 @@ public class AddSignedImmediate : ArithLogIInstruction {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsInt32();
         var rhs = this.RhsOperand;
 
-        cpu.Registers[this.Target].WriteInt32(lhs + rhs);
+        cpu.Registers[this.Target].WriteInt32(lhs < rhs ? 1 : 0);
     }
 }

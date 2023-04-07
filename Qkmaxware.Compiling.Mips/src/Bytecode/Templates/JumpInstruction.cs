@@ -1,3 +1,5 @@
+using Qkmaxware.Compiling.Mips.Hardware;
+
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>

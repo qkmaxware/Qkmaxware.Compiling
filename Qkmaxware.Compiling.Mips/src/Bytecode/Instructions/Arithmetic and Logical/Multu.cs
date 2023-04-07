@@ -1,10 +1,12 @@
+using Qkmaxware.Compiling.Mips.Hardware;
+
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>
-/// Unsigned addition of two registers (MIPS addu)
+/// Unsigned multiplication of two registers (MIPS multu)
 /// </summary>
-public class AddUnsigned : ArithLogInstruction {
-    public static readonly uint BinaryCode = 100001U;
+public class MultUnsigned : DivMultInstruction {
+    public static readonly uint BinaryCode = 011001U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -20,6 +22,9 @@ public class AddUnsigned : ArithLogInstruction {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsUInt32();
         var rhs = cpu.Registers[this.RhsOperand].ReadAsUInt32();
 
-        cpu.Registers[this.Destination].WriteUInt32(lhs + rhs);
+        var product = (ulong)lhs * (ulong)rhs;
+
+        cpu.Registers.LO.WriteUInt32((uint)(product >> 32));
+        cpu.Registers.HI.WriteUInt32((uint)(product & 0xFFFFFFFF));
     }
 }

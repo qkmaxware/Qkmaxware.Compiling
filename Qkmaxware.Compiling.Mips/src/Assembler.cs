@@ -5,6 +5,13 @@ using Qkmaxware.Compiling.Mips.Bytecode;
 
 namespace Qkmaxware.Compiling.Mips;
 
+class Counter {
+    public uint Count {get; private set;}
+    public Counter () {}
+
+    public void Increment() => Count++;
+}
+
 /// <summary>
 /// Assembler for MIPS assembly to MIPS bytecode
 /// </summary>
@@ -15,8 +22,9 @@ public class Assembler {
     /// <param name="input">assembly program</param>
     /// <param name="writer">bytecode emitter</param>
     public void AssembleTo(Assembly.AssemblyProgram input, IBytecodeWriter writer) {
-        var label_address = new Dictionary<LabelMarker, uint>();
-        var emitter = new Assembly2BytecodeTransformer(label_address);
+        var instructions = new Counter();
+        var label_address = new Dictionary<string, uint>();
+        var emitter = new Assembly2BytecodeTransformer(instructions, label_address);
         
         // Handle creating the data in the data section first
         foreach (var section in input.DataSections) {
@@ -40,11 +48,18 @@ public class Assembler {
                 var bytecode = instr.Visit(emitter);
                 foreach (var code in bytecode) {
                     // Add all bytecode instructions to the program
-                    if (code != null)
+                    if (code != null) {
                         writer.Encode(code);
+                        instructions.Increment();
+                    }
                 }
             }
         } 
+
+        // Error checking
+        if (emitter.IsMissingLabelAddress) {
+            throw new ArgumentException("One or more labels used are not bound to a memory location. Make sure all labels are declared.");
+        }
     }
 
     /// <summary>
@@ -61,34 +76,57 @@ public class Assembler {
     }
 }
 
-class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IBytecodeInstruction?>> {
+internal class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IBytecodeInstruction?>> {
 
-    private Dictionary<LabelMarker, List<Bytecode.IBytecodeInstruction>> awaiting_label_computation = new Dictionary<LabelMarker, List<IBytecodeInstruction>>();
-    private Dictionary<LabelMarker, uint> label_address = new Dictionary<LabelMarker, uint>();
+    private Dictionary<string, List<Bytecode.IBytecodeInstruction>> awaiting_label_computation = new Dictionary<string, List<IBytecodeInstruction>>();
+    private Dictionary<string, uint> label_address = new Dictionary<string, uint>();
 
-    public Assembly2BytecodeTransformer(Dictionary<LabelMarker, uint> labels) {
+    private Counter count;
+
+    public bool IsMissingLabelAddress => label_address.Count > 0;
+
+    public Assembly2BytecodeTransformer(Counter count, Dictionary<string, uint> labels) {
+        this.count = count;
         this.label_address = labels;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.LabelMarker marker) {
         // Mark this location to swap instructions waiting for this label
-        uint computed_address = 0; // TODO actually compute this
-        label_address.Add(marker, computed_address);
+        uint computed_address = current();
+        label_address.Add(marker.Name, computed_address);
 
         List<Bytecode.IBytecodeInstruction>? to_inject;
-        if (awaiting_label_computation.TryGetValue(marker, out to_inject)) {
+        if (awaiting_label_computation.TryGetValue(marker.Name, out to_inject)) {
             foreach (var instr in to_inject) {
-                // TODO replace the address in question with the computed one
+                instr.InjectResolvedAddress(computed_address);
             }
-            awaiting_label_computation.Remove(marker);
+            awaiting_label_computation.Remove(marker.Name);
         }
 
         // Doesn't return any new instructions YAY!
-        yield return null;
+        yield break;
+    }
+
+    private uint resolve(IBytecodeInstruction instr, AddressLikeToken address) {
+        if (address is ScalarConstantToken literal) {
+            return (uint)literal.IntegerValue;
+        } else {
+            var label = address.Value;
+            if (label_address.ContainsKey(label)) {
+                return label_address[label];
+            } else {
+                // Needs to be computed when we eventually compute this label
+                this.awaiting_label_computation[label].Add(instr);
+                return 0U; // A temp label until we replace it
+            }
+        }
+    }
+    private uint current() {
+        return count.Count;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.AddSigned instr) {
-        yield return new Bytecode.AddSigned {
+        yield return new Bytecode.Add {
             Destination = instr.ResultRegister,
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperandRegister
@@ -96,7 +134,7 @@ class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IB
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.AddSignedImmediate instr) {
-        yield return new Bytecode.AddSignedImmediate {
+        yield return new Bytecode.Addi {
             Target = instr.ResultRegister,
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperand
@@ -104,15 +142,25 @@ class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IB
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.SubtractSigned instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Sub {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.SubtractSignedImmediate instr) {
-        throw new NotImplementedException();
+        // There is no subtract immediate, its just an add with a negative.
+        // See https://chortle.ccsu.edu/assemblytutorial/Chapter-13/ass13_12.html
+        yield return new Bytecode.Addiu {
+            Target = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = BitConverter.ToUInt32(BitConverter.GetBytes(-instr.RhsOperand))
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.AddUnsigned instr) {
-        yield return new Bytecode.AddUnsigned {
+        yield return new Bytecode.Addu {
             Destination = instr.ResultRegister,
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperandRegister
@@ -120,7 +168,7 @@ class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IB
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.AddUnsignedImmediate instr) {
-        yield return new Bytecode.AddUnsignedImmediate {
+        yield return new Bytecode.Addiu {
             Target = instr.ResultRegister,
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperand
@@ -128,15 +176,21 @@ class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IB
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.SubtractUnsigned instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Subu {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.SubtractUnsignedImmediate instr) {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<IBytecodeInstruction?> Accept(Assembly.MultiplyWithoutOverflow instr) {
-        throw new NotImplementedException();
+        // There is no subtract immediate, its just an add with a negative.
+        // See https://chortle.ccsu.edu/assemblytutorial/Chapter-13/ass13_12.html
+        yield return new Bytecode.Addiu {
+            Target = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = BitConverter.ToUInt32(BitConverter.GetBytes(-((int)instr.RhsOperand)))
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.MultiplySignedWithOverflow instr) {
@@ -168,43 +222,130 @@ class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IB
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.SetOnLessThan instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Slt {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.SetOnLessThanImmediate instr) {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchOnGreater instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Slti {
+            Target = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.Constant
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchGreaterThan0 instr) {
-        throw new NotImplementedException();
+        var branch = new Bgtz {
+            Source = instr.LhsOperandRegister
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchLessThanOrEqual0 instr) {
-        throw new NotImplementedException();
+        var branch = new Blez {
+            Source = instr.LhsOperandRegister
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
+    }
+
+    public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchOnGreater instr) {
+        // Subtract the 2
+        var sub = new Sub {
+            Destination = RegisterIndex.NamedOrThrow("at"), // At register is reserved for assembler usage like this
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister,
+        };
+        yield return sub;
+        // If registers[destination] > 0 then lhs > rhs
+        var branch = new Bgtz {
+            Source = sub.Destination
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchOnGreaterOrEqual instr) {
-        throw new NotImplementedException();
+        // Branch on Greater
+        foreach (var instrs in Accept(new Assembly.BranchOnGreater{
+            LhsOperandRegister = instr.LhsOperandRegister,
+            RhsOperandRegister = instr.RhsOperandRegister,
+            Address = instr.Address
+        })) {
+            yield return instrs;
+        }
+        // Branch on Equal
+        var branch = new Beq {
+            Source = instr.LhsOperandRegister,
+            Target = instr.RhsOperandRegister,
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchOnLess instr) {
-        throw new NotImplementedException();
+        // Subtract the 2
+        var sub = new Sub {
+            Destination = RegisterIndex.NamedOrThrow("at"), // At register is reserved for assembler usage like this
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister,
+        };
+        yield return sub;
+
+        // Make sure the 2 are not equal first
+        var eqb = new Beq {
+            Source = instr.LhsOperandRegister,
+            Target = instr.RhsOperandRegister,
+        };
+        eqb.AddressOffset = 4 >> 2; // Skip a single instruction ahead (jump past the <= check)
+        yield return eqb;
+
+        // If registers[destination] <= 0 then lhs < rhs since we know the 2 are not equal from above
+        var branch = new Blez {
+            Source = sub.Destination
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchOnLessOrEqual instr) {
-        throw new NotImplementedException();
+        // Branch on Less
+        foreach (var instrs in Accept(new Assembly.BranchOnLess{
+            LhsOperandRegister = instr.LhsOperandRegister,
+            RhsOperandRegister = instr.RhsOperandRegister,
+            Address = instr.Address
+        })) {
+            yield return instrs;
+        }
+        // Branch on Equal
+        var branch = new Beq {
+            Source = instr.LhsOperandRegister,
+            Target = instr.RhsOperandRegister,
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchOnEqual instr) {
-        throw new NotImplementedException();
+        var branch = new Beq {
+            Source = instr.LhsOperandRegister,
+            Target = instr.RhsOperandRegister,
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.BranchOnNotEqual instr) {
-        throw new NotImplementedException();
+        var branch = new Bne {
+            Source = instr.LhsOperandRegister,
+            Target = instr.RhsOperandRegister,
+        };
+        branch.AddressOffset = (int)(resolve(branch, instr.Address) - (current() + 4)) >> 2;
+        yield return branch;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.And instr) {
@@ -216,7 +357,11 @@ class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IB
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.Or instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Or {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.AndImmediate instr) {
@@ -228,62 +373,135 @@ class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<Bytecode.IB
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.OrImmediate instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Ori {
+            Target = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperand
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.ShiftLeftLogical instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Sllv {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.ShiftRightLogical instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Srlv {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.LoadWord instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Lw {
+            Target = instr.ResultRegister,
+            Source = instr.BaseRegister,
+            Immediate = instr.Offset,
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.StoreWord instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Sw {
+            Target = instr.SourceRegister,
+            Source = instr.BaseRegister,
+            Immediate = instr.Offset,
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.LoadUpperImmediate instr) {
-        throw new NotImplementedException();
+        // Only load the upper bits 
+        var target = instr.ResultRegister;
+        var value = instr.Constant;
+        yield return new Lhi {
+            Target = target,
+            Immediate = value.HighHalf(),
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.LoadAddress instr) {
-        throw new NotImplementedException();
+        if (instr.Label == null)
+            throw new ArgumentException("Label is undefined");
+
+        var load = new Bytecode.Lw {
+            Target = instr.ResultRegister,
+            Source = new RegisterIndex(0),
+        };
+        load.Immediate = (resolve(load, new LabelToken(0, instr.Label)) - (current() + 4)) >> 2;
+        yield return load;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.LoadImmediate instr) {
-        throw new NotImplementedException();
+        // Load immediate splits into 2 instructions one to load the high bits, the other to load the low bits
+        var target = instr.ResultRegister;
+        var value = instr.Constant;
+        yield return new Lhi {
+            Target = target,
+            Immediate = value.HighHalf(),
+        };
+        yield return new Llo {
+            Target = target,
+            Immediate = value.LowHalf()
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.MoveFromHi instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Mfhi {
+            Destination = instr.ResultRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.MoveFromLo instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Mflo {
+            Destination = instr.ResultRegister
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.Move instr) {
-        throw new NotImplementedException();
+        var at = RegisterIndex.NamedOrThrow("at");
+        
+        // Cache current hi
+        yield return new Mfhi {
+            Destination = at
+        };
+
+        // Copy to hi
+        yield return new Mthi {
+            Source = instr.SourceRegister
+        };
+        // Copy from hi
+        yield return new Mfhi {
+            Destination = instr.ResultRegister
+        };
+
+        // Restore cached hi value
+        yield return new Mthi {
+            Source = at
+        };
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.JumpTo instr) {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<IBytecodeInstruction?> Accept(Assembly.JumpRegister instr) {
-        throw new NotImplementedException();
+        var jump = new J {};
+        jump.AddressOffset = (int)(resolve(jump, instr.Address) - (current() + 4)) >> 2;
+        yield return jump;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.JumpAndLink instr) {
-        throw new NotImplementedException();
+        var jump = new Jal {};
+        jump.AddressOffset = (int)(resolve(jump, instr.Address) - (current() + 4)) >> 2;
+        yield return jump;
+    }
+
+    public IEnumerable<IBytecodeInstruction?> Accept(Assembly.JumpRegister instr) {
+        var jump = new Jr {};
+        jump.Source = instr.Register;
+        yield return jump;
     }
 
     public IEnumerable<IBytecodeInstruction?> Accept(Assembly.Syscall instr) {
-        throw new NotImplementedException();
+        yield return new Bytecode.Syscall {};
     }
 }

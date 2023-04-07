@@ -10,11 +10,6 @@ public class LoadWord : IAssemblyInstruction {
     public void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
 
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        var word = memory.LoadWord(cpu.Registers[this.BaseRegister].Read() + this.Offset);
-        cpu.Registers[this.ResultRegister].Write(word);
-    }
-
     public override string? ToString() {
         return $"lw {this.ResultRegister},{this.Offset}({this.BaseRegister})";
     }
@@ -27,11 +22,6 @@ public class StoreWord : IAssemblyInstruction {
 
     public void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
-
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        memory.StoreWord(cpu.Registers[BaseRegister].Read() + Offset, cpu.Registers[SourceRegister].Read());
-    }
-
     public override string? ToString() {
         return $"lw {this.SourceRegister},{this.Offset}({this.BaseRegister})";
     }
@@ -43,11 +33,6 @@ public class LoadUpperImmediate : IAssemblyInstruction {
 
     public void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
-
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        var upper = this.Constant << 16;
-        cpu.Registers[this.ResultRegister].Write(upper);
-    }
 
     public override string? ToString() {
         return $"lui {this.ResultRegister},{Constant}";
@@ -84,10 +69,6 @@ public class MoveFromHi : IAssemblyInstruction {
     public void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
 
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        cpu.Registers[this.ResultRegister].Write(cpu.Registers.HI.Read());
-    }
-
     public override string? ToString() {
         return $"mfhi {this.ResultRegister}";
     }
@@ -98,10 +79,6 @@ public class MoveFromLo : IAssemblyInstruction {
 
     public void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
-
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        cpu.Registers[this.ResultRegister].Write(cpu.Registers.LO.Read());
-    }
 
     public override string? ToString() {
         return $"mfhi {this.ResultRegister}";
@@ -116,6 +93,6 @@ public class Move : IAssemblyInstruction {
     public T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
 
     public override string? ToString() {
-        return $"li {this.ResultRegister},{this.SourceRegister}";
+        return $"move {this.ResultRegister},{this.SourceRegister}";
     }
 }

@@ -1,10 +1,12 @@
+using Qkmaxware.Compiling.Mips.Hardware;
+
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>
-/// Unsigned addition of a register and an immediate (MIPS addu)
+/// Bitwise OR of a register and an immediate value (MIPS ori)
 /// </summary>
-public class AddUnsignedImmediate : ArithLogIInstruction {
-    public static readonly uint BinaryCode = 001001U;
+public class Ori : ArithLogIInstruction {
+    public static readonly uint BinaryCode = 001101U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -20,6 +22,6 @@ public class AddUnsignedImmediate : ArithLogIInstruction {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsUInt32();
         var rhs = this.RhsOperand;
 
-        cpu.Registers[this.Target].WriteUInt32(lhs + rhs);
+        cpu.Registers[this.Target].WriteUInt32(lhs | rhs);
     }
 }

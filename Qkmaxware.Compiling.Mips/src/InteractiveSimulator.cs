@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Qkmaxware.Compiling.Mips.Hardware;
 
 namespace Qkmaxware.Compiling.Mips;
 
@@ -26,6 +27,8 @@ public class InteractiveSimulator : Simulator {
             case "close":
             case "stop":
                 throw new ExitException();
+            default:
+                break; // continue to instruction execution
         }
     }
 }

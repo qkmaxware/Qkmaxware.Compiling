@@ -155,25 +155,25 @@ public class Parser {
                 if (maybe<ColonToken>(tokens)) {
                     // Is Array
                     var size = require<ScalarConstantToken>(tokens, "data length");
-                    return new Data<int>(label, directive, Enumerable.Repeat(integer.Value, (int)size.Value).ToArray());
+                    return new Data<int>(label, directive, Enumerable.Repeat(integer.IntegerValue, (int)size.IntegerValue).ToArray());
                 } else if (maybe<CommaToken>(tokens)) {
                     List<int> values = new List<int>();
-                    values.Add(integer.Value);
+                    values.Add(integer.IntegerValue);
                     while (maybe<CommaToken>(tokens)) {
                         var v = require<ScalarConstantToken>(tokens, "value");
-                        values.Add(v.Value);
+                        values.Add(v.IntegerValue);
                     }
                     return new Data<int>(label, directive, values.ToArray());
                 } else {
                     // Not Array
-                    return new Data<int>(label, directive, integer.Value);
+                    return new Data<int>(label, directive, integer.IntegerValue);
                 }
             case "float":
                 var real = require<FloatingPointConstantToken>(tokens, "floating point quantity");
                 if (maybe<ColonToken>(tokens)) {
                     // Is Array
                     var size = require<ScalarConstantToken>(tokens, "data length");
-                    return new Data<float>(label, directive, Enumerable.Repeat(real.Value, (int)size.Value).ToArray());
+                    return new Data<float>(label, directive, Enumerable.Repeat(real.Value, (int)size.IntegerValue).ToArray());
                 } else if (maybe<CommaToken>(tokens)) {
                     List<float> values = new List<float>();
                     values.Add(real.Value);
@@ -246,9 +246,6 @@ public class Parser {
                     break;
                 case "addiu":
                     yield return parseAddiu(tokens);
-                    break;
-                case "mul":
-                    yield return parseMul(tokens);
                     break;
                 case "mult":
                     yield return parseMult(tokens);
@@ -407,7 +404,7 @@ public class Parser {
         (res, lhs, rhs) => new AddSignedImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = (int)rhs.Value,
+            RhsOperand = (int)rhs.IntegerValue,
         }); 
 
     private SubtractSignedImmediate parseSubi(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, SubtractSignedImmediate>(
@@ -415,7 +412,7 @@ public class Parser {
         (res, lhs, rhs) => new SubtractSignedImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = (int)rhs.Value,
+            RhsOperand = (int)rhs.IntegerValue,
         }); 
 
     private AddUnsigned parseAddu(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, AddUnsigned>(
@@ -439,16 +436,9 @@ public class Parser {
         (res, lhs, rhs) => new AddUnsignedImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = (uint)rhs.Value,
+            RhsOperand = (uint)rhs.IntegerValue,
         }); 
 
-    private MultiplyWithoutOverflow parseMul(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, MultiplyWithoutOverflow>(
-        tokens, 
-        (res, lhs, rhs) => new MultiplyWithoutOverflow {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
     private MultiplySignedWithOverflow parseMult(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, MultiplySignedWithOverflow>(
         tokens, 
         (lhs, rhs) => new MultiplySignedWithOverflow {
@@ -497,7 +487,7 @@ public class Parser {
         (res, lhs, rhs) => new AndImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = (uint)rhs.Value,
+            RhsOperand = (uint)rhs.IntegerValue,
         }); 
         
     private OrImmediate parseOri(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, OrImmediate>(
@@ -505,7 +495,7 @@ public class Parser {
         (res, lhs, rhs) => new OrImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            RhsOperand = (uint)rhs.Value,
+            RhsOperand = (uint)rhs.IntegerValue,
         }); 
 
     private ShiftLeftLogical parseSll(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftLeftLogical>(
@@ -534,7 +524,7 @@ public class Parser {
         return new LoadWord {
             ResultRegister = res.Value,
             BaseRegister = root.Value,
-            Offset = (uint)offset.Value
+            Offset = (uint)offset.IntegerValue
         };
     }
 
@@ -548,7 +538,7 @@ public class Parser {
         return new StoreWord {
             SourceRegister = res.Value,
             BaseRegister = root.Value,
-            Offset = (uint)offset.Value
+            Offset = (uint)offset.IntegerValue
         };
     }
 
@@ -558,7 +548,7 @@ public class Parser {
         var label = require<ScalarConstantToken>(tokens, "immediate value");
         return new LoadUpperImmediate {
             ResultRegister = res.Value,
-            Constant = (uint)label.Value
+            Constant = (uint)label.IntegerValue
         };
     }
 
@@ -578,7 +568,7 @@ public class Parser {
         var label = require<ScalarConstantToken>(tokens, "immediate value");
         return new LoadImmediate {
             ResultRegister = res.Value,
-            Constant = (uint)label.Value
+            Constant = (uint)label.IntegerValue
         };
     }
 
@@ -606,52 +596,52 @@ public class Parser {
         };
     }
 
-    private BranchOnEqual parseBeq(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnEqual>(
+    private BranchOnEqual parseBeq(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnEqual>(
         tokens, 
         (res, lhs, rhs) => new BranchOnEqual {
             LhsOperandRegister = res.Value,
             RhsOperandRegister = lhs.Value,
-            Offset = rhs.Value
+            Address = rhs
         });
 
-    private BranchOnNotEqual parseBne(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnNotEqual>(
+    private BranchOnNotEqual parseBne(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnNotEqual>(
         tokens, 
         (res, lhs, rhs) => new BranchOnNotEqual {
             LhsOperandRegister = res.Value,
             RhsOperandRegister = lhs.Value,
-            Offset = rhs.Value
+            Address = rhs
         });
 
-    private BranchOnGreater parseBgt(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnGreater>(
+    private BranchOnGreater parseBgt(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnGreater>(
         tokens, 
         (res, lhs, rhs) => new BranchOnGreater {
             LhsOperandRegister = res.Value,
             RhsOperandRegister = lhs.Value,
-            Offset = rhs.Value
+            Address = rhs
         });
 
-    private BranchOnGreaterOrEqual parseBge(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnGreaterOrEqual>(
+    private BranchOnGreaterOrEqual parseBge(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnGreaterOrEqual>(
         tokens, 
         (res, lhs, rhs) => new BranchOnGreaterOrEqual {
             LhsOperandRegister = res.Value,
             RhsOperandRegister = lhs.Value,
-            Offset = rhs.Value
+            Address = rhs
         });
 
-    private BranchOnLess parseBlt(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnLess>(
+    private BranchOnLess parseBlt(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnLess>(
         tokens, 
         (res, lhs, rhs) => new BranchOnLess {
             LhsOperandRegister = res.Value,
             RhsOperandRegister = lhs.Value,
-            Offset = rhs.Value
+            Address = rhs
         });
 
-    private BranchOnLessOrEqual parseBle(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, BranchOnLessOrEqual>(
+    private BranchOnLessOrEqual parseBle(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnLessOrEqual>(
         tokens, 
         (res, lhs, rhs) => new BranchOnLessOrEqual {
             LhsOperandRegister = res.Value,
             RhsOperandRegister = lhs.Value,
-            Offset = rhs.Value
+            Address = rhs
         });
 
     private SetOnLessThan parseSlt(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, SetOnLessThan>(
@@ -667,11 +657,11 @@ public class Parser {
         (res, lhs, rhs) => new SetOnLessThanImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
-            Constant = rhs.Value
+            Constant = rhs.IntegerValue
         }); 
 
     private JumpTo parseJ(BufferedTokenStream tokens) {
-        var from = require<IAddressLike>(tokens, "target address");
+        var from = require<AddressLikeToken>(tokens, "target address");
         return new JumpTo {
             Address = from
         };
@@ -685,7 +675,7 @@ public class Parser {
     }
 
     private JumpAndLink parseJal(BufferedTokenStream tokens) {
-        var from = require<IAddressLike>(tokens, "target address");
+        var from = require<AddressLikeToken>(tokens, "target address");
         return new JumpAndLink {
             Address = from
         };
@@ -694,7 +684,7 @@ public class Parser {
     private BranchGreaterThan0 parseBgtz(BufferedTokenStream tokens) {
         var reg = require<RegisterToken>(tokens, "register");
         require<CommaToken>(tokens, "comma");
-        var from = require<IAddressLike>(tokens, "target address");
+        var from = require<AddressLikeToken>(tokens, "target address");
         return new BranchGreaterThan0 {
             LhsOperandRegister = reg.Value,
             Address = from
@@ -704,7 +694,7 @@ public class Parser {
     private BranchLessThanOrEqual0 parseBlez(BufferedTokenStream tokens) {
         var reg = require<RegisterToken>(tokens, "register");
         require<CommaToken>(tokens, "comma");
-        var from = require<IAddressLike>(tokens, "target address");
+        var from = require<AddressLikeToken>(tokens, "target address");
         return new BranchLessThanOrEqual0 {
             LhsOperandRegister = reg.Value,
             Address = from

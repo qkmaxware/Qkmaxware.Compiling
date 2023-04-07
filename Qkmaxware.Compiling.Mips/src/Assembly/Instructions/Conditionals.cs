@@ -5,20 +5,11 @@ namespace Qkmaxware.Compiling.Mips.Assembly;
 public abstract class BranchConditionalInstruction : BaseAssemblyInstruction {
     public RegisterIndex LhsOperandRegister;
     public RegisterIndex RhsOperandRegister;
-    public int Offset;
-
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        var lhs = cpu.Registers[LhsOperandRegister].Read();
-        var rhs = cpu.Registers[RhsOperandRegister].Read();
-
-        if (DoBranch(lhs, rhs)) {
-            cpu.PC += Offset % 4; // Since offset is in bytes, convert to words
-        }
-    }
+    public AddressLikeToken Address;
 
     public abstract bool DoBranch(uint lhs, uint rhs);
 
-    public override string ToString() => $"{InstrName()} {LhsOperandRegister},{RhsOperandRegister},{Offset}";
+    public override string ToString() => $"{InstrName()} {LhsOperandRegister},{RhsOperandRegister},{Address}";
 }
 
 public class BranchOnEqual : BranchConditionalInstruction {
@@ -31,35 +22,21 @@ public class BranchOnEqual : BranchConditionalInstruction {
 public class BranchGreaterThan0 : BaseAssemblyInstruction {
 
     public RegisterIndex LhsOperandRegister;
-    public IAddressLike Address;
+    public AddressLikeToken Address;
 
     public override string InstrName() => "bgtz";
     public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        var lhs = cpu.Registers[LhsOperandRegister].Read();
-
-        if (lhs > 0) {
-            //cpu.PC += Offset % 4; // Since offset is in bytes, convert to words
-        }
-    }
 }
 
 public class BranchLessThanOrEqual0 : BaseAssemblyInstruction {
 
     public RegisterIndex LhsOperandRegister;
-    public IAddressLike Address;
+    public AddressLikeToken Address;
 
     public override string InstrName() => "blez";
     public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
-        var lhs = cpu.Registers[LhsOperandRegister].Read();
-
-        if (lhs <= 0) {
-            //cpu.PC += Offset % 4; // Since offset is in bytes, convert to words
-        }
-    }
 }
 
 public class BranchOnNotEqual : BranchConditionalInstruction {

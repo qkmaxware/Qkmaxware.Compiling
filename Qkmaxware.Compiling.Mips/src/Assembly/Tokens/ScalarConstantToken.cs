@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Qkmaxware.Compiling.Mips.Assembly;
 
-public class ScalarConstantToken : Token<int>, IAddressLike {
-    public ScalarConstantToken(long pos, int value) : base(pos, value) {}
+public class ScalarConstantToken : AddressLikeToken {
+    public int IntegerValue {get; private set;}
+    public ScalarConstantToken(long pos, int value) : base(pos, value.ToString()) {
+        this.IntegerValue = value;
+    }
 }

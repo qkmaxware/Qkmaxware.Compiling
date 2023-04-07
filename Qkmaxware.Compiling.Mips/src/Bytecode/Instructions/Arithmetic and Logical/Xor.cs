@@ -1,10 +1,12 @@
+using Qkmaxware.Compiling.Mips.Hardware;
+
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>
-/// Unsigned division of two registers (MIPS divu)
+/// Bitwise XOR of two registers (MIPS xor)
 /// </summary>
-public class DivUnsigned : DivMultInstruction {
-    public static readonly uint BinaryCode = 011011U;
+public class Xor : ArithLogInstruction {
+    public static readonly uint BinaryCode = 100110U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -20,10 +22,6 @@ public class DivUnsigned : DivMultInstruction {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsUInt32();
         var rhs = cpu.Registers[this.RhsOperand].ReadAsUInt32();
 
-        var quotient = lhs / rhs;
-        var remainder = lhs % rhs;
-
-        cpu.Registers.LO.WriteUInt32(quotient);
-        cpu.Registers.HI.WriteUInt32(remainder);
+        cpu.Registers[this.Destination].WriteUInt32(lhs ^ rhs);
     }
 }

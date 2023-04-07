@@ -1,10 +1,12 @@
+using Qkmaxware.Compiling.Mips.Hardware;
+// ADD 
 namespace Qkmaxware.Compiling.Mips.Bytecode;
 
 /// <summary>
-/// Bitwise AND of two registers (MIPS and)
+/// Set on less than for unsigned numbers (MIPS sltu)
 /// </summary>
-public class And : ArithLogInstruction {
-    public static readonly uint BinaryCode = 100100U;
+public class Sltu : ArithLogInstruction {
+    public static readonly uint BinaryCode = 101001U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -20,6 +22,6 @@ public class And : ArithLogInstruction {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsUInt32();
         var rhs = cpu.Registers[this.RhsOperand].ReadAsUInt32();
 
-        cpu.Registers[this.Destination].WriteUInt32(lhs & rhs);
+        cpu.Registers[this.Destination].WriteUInt32(lhs < rhs ? 1U : 0U);
     }
 }

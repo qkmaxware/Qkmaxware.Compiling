@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Mips.Hardware;
 
 /// <summary>
 /// Register set for the MIPS 32 CPU
@@ -87,4 +87,8 @@ public class CpuRegisterSet {
 public class Cpu {
     public int PC;
     public CpuRegisterSet Registers {get; private set;} = new CpuRegisterSet();
+
+    public override string ToString() {
+        return $"PC: {PC} HILO: {this.Registers.HI.Read():X4}{this.Registers.LO.Read():X4} REG(s): {this.Registers[0].Read():X4},{this.Registers[1].Read():X4},{this.Registers[2].Read():X4},{this.Registers[3].Read():X4},{this.Registers[4].Read():X4},{this.Registers[5].Read():X4},{this.Registers[6].Read():X4},{this.Registers[7].Read():X4},{this.Registers[8].Read():X4},{this.Registers[9].Read():X4},{this.Registers[10].Read():X4},,{this.Registers[11].Read():X4},{this.Registers[12].Read():X4},{this.Registers[13].Read():X4},{this.Registers[14].Read():X4},{this.Registers[15].Read():X4},{this.Registers[16].Read():X4},{this.Registers[17].Read():X4},{this.Registers[18].Read():X4},{this.Registers[19].Read():X4},{this.Registers[20].Read():X4},{this.Registers[21].Read():X4},{this.Registers[22].Read():X4},{this.Registers[23].Read():X4},{this.Registers[24].Read():X4},{this.Registers[25].Read():X4},{this.Registers[26].Read():X4},{this.Registers[27].Read():X4},{this.Registers[28].Read():X4},{this.Registers[29].Read():X4},{this.Registers[30].Read():X4},{this.Registers[31].Read():X4}";
+    }
 }
