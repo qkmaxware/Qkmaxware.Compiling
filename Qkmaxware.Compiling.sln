@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qkmaxware.Compiling", "Qkma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qkmaxware.Compiling.Mips.Test", "Qkmaxware.Compiling.Mips.Test\Qkmaxware.Compiling.Mips.Test.csproj", "{9E999418-D3CE-4108-9C5A-4707A631569D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qkmaxware.Compiling.Docs", "Qkmaxware.Compiling.Docs\Qkmaxware.Compiling.Docs.csproj", "{33FE1707-9633-4FBE-9937-10B1F76C785B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{9E999418-D3CE-4108-9C5A-4707A631569D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E999418-D3CE-4108-9C5A-4707A631569D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E999418-D3CE-4108-9C5A-4707A631569D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33FE1707-9633-4FBE-9937-10B1F76C785B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33FE1707-9633-4FBE-9937-10B1F76C785B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33FE1707-9633-4FBE-9937-10B1F76C785B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33FE1707-9633-4FBE-9937-10B1F76C785B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

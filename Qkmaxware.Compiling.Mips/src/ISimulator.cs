@@ -6,5 +6,5 @@ namespace Qkmaxware.Compiling.Mips;
 /// Interface that all MIPS simulators must implement
 /// </summary>
 public interface ISimulator {
-    public int Execute (List<Bytecode.IBytecodeInstruction> instrs);
+    public int Execute (Bytecode.BytecodeProgram instrs);
 }

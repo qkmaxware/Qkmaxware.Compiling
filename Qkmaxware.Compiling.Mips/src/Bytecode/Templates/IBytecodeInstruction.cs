@@ -22,5 +22,9 @@ public interface IBytecodeInstruction {
     /// <param name="cpu">Simulated MIPS CPU</param>
     /// <param name="fpu">Simulated MIPS Floating-point coprocessor</param>
     /// <param name="memory">Simulator linear byte-addressable memory</param>
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory);
+    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io);
+
+    public string InstructionName() => this.GetType().Name;
+
+    public IEnumerable<uint> GetOperands();
 }

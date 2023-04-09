@@ -22,7 +22,7 @@ public class Beq : BranchInstruction {
         set => this.Immediate = BitConverter.ToUInt32(BitConverter.GetBytes(value));
     }
 
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsInt32();
         var rhs = cpu.Registers[this.RhsOperand].ReadAsInt32();
 

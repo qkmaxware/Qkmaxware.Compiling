@@ -3,6 +3,21 @@ using Qkmaxware.Compiling.Mips.Hardware;
 
 namespace Qkmaxware.Compiling.Mips;
 
+public class SimulatorIO {
+    public TextReader StdIn {get; private set;}
+    public TextWriter StdOut {get; private set;}
+
+    public SimulatorIO() {
+        this.StdIn = Console.In;
+        this.StdOut = Console.Out;
+    }
+
+    public SimulatorIO(TextReader @in, TextWriter @out) {
+        this.StdIn = @in;
+        this.StdOut = @out;
+    }
+}
+
 /// <summary>
 /// MIPS 32 simulator
 /// </summary>
@@ -12,21 +27,25 @@ public class Simulator : ISimulator {
     protected IMemory memory {get; private set;}
     protected Fpu coprocessor0 => fpu;
 
-    public Simulator(IMemory memory) {
+    private SimulatorIO io {get; set;}
+
+    public Simulator(SimulatorIO io, IMemory memory) {
         this.cpu = new Cpu();
         this.fpu = new Fpu();
         this.memory = memory;
-    }    
+        this.io = io;
+    }
+    public Simulator(IMemory memory) : this(new SimulatorIO(), memory) {}    
 
     public void Execute(Bytecode.IBytecodeInstruction instr) {
-        instr.Invoke(cpu, fpu, memory);
+        instr.Invoke(cpu, fpu, memory, this.io);
     }
-    
-    public int Execute (List<Bytecode.IBytecodeInstruction> instrs) {
+
+    public int Execute (Bytecode.BytecodeProgram instrs) {
         while (true) {
-            if (cpu.PC < 0 || cpu.PC >= instrs.Count)
+            if (cpu.PC < 0 || cpu.PC >= instrs.InstructionCount)
                 break;
-            var instr = instrs[cpu.PC];
+            var instr = instrs[(uint)cpu.PC];
             cpu.PC++;
             try {
                 OnBeforeInstruction(instr);

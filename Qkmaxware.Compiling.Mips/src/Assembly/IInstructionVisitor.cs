@@ -32,8 +32,11 @@ public interface IInstructionVisitor {
 
     public void Accept(And instr);
     public void Accept(Or instr);
+    public void Accept(Nor instr);
+    public void Accept(Xor instr);
     public void Accept(AndImmediate instr);
     public void Accept(OrImmediate instr);
+    public void Accept(XorImmediate instr);
     public void Accept(ShiftLeftLogical instr);
     public void Accept(ShiftRightLogical instr);
 
@@ -51,6 +54,10 @@ public interface IInstructionVisitor {
     public void Accept(JumpAndLink instr);
 
     public void Accept(Syscall instr);
+
+    public void Accept(LoadIntoCoprocessor1 instr);
+    public void Accept(StoreFromCoprocessor1 instr);
+
 }
 
 /// <summary>
@@ -85,6 +92,9 @@ public interface IInstructionVisitor<T> {
 
     public T Accept(And instr);
     public T Accept(Or instr);
+    public T Accept(Nor instr);
+    public T Accept(Xor instr);
+    public T Accept(XorImmediate instr);
     public T Accept(AndImmediate instr);
     public T Accept(OrImmediate instr);
     public T Accept(ShiftLeftLogical instr);
@@ -104,4 +114,7 @@ public interface IInstructionVisitor<T> {
     public T Accept(JumpAndLink instr);
 
     public T Accept(Syscall instr);
+
+    public T Accept(LoadIntoCoprocessor1 instr);
+    public T Accept(StoreFromCoprocessor1 instr);
 }

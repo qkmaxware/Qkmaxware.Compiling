@@ -10,7 +10,7 @@ public class Jr : JumpRInstruction {
     public override uint Opcode => BinaryCode;
 
 
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         cpu.PC += (int)(cpu.Registers[this.Source].ReadAsUInt32() >> 2); // goto saved pc (as word not bytes)
     }
 }

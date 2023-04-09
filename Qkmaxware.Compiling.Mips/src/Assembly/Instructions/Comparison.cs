@@ -3,6 +3,8 @@ namespace Qkmaxware.Compiling.Mips.Assembly;
 
 public class SetOnLessThan : BaseAssemblyInstruction {
     public override string InstrName() => "slt";
+    public override string InstrFormat() => InstrName() + " $rDest, $rLhs, $rRhs";
+    public override string InstrDescription() =>  "Stores a value of 1 in rDest if the value in rLhs < rRhs.";
 
     public RegisterIndex ResultRegister;
     public RegisterIndex LhsOperandRegister;
@@ -19,6 +21,8 @@ public class SetOnLessThan : BaseAssemblyInstruction {
 
 public class SetOnLessThanImmediate : BaseAssemblyInstruction {
     public override string InstrName() => "slti";
+    public override string InstrFormat() => InstrName() + " $rDest, $rLhs, value";
+    public override string InstrDescription() =>  "Stores a value of 1 in rDest if the value in rLhs < immediate value.";
 
     public RegisterIndex ResultRegister;
     public RegisterIndex LhsOperandRegister;

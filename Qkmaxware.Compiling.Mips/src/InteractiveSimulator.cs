@@ -4,11 +4,12 @@ using Qkmaxware.Compiling.Mips.Hardware;
 namespace Qkmaxware.Compiling.Mips;
 
 /// <summary>
-/// Interactive MIPS 32 simulator allowing for stepping through instructions and viewing memory
+/// Interactive MIPS 32 simulator allowing for stepping through instructions and viewing memory using the console
 /// </summary>
-public class InteractiveSimulator : Simulator {
+public class ConsoleInteractiveSimulator : Simulator {
 
-    public InteractiveSimulator(IMemory memory) : base(memory) {}
+    public ConsoleInteractiveSimulator(SimulatorIO io, IMemory memory) : base(io, memory) {}
+    public ConsoleInteractiveSimulator(IMemory memory) : base(memory) {}
 
     public override void OnBeforeInstruction(Bytecode.IBytecodeInstruction instr) {
         Console.WriteLine("CPU");

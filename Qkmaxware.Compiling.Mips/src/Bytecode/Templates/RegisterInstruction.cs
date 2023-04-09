@@ -7,8 +7,10 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// </summary>
 public abstract class RegisterEncodedInstruction : IBytecodeInstruction {
     public abstract uint Opcode {get;}
-    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory);
+    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io);
     public abstract uint Encode32();
+
+    public abstract IEnumerable<uint> GetOperands();
 
     protected uint Encode32(uint source, uint target, uint dest, uint amount, uint function) {
         // Encoding
@@ -39,6 +41,12 @@ public abstract class ArithLogInstruction : RegisterEncodedInstruction {
     public RegisterIndex Source;
     public RegisterIndex Target;
 
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Destination;
+        yield return (uint)Source;
+        yield return (uint)Target;
+    }
+
     public override uint Encode32() {
         return Encode32((uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
     }
@@ -51,18 +59,29 @@ public abstract class DivMultInstruction : RegisterEncodedInstruction {
     public RegisterIndex Source;
     public RegisterIndex Target;
 
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Source;
+        yield return (uint)Target;
+    }
+
     public override uint Encode32() {
         return Encode32((uint)Source, (uint)Target, 0, 0, this.Opcode);
     }
 }
 
 /// <summary>
-/// Base class for instructions with format f $s, $t, a
+/// Base class for instructions with format f $d, $t, a
 /// </summary>
 public abstract class ShiftInstruction : RegisterEncodedInstruction {
     public RegisterIndex Destination;
     public RegisterIndex Target;
     public uint Amount;
+
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Destination;
+        yield return (uint)Target;
+        yield return (uint)Amount;
+    }
 
     public override uint Encode32() {
         return Encode32(0, (uint)Target, (uint)Destination, this.Amount, this.Opcode);
@@ -77,6 +96,12 @@ public abstract class ShiftVInstruction : RegisterEncodedInstruction {
     public RegisterIndex Target;
     public RegisterIndex Source;
 
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Destination;
+        yield return (uint)Target;
+        yield return (uint)Source;
+    }
+
     public override uint Encode32() {
         return Encode32((uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
     }
@@ -87,6 +112,10 @@ public abstract class ShiftVInstruction : RegisterEncodedInstruction {
 /// </summary>
 public abstract class JumpRInstruction : RegisterEncodedInstruction {
     public RegisterIndex Source;
+
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Source;
+    }
 
     public override uint Encode32() {
         return Encode32((uint)Source, 0, 0, 0, this.Opcode);
@@ -99,6 +128,10 @@ public abstract class JumpRInstruction : RegisterEncodedInstruction {
 public abstract class MoveFromInstruction : RegisterEncodedInstruction {
     public RegisterIndex Destination;
 
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Destination;
+    }
+
     public override uint Encode32() {
         return Encode32(0, 0, (uint)Destination, 0, this.Opcode);
     }
@@ -109,6 +142,10 @@ public abstract class MoveFromInstruction : RegisterEncodedInstruction {
 /// </summary>
 public abstract class MoveToInstruction : RegisterEncodedInstruction {
     public RegisterIndex Source;
+
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Source;
+    }
 
     public override uint Encode32() {
         return Encode32((uint)Source, 0, 0, 0, this.Opcode);

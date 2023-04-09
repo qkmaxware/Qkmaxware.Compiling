@@ -151,7 +151,6 @@ public class Parser {
             case "half":
             case "word":
                 var integer = require<ScalarConstantToken>(tokens, "scalar quantity");
-                // TODO comma separated literal list
                 if (maybe<ColonToken>(tokens)) {
                     // Is Array
                     var size = require<ScalarConstantToken>(tokens, "data length");
@@ -267,11 +266,20 @@ public class Parser {
                 case "or":
                     yield return parseOr(tokens);
                     break;
+                case "nor":
+                    yield return parseNor(tokens);
+                    break;
+                case "xor":
+                    yield return parseXor(tokens);
+                    break;
                 case "andi":
                     yield return parseAndi(tokens);
                     break;
                 case "ori":
                     yield return parseOri(tokens);
+                    break;
+                case "xori":
+                    yield return parseXori(tokens);
                     break;
                 case "sll":
                     yield return parseSll(tokens);
@@ -355,6 +363,14 @@ public class Parser {
                 case "syscall":
                     // System call behavior changes depending on the value in specific registers, not encoded onto operation
                     yield return new Syscall();
+                    break;
+
+                // FPU specials
+                case "lwc1":
+                    yield return parselwc1(tokens);
+                    break;
+                case "swc1":
+                    yield return parseswc1(tokens);
                     break;
 
                 // Else
@@ -482,6 +498,22 @@ public class Parser {
             RhsOperandRegister = rhs.Value,
         }); 
 
+    private Nor parseNor(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, Nor>(
+        tokens, 
+        (res, lhs, rhs) => new Nor {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
+
+    private Xor parseXor(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, Xor>(
+        tokens, 
+        (res, lhs, rhs) => new Xor {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        });
+
     private AndImmediate parseAndi(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, AndImmediate>(
         tokens, 
         (res, lhs, rhs) => new AndImmediate {
@@ -493,6 +525,14 @@ public class Parser {
     private OrImmediate parseOri(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, OrImmediate>(
         tokens, 
         (res, lhs, rhs) => new OrImmediate {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperand = (uint)rhs.IntegerValue,
+        }); 
+
+    private XorImmediate parseXori(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, XorImmediate>(
+        tokens, 
+        (res, lhs, rhs) => new XorImmediate {
             ResultRegister = res.Value,
             LhsOperandRegister = lhs.Value,
             RhsOperand = (uint)rhs.IntegerValue,
@@ -698,6 +738,34 @@ public class Parser {
         return new BranchLessThanOrEqual0 {
             LhsOperandRegister = reg.Value,
             Address = from
+        };
+    }
+
+    private LoadIntoCoprocessor1 parselwc1(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "result register");
+        require<CommaToken>(tokens, "comma");
+        var offset = require<ScalarConstantToken>(tokens, "memory offset");
+        require<OpenParenthesisToken>(tokens, "open parenthesis");
+        var root = require<RegisterToken>(tokens, "base register");
+        require<CloseParenthesisToken>(tokens, "close parenthesis");
+        return new LoadIntoCoprocessor1 {
+            ResultRegister = res.Value,
+            BaseRegister = root.Value,
+            Offset = (uint)offset.IntegerValue
+        };
+    }
+
+    private StoreFromCoprocessor1 parseswc1(BufferedTokenStream tokens) {
+        var res = require<RegisterToken>(tokens, "source register");
+        require<CommaToken>(tokens, "comma");
+        var offset = require<ScalarConstantToken>(tokens, "memory offset");
+        require<OpenParenthesisToken>(tokens, "open parenthesis");
+        var root = require<RegisterToken>(tokens, "base register");
+        require<CloseParenthesisToken>(tokens, "close parenthesis");
+        return new StoreFromCoprocessor1 {
+            SourceRegister = res.Value,
+            BaseRegister = root.Value,
+            Offset = (uint)offset.IntegerValue
         };
     }
 }

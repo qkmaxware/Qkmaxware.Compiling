@@ -7,8 +7,10 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// </summary>
 public abstract class ImmediateEncodedInstruction : IBytecodeInstruction {
     public abstract uint Opcode {get;}
-    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory);
+    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io);
     public abstract uint Encode32();
+
+    public abstract IEnumerable<uint> GetOperands();
 
     protected uint Encode32(uint opcode, uint source, uint target, uint imm) {
         // Encoding
@@ -37,6 +39,12 @@ public abstract class ArithLogIInstruction : ImmediateEncodedInstruction {
     public RegisterIndex Target;
     public uint Immediate;
 
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Target;
+        yield return (uint)Source;
+        yield return Immediate;
+    }
+
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, (uint)this.Target, this.Immediate);
     }
@@ -48,6 +56,11 @@ public abstract class ArithLogIInstruction : ImmediateEncodedInstruction {
 public abstract class LoadIInstruction : ImmediateEncodedInstruction {
     public RegisterIndex Target;
     public uint Immediate;
+
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Target;
+        yield return Immediate;
+    }
 
     public override uint Encode32() {
         return Encode32(this.Opcode, 0, (uint)this.Target, this.Immediate);
@@ -62,6 +75,12 @@ public abstract class BranchInstruction : ImmediateEncodedInstruction {
     public RegisterIndex Target;
     public uint Immediate;
 
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Source;
+        yield return (uint)Target;
+        yield return Immediate;
+    }
+
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, (uint)this.Target, this.Immediate);
     }
@@ -73,6 +92,11 @@ public abstract class BranchInstruction : ImmediateEncodedInstruction {
 public abstract class BranchZInstruction : ImmediateEncodedInstruction {
     public RegisterIndex Source;
     public uint Immediate;
+
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Source;
+        yield return Immediate;
+    }
 
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, 0, this.Immediate);
@@ -86,6 +110,12 @@ public abstract class LoadStoreInstruction : ImmediateEncodedInstruction {
     public RegisterIndex Target;
     public RegisterIndex Source;
     public uint Immediate;
+
+    public override IEnumerable<uint> GetOperands() {
+        yield return (uint)Target;
+        yield return Immediate;
+        yield return (uint)Source;
+    }
 
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, (uint)this.Target, this.Immediate);

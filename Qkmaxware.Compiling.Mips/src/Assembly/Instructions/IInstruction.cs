@@ -6,6 +6,10 @@ namespace Qkmaxware.Compiling.Mips.Assembly;
 /// Base interface for all MIPS instructions
 /// </summary>
 public interface IAssemblyInstruction {
+    public string InstrName();
+    public string InstrFormat();
+    public string InstrDescription();
+
     public void Visit(IInstructionVisitor visitor);
     public T Visit<T>(IInstructionVisitor<T> visitor);
     /// <summary>
@@ -16,10 +20,17 @@ public interface IAssemblyInstruction {
 }
 
 /// <summary>
+/// Flag to indicate that an instruction is a pseudo-instruction rather than a real hw supported instruction
+/// </summary>
+public interface IPseudoInstruction : IAssemblyInstruction {}
+
+/// <summary>
 /// Base class for all instructions with shared functionality
 /// </summary>
 public abstract class BaseAssemblyInstruction : IAssemblyInstruction {
     public abstract string InstrName();
+    public abstract string InstrFormat();
+    public abstract string InstrDescription();
     public abstract void Visit(IInstructionVisitor visitor);
     public abstract T Visit<T>(IInstructionVisitor<T> visitor);
 

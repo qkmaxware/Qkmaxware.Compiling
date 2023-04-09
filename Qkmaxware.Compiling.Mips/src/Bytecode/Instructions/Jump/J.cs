@@ -14,7 +14,7 @@ public class J : JumpInstruction {
         set => this.Immediate = BitConverter.ToUInt32(BitConverter.GetBytes(value));
     }
 
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         cpu.PC += this.AddressOffset;
     }
 }

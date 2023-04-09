@@ -9,19 +9,20 @@ public class Syscall : JumpRInstruction {
     public static readonly uint BinaryCode = 001100U;
     public override uint Opcode => BinaryCode;
     
-
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         // Behaviour changes depending on $v0
         var system_call = cpu.Registers.V0.Read();
-
+        
         switch (system_call) {
             case 1: 
                 // print_int $a0
-                Console.Write(cpu.Registers.A0.ReadAsInt32());
+                io.StdOut.Write(cpu.Registers.A0.ReadAsInt32());
+                io.StdOut.Flush();
                 break;
             case 2:
                 // print_float $f12
-                Console.Write(fpu.Registers[12].Read());
+                io.StdOut.Write(fpu.Registers[12].Read());
+                io.StdOut.Flush();
                 break;
             case 3:
                 goto default;
@@ -30,15 +31,16 @@ public class Syscall : JumpRInstruction {
                 var addr = cpu.Registers.A0.ReadAsUInt32();
                 uint character = default(char);
                 // until null termination, print each ascii character
-                while ((character = memory.LoadWord(addr)) != '\0') {
-                    Console.Write((char)character);
+                while ((character = memory.LoadByte(addr)) != '\0') {
+                    io.StdOut.Write((char)character);
                     addr += 1;
                 }
+                io.StdOut.Flush();
                 break;
             case 5:
                 // read_int $v0
                 {
-                    var input = Console.ReadLine();
+                    var input = io.StdIn.ReadLine();
                     int i;
                     if (int.TryParse(input, out i)) {
                         cpu.Registers.V0.WriteInt32(i);
@@ -50,7 +52,7 @@ public class Syscall : JumpRInstruction {
             case 6:
                 // read_float $v0
                 {
-                    var input = Console.ReadLine();
+                    var input = io.StdIn.ReadLine();
                     float i;
                     if (float.TryParse(input, out i)) {
                         fpu.Registers[0].Write(i);
@@ -71,7 +73,7 @@ public class Syscall : JumpRInstruction {
             case 11:
                 // read_char $v0
                 {
-                    var input = Console.Read();
+                    var input = io.StdIn.Read();
                     cpu.Registers.V0.WriteInt32(input);
                 }
                 break;

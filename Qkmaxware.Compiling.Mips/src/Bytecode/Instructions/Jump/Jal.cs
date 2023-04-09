@@ -14,7 +14,7 @@ public class Jal : JumpInstruction {
         set => this.Immediate = BitConverter.ToUInt32(BitConverter.GetBytes(value));
     }
 
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         cpu.Registers[new RegisterIndex(31)].WriteInt32(cpu.PC << 2); // save old pc (as bytes not words)
         cpu.PC += this.AddressOffset;                                 // goto new pc
     }

@@ -1,0 +1,163 @@
+<div class="w3-row">
+    <div class="w3-third">
+        <div class="w3-grey w3-container">Processors</div>
+        <div class="w3-padding w3-border">
+        <TabView>
+            <Tab Title="CPU">
+                <table class="w3-table" style="display: block; height: 50vh; overflow: scroll;">
+                    <thead>
+                        <th>Register</th>
+                        <th>Hex</th>
+                        <th>I32</th>
+                        <th>U32</th>
+                        <th>F32</th>
+                    </thead>
+                    <tbody>
+                        @if (Simulator != null) {
+                            var pc = Simulator.Cpu.PC;
+                            <tr>
+                                <td>PC</td>
+                                <td>0x@(pc.ToString("X8"))</td>
+                                <td>@BitConverter.ToInt32(BitConverter.GetBytes(pc))</td>
+                                <td>@BitConverter.ToUInt32(BitConverter.GetBytes(pc))</td>
+                                <td>@BitConverter.ToSingle(BitConverter.GetBytes(pc))</td>
+                            </tr>
+                            for (var i = 0; i < 32; i++) {
+                                var register = Simulator.Cpu.Registers[i];
+                                var value = register.Read();
+                                <tr>
+                                    <td>#@(i)</td>
+                                    <td>0x@(value.ToString("X8"))</td>
+                                    <td>@BitConverter.ToInt32(BitConverter.GetBytes(value))</td>
+                                    <td>@BitConverter.ToUInt32(BitConverter.GetBytes(value))</td>
+                                    <td>@BitConverter.ToSingle(BitConverter.GetBytes(value))</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </Tab>
+            <Tab Title="CO0">
+
+            </Tab>
+            <Tab Title="FPU (CO1)">
+                <table class="w3-table" style="display: block; height: 50vh; overflow: scroll;">
+                    <thead>
+                        <th>Register</th>
+                        <th>Hex</th>
+                        <th>I32</th>
+                        <th>U32</th>
+                        <th>F32</th>
+                    </thead>
+                    <tbody>
+                        @if (Simulator != null) {
+                            for (var i = 0; i < 32; i++) {
+                                var register = Simulator.Fpu.Registers[i];
+                                var value = register.Read();
+                                <tr>
+                                    <td>#@(i)</td>
+                                    <td>0x@(BitConverter.ToUInt32(BitConverter.GetBytes(value)).ToString("X8"))</td>
+                                    <td>@BitConverter.ToInt32(BitConverter.GetBytes(value))</td>
+                                    <td>@BitConverter.ToUInt32(BitConverter.GetBytes(value))</td>
+                                    <td>@BitConverter.ToSingle(BitConverter.GetBytes(value))</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </Tab>
+        </TabView>
+        </div>
+        <div class="w3-grey w3-container">Memory <small>@(MemorySize)</small></div>
+        <div class="w3-padding w3-border">
+            <PagedView TElement=int PageSize=64 Elements="@Enumerable.Range(0, (int)MemorySize.TotalBytes)">
+                @if (Simulator != null && Simulator.Memory != null) {
+                    var value = @Simulator.Memory.LoadByte((uint)context);
+                    <span class="w3-button">@value.ToString("X2") (@((char)value))</span>
+                }
+            </PagedView>
+        </div>
+    </div>
+    <div class="w3-twothird">
+        <div class="w3-grey w3-container">Execution</div>
+        <div class="w3-padding w3-border" style="text-align: right;">
+            @if (this.Simulator == null) {
+                <button class="w3-button w3-green" @onclick="run">Run Program &#9658;</button>
+                <button class="w3-button w3-green" @onclick="step">Debug Program &par;&#9658;</button>
+            } else {
+                if (this.Simulator.IsProgramDone) {
+                    <button class="w3-button w3-green" @onclick="restart">Restart &#8635;</button>
+                } else {
+                    <span>Next: @Simulator.NextInstruction?.InstructionName()</span>
+                    <button class="w3-button w3-green" @onclick="next">Step &darr;</button>
+                    <button class="w3-button w3-red" @onclick="restart">Stop &times;</button>
+                }
+            }
+        </div>
+        <div class="w3-grey w3-container">"Standard" Out</div>
+        <div class="w3-padding w3-border" style="min-height: 4em;">
+            @if (stdout != null) {
+                <text>@stdout.GetStringBuilder().ToString()</text>
+            }
+        </div>
+        <div class="w3-grey w3-container">"Standard" In</div>
+        <div class="w3-padding w3-border">
+            <input type="text" class="w3-input w3-border w3-round" placeholder="input">
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private static readonly Qkmaxware.Compiling.Mips.DataSize MemorySize = Qkmaxware.Compiling.Mips.DataSize.KibiBytes(1);
+
+    private Qkmaxware.Compiling.Mips.StepableSimulator Simulator;
+
+    private Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program;
+    private StringWriter stdout;
+    public Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram Program => program;
+    public void SetProgram(Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program) {
+        this.program = program;
+        this.Simulator = null;
+        StateHasChanged();
+    }
+
+    private void setUp() {
+        try {
+            this.stdout = new StringWriter();
+            var stdio = new StringReader("");
+            var io = new Mips.SimulatorIO(
+                @in: stdio,
+                @out: stdout
+            );
+            this.Simulator = new Qkmaxware.Compiling.Mips.StepableSimulator(
+                io:         io,
+                memory:     new Mips.Hardware.ByteArrayMemory(MemorySize),
+                program:    program
+            );
+        } catch (Exception e) {
+            this.stdout?.Write(e);
+        }
+    }
+    private void run() {
+        setUp();
+        try {
+            this.Simulator?.RunAll();
+        } catch (Exception e) {
+            this.stdout?.Write(e);
+        }
+    }
+    private void step() {
+        setUp();
+    }
+    private void next() {
+        try {
+            this.Simulator?.TryStepNext();
+        } catch (Exception e) {
+            this.stdout?.Write(e);
+        }
+    }
+    private void restart() {
+        this.Simulator = null;
+    }
+}

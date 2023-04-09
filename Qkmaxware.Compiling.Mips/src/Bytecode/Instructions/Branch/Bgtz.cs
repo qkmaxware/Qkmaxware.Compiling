@@ -14,7 +14,7 @@ public class Bgtz : BranchZInstruction {
         set => this.Immediate = BitConverter.ToUInt32(BitConverter.GetBytes(value));
     }
 
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var operand = cpu.Registers[this.Source].ReadAsInt32();
 
         if (operand > 0) {

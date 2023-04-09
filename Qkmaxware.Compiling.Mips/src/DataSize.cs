@@ -6,6 +6,9 @@ namespace Qkmaxware.Compiling.Mips;
 public struct DataSize {
     private uint byte_count;
 
+    /// <summary>
+    /// Total number of bytes used by the data  
+    /// </summary>
     public uint TotalBytes => byte_count;
 
     private DataSize(uint bytes) {
@@ -14,6 +17,14 @@ public struct DataSize {
 
     public static DataSize Bytes(uint bytes) {
         return new DataSize(bytes);
+    }
+
+    public static DataSize KiloBytes(uint kb) {
+        return Bytes(1000 * kb);
+    }
+
+    public static DataSize KibiBytes(uint kb) {
+        return Bytes(1024 * kb);
     }
 
     public static DataSize MegaBytes(uint mb) {
@@ -29,5 +40,9 @@ public struct DataSize {
     }
     public static DataSize GibiBytes(uint gb) {
         return Bytes(1073741824 * gb);
+    }
+
+    public override string ToString() {
+        return this.TotalBytes + "bytes";
     }
 }

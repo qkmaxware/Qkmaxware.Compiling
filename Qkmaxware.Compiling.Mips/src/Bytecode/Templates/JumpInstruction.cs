@@ -7,8 +7,10 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// </summary>
 public abstract class JumpEncodedInstruction : IBytecodeInstruction {
     public abstract uint Opcode {get;}
-    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory);
+    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io);
     public abstract uint Encode32();
+
+    public abstract IEnumerable<uint> GetOperands();
 
     protected uint Encode32(uint opcode, uint imm) {
         // Encoding
@@ -31,6 +33,10 @@ public abstract class JumpEncodedInstruction : IBytecodeInstruction {
 public abstract class JumpInstruction : JumpEncodedInstruction {
     public uint Immediate;
 
+    public override IEnumerable<uint> GetOperands() {
+        yield return Immediate;
+    }
+
     public override uint Encode32() {
         return Encode32(this.Opcode, this.Immediate);
     }
@@ -41,6 +47,10 @@ public abstract class JumpInstruction : JumpEncodedInstruction {
 /// </summary>
 public abstract class TrapInstruction : JumpEncodedInstruction {
     public uint Immediate;
+
+    public override IEnumerable<uint> GetOperands() {
+        yield return Immediate;
+    }
 
     public override uint Encode32() {
         return Encode32(this.Opcode, this.Immediate);

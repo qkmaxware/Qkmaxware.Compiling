@@ -1,0 +1,45 @@
+@typeparam TElement
+
+@if (chunks != null) {
+    <div class="w3-center">
+        <button class="w3-button" @onclick=@(() => page = Math.Max(page - 1, 0))> &lt;</button>
+        @for (var i = 0; i < chunks.Count; i++) {
+            var index = i;
+            <button class='w3-button @(index == page ? "w3-green" : string.Empty)' @onclick=@(() => page = index)>@(index + 1)</button>
+        }
+        <button class="w3-button" @onclick=@(() => page = Math.Min(page + 1, chunks.Count - 1))> &gt;</button>
+    </div>
+    <hr>
+    @for (var i = 0; i < chunks.Count; i++) {
+        var index = i;
+        <div class='@(page == i ? "w3-show" : "w3-hide")'>
+            @foreach (var element in chunks[i]) {
+                @ChildContent(element)
+            }
+        </div>
+    }
+}
+
+@code {
+
+private int page = 0;
+
+[Parameter]
+public int PageSize {get; set;} = 16;
+
+public int ChunkSize => chunks == null || chunks.Count > 0 ? 0 : chunks[0].Length;
+public int ChunkCount => chunks == null ? 0 : chunks.Count;
+
+private List<TElement[]>? chunks;
+
+[Parameter]
+public IEnumerable<TElement>? Elements {
+    set {
+        this.chunks = value?.Chunk(PageSize)?.ToList();
+    }
+}
+
+[Parameter]
+public RenderFragment<TElement> ChildContent { get; set; }
+
+}

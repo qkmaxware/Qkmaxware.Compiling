@@ -1,0 +1,73 @@
+<div class="w3-row">
+    <div class="w3-twothird w3-border">
+        <div class="w3-grey w3-container">Bytecode</div>
+        @if (program != null) {
+            foreach (var instr in program) {
+                <span class="w3-button" @onclick=@(() => instruction = instr)>
+                    <text>@instr.Encode32().ToString("X8")</text>
+                </span>
+            }
+        }
+    </div>
+    <div class="w3-third w3-border">
+        <div class="w3-grey w3-container">Inspector</div>
+        <div class="w3-padding">
+        @if (instruction != null) {
+            var encoded = instruction.Encode32();
+            <label>Instruction</label>
+            <div class="w3-margin-left">
+                <table class="w3-table">
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <td>@instruction.InstructionName()</td>
+                        </tr>
+                        <tr>
+                            <th>Hex</th>
+                            <td>@string.Join(' ', encoded.ToString("X8").SplitN(2))</td>
+                        </tr>
+                        <tr>
+                            <th>Binary</th>
+                            <td>@string.Join(' ', Convert.ToString(encoded, 2).PadLeft(32, '0').SplitN(8))</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <label>Operands</label>
+            <div class="w3-margin-left">
+                <table class="w3-table">
+                    <thead>
+                        <th>#</th>
+                        <th>Hex</th>
+                        <th>I32</th>
+                        <th>U32</th>
+                        <th>F32</th>
+                    </thead>
+                    <tbody>
+                    @foreach (var operand in instruction.GetOperands().Select((x,i) => (x,i))) {
+                        <tr>
+                            <td>@operand.i</td>
+                            <td>0x@(operand.x.ToString("X8"))</td>
+                            <td>@BitConverter.ToInt32(BitConverter.GetBytes(operand.x))</td>
+                            <td>@BitConverter.ToUInt32(BitConverter.GetBytes(operand.x))</td>
+                            <td>@BitConverter.ToSingle(BitConverter.GetBytes(operand.x))</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program;
+    private Qkmaxware.Compiling.Mips.Bytecode.IBytecodeInstruction instruction;
+    public Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram Program => program;
+    public void SetProgram(Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program) {
+        this.program = program;
+        StateHasChanged();
+    }
+}

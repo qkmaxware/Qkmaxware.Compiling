@@ -1,0 +1,68 @@
+@page "/mips"
+
+<div class="w3-row">
+    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Program ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = Tab.Program)>
+        1. Program
+    </div>
+    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Assemble ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = Tab.Assemble)>
+        2. Assemble
+    </div>
+    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Execute ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = Tab.Execute)>
+        3. Execute
+    </div>
+</div>
+
+
+<div class='@(currentTab == Tab.Program ? "w3-show" : "w3-hide")'>
+    <MipsEditor @ref="code_editor"></MipsEditor>
+    <div class="w3-border w3-margin-bottom" style="min-height: 25vh;">
+        <div class="w3-grey w3-container">Problems</div>
+        @assemblerException
+    </div>
+    <div style="text-align: right;">
+        <button class="w3-button w3-green" @onclick="assemble">Assemble &rsaquo;</button>
+    </div>
+</div>
+<div class='@(currentTab == Tab.Assemble ? "w3-show" : "w3-hide")'>
+    <MipsInspector @ref="binary_inspector"></MipsInspector>
+    <div style="text-align: right;">
+        <button class="w3-button w3-green" @onclick="run">Run &rsaquo;</button>
+    </div>
+</div>
+<div class='@(currentTab == Tab.Execute ? "w3-show" : "w3-hide")'>
+    <MipsRunner @ref="runner"></MipsRunner>
+</div>
+
+@code {
+    enum Tab {
+        Program, Assemble, Execute
+    }
+    private string activeTabClass = "w3-red";
+    private Tab currentTab;
+
+    private MipsEditor code_editor;
+    private string assemblerException;
+
+    private void assemble() {
+        var assembler = new Qkmaxware.Compiling.Mips.Assembler();
+        var code = code_editor.Code;
+    
+        try {
+            var bytecode = assembler.ParseAndAssemble(code);
+            binary_inspector.SetProgram(bytecode);
+
+            currentTab = Tab.Assemble;
+        } catch (Exception ex) {
+            assemblerException = ex.ToString();
+        }
+    }
+
+    private MipsInspector binary_inspector;
+
+    private void run() {
+        currentTab = Tab.Execute;
+        var progam = binary_inspector.Program;
+        runner.SetProgram(progam);
+    }
+    private MipsRunner runner;
+}

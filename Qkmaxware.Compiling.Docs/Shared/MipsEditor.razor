@@ -1,0 +1,166 @@
+@inject IJSRuntime js
+
+<div class="w3-bar w3-grey">
+    <button class="w3-button w3-bar-item" @onclick="openLoad">&#x1F4C1; Load</button>
+    <button class="w3-button w3-bar-item" @onclick="openSave">&#x1f4be; Save</button>
+
+    <button class="w3-button w3-bar-item w3-right" @onclick="openHelp">&#x1F6C8; Info</button>
+</div>
+<textarea @bind="_code" style="width: 100%; min-height: 50vh;">
+
+</textarea>
+
+<!-- Help Dialog -->
+<div class='@(showHelpDialog ? "w3-show" : "w3-hide") w3-modal'>
+    <div class="w3-modal-content w3-padding w3-round-xlarge w3-white">
+        <h1>Help</h1>
+        <div>
+            <h3>Instructions <small>@all_assembly_instructions?.Count</small></h3>
+            <p>All instructions supported by this assembler. Not all MIPS instructions are guaranteed to be provided. Pseudo-instructions are special instructions that are not supported by the MIPS hardware but the assembler will convert them to supported instructions. These pseudo-instructions are marked by the <small>pseudo</small> indicator.</p>
+            <div>
+                @if (all_assembly_instructions != null) {
+                foreach (var instr in all_assembly_instructions) {
+                    if (instr != null) {
+                    <span class="w3-third w3-padding">
+                        <b>@instr.InstrName()</b>@if(instr is Qkmaxware.Compiling.Mips.Assembly.IPseudoInstruction){ <small class="w3-margin-left">pseudo</small> }<br>
+                        <i>@instr.InstrFormat()</i><br>
+                        @instr.InstrDescription()<br>
+                    </span>
+                    }
+                }
+                }
+            </div>
+        </div>
+        <div class="w3-center">
+            <button class="w3-button w3-red" @onclick=closeHelp>Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Dialog -->
+<div class='@(showLoadDialog ? "w3-show" : "w3-hide") w3-modal'>
+    <div class="w3-modal-content w3-padding w3-round-xlarge w3-white">
+        <h1>Load Assembly</h1>
+        <ul class="w3-ul">
+            <li><b>Examples</b></li>
+            @foreach (var defaults in this.default_asm) {
+                <li class="w3-button" style="width: 100%" @onclick=@(() => loadDefault(defaults.Key, defaults.Value))>@defaults.Key</li>
+            }
+            <li><b>User Saved</b></li>
+            @foreach (var user in this.cached_asm) {
+                <li class="w3-button" style="width: 100%" @onclick=@(() => loadCached(user))>@user</li>
+            }
+        </ul>
+        <div class="w3-row">
+            <div class="w3-half">
+                <button class="w3-button w3-red" @onclick=closeLoad>Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Dialog -->
+<div class='@(showSaveDialog ? "w3-show" : "w3-hide") w3-modal'>
+    <div class="w3-modal-content w3-padding w3-round-xlarge w3-white">
+        <h1>Save Assembly</h1>
+        <label>Filename</label>
+        <input type="text" class="w3-input w3-border w3-round w3-margin-bottom" @bind="filename">
+        <div class="w3-row">
+            <div class="w3-half">
+                <button class="w3-button w3-red" @onclick=closeSave>Cancel</button>
+            </div>
+            <div class="w3-half" style="text-align: right">
+                <button class="w3-button w3-green" @onclick=saveAndCloseSave>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Dictionary<string, string> default_asm = new Dictionary<string, string> {
+        {
+            "hello_world.asm",
+            @".data
+str: .asciiz ""Hello World""
+
+.text
+main:
+  li $v0, 4
+  la $a0, str
+  syscall"
+        },
+        {
+            "add_and_print.asm",
+            @".text
+main:
+  li $t0,12
+  li $t1,6 
+  add $t3, $t0, $t1
+
+print:
+  li $v0, 1
+  move $a0, $t3
+  syscall"}
+    };
+    private string _code = 
+@".data
+
+.text";
+    public string Code => _code;
+
+    private List<string> cached_asm = new List<string>();
+
+    private static List<Qkmaxware.Compiling.Mips.Assembly.IAssemblyInstruction?> all_assembly_instructions = 
+        typeof(Qkmaxware.Compiling.Mips.Assembler)
+        .Assembly.GetTypes()
+        .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(Qkmaxware.Compiling.Mips.Assembly.IAssemblyInstruction)))
+        .Select(type => (Qkmaxware.Compiling.Mips.Assembly.IAssemblyInstruction?)Activator.CreateInstance(type))
+        .ToList();
+
+    private bool showHelpDialog = false;
+    private void openHelp() {
+        showHelpDialog = true;
+    }
+    private void closeHelp() {
+        showHelpDialog = false;
+    }
+
+    private bool showLoadDialog = false;
+    private async Task openLoad() {
+        var cached = await js.InvokeAsync<string[]>("BlazorListLocalStorage");
+        cached_asm.Clear();
+        cached_asm.AddRange(cached);
+
+        showLoadDialog = true;
+        showSaveDialog = false;
+    }
+    private void closeLoad() {
+        showLoadDialog = false;
+    }
+    private void loadDefault(string fname, string asm) {
+        this._code = asm;
+        this.filename = fname;
+        closeLoad();
+    }
+    private async Task loadCached(string fname) {
+        var asm = await js.InvokeAsync<string>("BlazorReadLocalStorage", fname);
+        this._code = asm;
+        this.filename = fname;
+        closeLoad();
+    }
+
+    private bool showSaveDialog = false;
+    private void openSave() {
+        showSaveDialog = true;
+        showLoadDialog = false;
+    }
+    private void closeSave() {
+        showSaveDialog = false;
+    }
+    private async Task saveAndCloseSave() {
+        await js.InvokeVoidAsync("BlazorWriteLocalStorage", this.filename, this._code);
+        closeSave();
+    }
+    private string filename = "mips-" + (DateTime.Now.ToShortDateString())  + ".asm";
+}
+

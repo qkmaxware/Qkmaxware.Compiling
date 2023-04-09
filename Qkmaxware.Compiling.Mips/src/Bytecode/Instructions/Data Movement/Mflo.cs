@@ -9,7 +9,7 @@ public class Mflo : MoveFromInstruction {
     public static readonly uint BinaryCode = 010010U;
     public override uint Opcode => BinaryCode;
 
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var toMove = cpu.Registers.LO.ReadAsUInt32();
         cpu.Registers[this.Destination].WriteUInt32(toMove);
     }

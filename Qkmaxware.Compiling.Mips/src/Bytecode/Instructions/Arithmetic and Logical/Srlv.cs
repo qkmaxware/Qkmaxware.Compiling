@@ -18,7 +18,7 @@ public class Srlv : ShiftVInstruction {
         set => this.Source = value;
     }
 
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var lhs = cpu.Registers[this.LhsOperand].ReadAsUInt32();
         var rhs = cpu.Registers[this.RhsOperand].ReadAsUInt32();
 
