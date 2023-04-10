@@ -772,4 +772,57 @@ internal class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<By
             Immediate = instr.Offset,
         };
     }
+
+    public IEnumerable<IBytecodeInstruction> Accept(Assembly.MoveFromCoprocessor1 instr) {
+        yield return new Bytecode.Mfc1 {
+            FpuRegister = instr.FpuRegister,
+            CpuRegister = instr.CpuRegister
+        };
+    }
+
+    public IEnumerable<IBytecodeInstruction> Accept(Assembly.MoveToCoprocessor1 instr) {
+        yield return new Bytecode.Mtc1 {
+            FpuRegister = instr.FpuRegister,
+            CpuRegister = instr.CpuRegister
+        };
+    }
+
+    public IEnumerable<IBytecodeInstruction> Accept(Assembly.AddSingle instr) {
+        yield return new Bytecode.AddS {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
+    }
+
+    public IEnumerable<IBytecodeInstruction> Accept(Assembly.SubtractSingle instr) {
+        yield return new Bytecode.SubS {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
+    }
+
+    public IEnumerable<IBytecodeInstruction> Accept(Assembly.MultiplySingle instr) {
+        yield return new Bytecode.MulS {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
+    }
+
+    public IEnumerable<IBytecodeInstruction> Accept(Assembly.DivideSingle instr) {
+        yield return new Bytecode.DivS {
+            Destination = instr.ResultRegister,
+            LhsOperand = instr.LhsOperandRegister,
+            RhsOperand = instr.RhsOperandRegister
+        };
+    }
+
+    public IEnumerable<IBytecodeInstruction> Accept(Assembly.AbsoluteValueSingle instr) {
+        yield return new Bytecode.AbsS {
+            Destination = instr.ResultRegister,
+            Operand = instr.SourceRegister,
+        };
+    }
 }

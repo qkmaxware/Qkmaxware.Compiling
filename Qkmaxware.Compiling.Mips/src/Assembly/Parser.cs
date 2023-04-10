@@ -372,6 +372,27 @@ public class Parser {
                 case "swc1":
                     yield return parseswc1(tokens);
                     break;
+                case "mtc1":
+                    yield return parsemtc1(tokens);
+                    break;
+                case "mfc1":
+                    yield return parsemfc1(tokens);
+                    break;
+                case "abs.s":
+                    yield return parseabsS(tokens);
+                    break;
+                case "add.s":
+                    yield return parseaddS(tokens);
+                    break;
+                case "sub.s":
+                    yield return parsesubS(tokens);
+                    break;
+                case "mul.s":
+                    yield return parsemulS(tokens);
+                    break;
+                case "div.s":
+                    yield return parsedivS(tokens);
+                    break;
 
                 // Else
                 default:
@@ -768,4 +789,62 @@ public class Parser {
             Offset = (uint)offset.IntegerValue
         };
     }
+
+    private MoveToCoprocessor1 parsemtc1(BufferedTokenStream tokens) {
+        var cpu = require<RegisterToken>(tokens, "cpu register");
+        require<CommaToken>(tokens, "comma");
+        var fpu = require<RegisterToken>(tokens, "fpu register");
+        return new MoveToCoprocessor1 {
+            CpuRegister = cpu.Value,
+            FpuRegister = fpu.Value
+        };
+    }
+
+    private MoveFromCoprocessor1 parsemfc1(BufferedTokenStream tokens) {
+        var cpu = require<RegisterToken>(tokens, "cpu register");
+        require<CommaToken>(tokens, "comma");
+        var fpu = require<RegisterToken>(tokens, "fpu register");
+        return new MoveFromCoprocessor1 {
+            CpuRegister = cpu.Value,
+            FpuRegister = fpu.Value
+        };
+    }
+
+    private AbsoluteValueSingle parseabsS(BufferedTokenStream tokens) {
+        var dest = require<RegisterToken>(tokens, "result register");
+        require<CommaToken>(tokens, "comma");
+        var src = require<RegisterToken>(tokens, "source register");
+        return new AbsoluteValueSingle {
+            ResultRegister = dest.Value,
+            SourceRegister = src.Value
+        };
+    }
+    private AddSingle parseaddS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, AddSingle>(
+        tokens, 
+        (res, lhs, rhs) => new AddSingle {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
+    private SubtractSingle parsesubS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, SubtractSingle>(
+        tokens, 
+        (res, lhs, rhs) => new SubtractSingle {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
+    private MultiplySingle parsemulS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, MultiplySingle>(
+        tokens, 
+        (res, lhs, rhs) => new MultiplySingle {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
+    private DivideSingle parsedivS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, DivideSingle>(
+        tokens, 
+        (res, lhs, rhs) => new DivideSingle {
+            ResultRegister = res.Value,
+            LhsOperandRegister = lhs.Value,
+            RhsOperandRegister = rhs.Value,
+        }); 
 }

@@ -57,7 +57,13 @@ public interface IInstructionVisitor {
 
     public void Accept(LoadIntoCoprocessor1 instr);
     public void Accept(StoreFromCoprocessor1 instr);
-
+    public void Accept(MoveToCoprocessor1 instr);
+    public void Accept(MoveFromCoprocessor1 instr);
+    public void Accept(AbsoluteValueSingle instr);
+    public void Accept(AddSingle instr);
+    public void Accept(SubtractSingle instr);
+    public void Accept(MultiplySingle instr);
+    public void Accept(DivideSingle instr);
 }
 
 /// <summary>
@@ -117,4 +123,11 @@ public interface IInstructionVisitor<T> {
 
     public T Accept(LoadIntoCoprocessor1 instr);
     public T Accept(StoreFromCoprocessor1 instr);
+    public T Accept(MoveToCoprocessor1 instr);
+    public T Accept(MoveFromCoprocessor1 instr);
+    public T Accept(AbsoluteValueSingle instr);
+    public T Accept(AddSingle instr);
+    public T Accept(SubtractSingle instr);
+    public T Accept(MultiplySingle instr);
+    public T Accept(DivideSingle instr);
 }

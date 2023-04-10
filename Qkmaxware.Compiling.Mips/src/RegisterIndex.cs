@@ -235,6 +235,103 @@ public struct RegisterIndex {
             case "ra":
                 return new RegisterIndex(31);
                 
+            // Named FPU registers
+            case "f0":
+                return new RegisterIndex(0);
+                
+            case "f1":
+                return new RegisterIndex(1);
+                
+            case "f2":
+                return new RegisterIndex(2);
+                
+            case "f3":
+                return new RegisterIndex(3);
+                
+            case "f4":
+                return new RegisterIndex(4);
+                
+            case "f5":
+                return new RegisterIndex(5);
+                
+            case "f6":
+                return new RegisterIndex(6);
+                
+            case "f7":
+                return new RegisterIndex(7);
+                
+            case "f8":
+                return new RegisterIndex(8);
+                
+            case "f9":
+                return new RegisterIndex(9);
+                
+            case "f10":
+                return new RegisterIndex(10);
+                
+            case "f11":
+                return new RegisterIndex(11);
+                
+            case "f12":
+                return new RegisterIndex(12);
+                
+            case "f13":
+                return new RegisterIndex(13);
+                
+            case "f14":
+                return new RegisterIndex(14);
+                
+            case "f15":
+                return new RegisterIndex(15);
+                
+            case "f16":
+                return new RegisterIndex(16);
+                
+            case "f17":
+                return new RegisterIndex(17);
+                
+            case "f18":
+                return new RegisterIndex(18);
+                
+            case "f19":
+                return new RegisterIndex(19);
+                
+            case "f20":
+                return new RegisterIndex(20);
+                
+            case "f21":
+                return new RegisterIndex(21);
+                
+            case "f22":
+                return new RegisterIndex(22);
+                
+            case "f23":
+                return new RegisterIndex(23);
+                
+            case "f24":
+                return new RegisterIndex(24);
+                
+            case "f25":
+                return new RegisterIndex(25);
+                
+            case "f26":
+                return new RegisterIndex(26);
+                
+            case "f27":
+                return new RegisterIndex(27);
+                
+            case "f28":
+                return new RegisterIndex(28);
+                
+            case "f29":
+                return new RegisterIndex(29);
+                
+            case "f30":
+                return new RegisterIndex(30);
+                
+            case "f31":
+                return new RegisterIndex(31);
+
             // IDK
             default:
                 return null;
