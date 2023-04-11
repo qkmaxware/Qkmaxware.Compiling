@@ -57,17 +57,17 @@ public class XorImmediate : TwoAddressImmediateInstruction<uint> {
 }
 
 public class ShiftLeftLogical : ThreeAddressInstruction {
-    public override string InstrName() => "sll";
-    public override string InstrFormat() => InstrName() + " $rDest, $rLhs, amount";
-    public override string InstrDescription() =>  "Shifts the value stored in rLhs to the left by an immediate amount. The result is stored in rDest.";
+    public override string InstrName() => "sllv";
+    public override string InstrFormat() => InstrName() + " $rDest, $rLhs, $rRhs";
+    public override string InstrDescription() =>  "Shifts the value stored in rLhs to the left by $rRhs. The result is stored in rDest.";
     public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
 }
 
 public class ShiftRightLogical : ThreeAddressInstruction {
-    public override string InstrName() => "srl";
-    public override string InstrFormat() => InstrName() + " $rDest, $rLhs, amount";
-    public override string InstrDescription() =>  "Shifts the value stored in rLhs to the right by an immediate amount. The result is stored in rDest.";
+    public override string InstrName() => "srlv";
+    public override string InstrFormat() => InstrName() + " $rDest, $rLhs, $rRhs";
+    public override string InstrDescription() =>  "Shifts the value stored in rLhs to the right by $rRhs. The result is stored in rDest.";
     public override void Visit(IInstructionVisitor visitor) => visitor.Accept(this);
     public override T Visit<T>(IInstructionVisitor<T> visitor) => visitor.Accept(this);
 }

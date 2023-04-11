@@ -281,11 +281,11 @@ public class Parser {
                 case "xori":
                     yield return parseXori(tokens);
                     break;
-                case "sll":
-                    yield return parseSll(tokens);
+                case "sllv":
+                    yield return parseSllv(tokens);
                     break;
-                case "srl":
-                    yield return parseSrl(tokens);
+                case "srlv":
+                    yield return parseSrlv(tokens);
                     break;
 
                 // Data Transfer
@@ -559,7 +559,7 @@ public class Parser {
             RhsOperand = (uint)rhs.IntegerValue,
         }); 
 
-    private ShiftLeftLogical parseSll(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftLeftLogical>(
+    private ShiftLeftLogical parseSllv(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftLeftLogical>(
         tokens, 
         (res, lhs, rhs) => new ShiftLeftLogical {
             ResultRegister = res.Value,
@@ -567,7 +567,7 @@ public class Parser {
             RhsOperandRegister = rhs.Value,
         }); 
 
-    private ShiftRightLogical parseSrl(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftRightLogical>(
+    private ShiftRightLogical parseSrlv(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftRightLogical>(
         tokens, 
         (res, lhs, rhs) => new ShiftRightLogical {
             ResultRegister = res.Value,

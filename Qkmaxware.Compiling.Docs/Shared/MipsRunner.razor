@@ -70,10 +70,23 @@
         </div>
         <div class="w3-grey w3-container">Memory <small>@(MemorySize)</small></div>
         <div class="w3-padding w3-border">
+            <div style="text-align: right">
+                <span>display: </span>
+                <button class="w3-button" @onclick=@(() => mode = MemoryDisplayMode.Hex)>0xFF</button>
+                <button class="w3-button" @onclick=@(() => mode = MemoryDisplayMode.Ascii)>Ascii</button>
+            </div>
             <PagedView TElement=int PageSize=64 Elements="@Enumerable.Range(0, (int)MemorySize.TotalBytes)">
                 @if (Simulator != null && Simulator.Memory != null) {
                     var value = @Simulator.Memory.LoadByte((uint)context);
-                    <span class="w3-button">@value.ToString("X2") (@((char)value))</span>
+                    switch(mode) {
+                        case MemoryDisplayMode.Hex:
+                            <span class="w3-button">@value.ToString("X2")</span>
+                            break;
+                        case MemoryDisplayMode.Ascii:
+                            <span class="w3-button">@((char)value)</span>
+                            break;
+                    }
+                    
                 }
             </PagedView>
         </div>
@@ -108,6 +121,12 @@
 </div>
 
 @code {
+
+    enum MemoryDisplayMode {
+        Hex,
+        Ascii
+    }
+    private MemoryDisplayMode mode;
 
     private static readonly Qkmaxware.Compiling.Mips.DataSize MemorySize = Qkmaxware.Compiling.Mips.DataSize.KibiBytes(1);
 

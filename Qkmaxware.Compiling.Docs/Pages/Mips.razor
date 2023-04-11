@@ -1,4 +1,4 @@
-@page "/mips"
+@page "/mips/simulator"
 
 <div class="w3-row">
     <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Program ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = currentTab > Tab.Program ? Tab.Program : currentTab)>
@@ -25,7 +25,7 @@
 </div>
 <div class='@(currentTab == Tab.Assemble ? "w3-show" : "w3-hide")'>
     <MipsInspector @ref="binary_inspector"></MipsInspector>
-    <div style="text-align: right;">
+    <div class="w3-margin-top" style="text-align: right;">
         <button class="w3-button w3-green" @onclick="run">Run &rsaquo;</button>
     </div>
 </div>
@@ -48,7 +48,7 @@
         var code = code_editor.Code;
     
         try {
-            var bytecode = assembler.ParseAndAssemble(code);
+            var bytecode = (Qkmaxware.Compiling.Mips.Bytecode.InMemoryBytecodeProgram)assembler.ParseAndAssemble(code);
             binary_inspector.SetProgram(bytecode);
 
             currentTab = Tab.Assemble;

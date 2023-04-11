@@ -1,3 +1,9 @@
+@inject IJSRuntime js
+
+<div class="w3-bar w3-grey">
+    <button class="w3-button w3-bar-item" @onclick="download">&#x2B73; Download Binary</button>
+</div>
+
 <div class="w3-row">
     <div class="w3-twothird w3-border">
         <div class="w3-grey w3-container">Bytecode</div>
@@ -10,7 +16,22 @@
         }
     </div>
     <div class="w3-third w3-border">
-        <div class="w3-grey w3-container">Inspector</div>
+        <div class="w3-grey w3-container">File Inspector</div>
+        <div class="w3-padding">
+            <div>
+                <label>Instruction Count</label>
+                <div class="w3-margin-left">
+                    @program?.InstructionCount
+                </div>
+            </div>
+            <div>
+                <label>File Size</label><br>
+                <div class="w3-margin-left">
+                    @program?.Size
+                </div>
+            </div>
+        </div>
+        <div class="w3-grey w3-container">Instruction Inspector</div>
         <div class="w3-padding">
         @if (instruction != null) {
             var encoded = instruction.Encode32();
@@ -56,6 +77,8 @@
                     </tbody>
                 </table>
             </div>
+        } else {
+            <p>Select an instruction on the left to view information about it.</p>
         }
         </div>
     </div>
@@ -63,11 +86,29 @@
 
 
 @code {
-    private Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program;
+    private Qkmaxware.Compiling.Mips.Bytecode.InMemoryBytecodeProgram program;
     private Qkmaxware.Compiling.Mips.Bytecode.IBytecodeInstruction instruction;
     public Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram Program => program;
-    public void SetProgram(Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program) {
+    public void SetProgram(Qkmaxware.Compiling.Mips.Bytecode.InMemoryBytecodeProgram program) {
         this.program = program;
         StateHasChanged();
+    }
+
+    private async Task download() {
+        using var stream = new MemoryStream();
+        using var writer = new BinaryWriter(stream);
+
+        if (this.program == null)
+            return;
+        this.program.Dump(writer);
+        writer.Flush();
+        stream.Position = 0;
+
+        var fileStream = stream;
+        var fileName = "assembly-" + (DateTime.Now.ToShortDateString()) + ".mips.bin";
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await js.InvokeVoidAsync("BlazorDownloadFileFromStream", fileName, streamRef);
     }
 }
