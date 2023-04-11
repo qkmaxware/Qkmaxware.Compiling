@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Load low bits (MIPS llo)
 /// </summary>
 public class Llo : LoadIInstruction {
-    public static readonly uint BinaryCode = 011000U;
+    public static readonly uint BinaryCode = 0b011000U;
     public override uint Opcode => BinaryCode;
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
@@ -14,5 +14,18 @@ public class Llo : LoadIInstruction {
         var prev = cpu.Registers[this.Target].ReadAsUInt32().ClearLowHalf();
         
         cpu.Registers[this.Target].WriteUInt32(prev | value);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (ImmediateEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var source, out var target, out var immediate)) {
+            decoded = new Llo {
+                Target = (RegisterIndex)target,
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

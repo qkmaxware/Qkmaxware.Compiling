@@ -5,8 +5,8 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// <summary>
 /// Unsigned multiplication of two registers (MIPS multu)
 /// </summary>
-public class MultUnsigned : DivMultInstruction {
-    public static readonly uint BinaryCode = 011001U;
+public class Multu : DivMultInstruction {
+    public static readonly uint BinaryCode = 0b011001U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -26,5 +26,18 @@ public class MultUnsigned : DivMultInstruction {
 
         cpu.Registers.LO.WriteUInt32((uint)(product >> 32));
         cpu.Registers.HI.WriteUInt32((uint)(product & 0xFFFFFFFF));
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (RegisterEncodedInstruction.TryDecodeBytecode(bytecode, out var opcode, out var source, out var target, out var dest, out var amount, BinaryCode)) {
+            decoded = new Div {
+                LhsOperand = (RegisterIndex)source,
+                RhsOperand = (RegisterIndex)target,
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

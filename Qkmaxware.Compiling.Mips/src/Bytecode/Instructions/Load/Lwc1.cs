@@ -13,4 +13,18 @@ public class Lwc1 : LoadStoreInstruction {
         var raw = memory.LoadWord(cpu.Registers[this.Source].ReadAsUInt32() + this.Immediate);
         fpu.Registers[this.Target].WriteUInt32(raw);
     }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (ImmediateEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var source, out var target, out var immediate)) {
+            decoded = new Lwc1 {
+                Target = (RegisterIndex)target,
+                Source = (RegisterIndex)source,
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
+    }
 }

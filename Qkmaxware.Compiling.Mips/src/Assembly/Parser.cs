@@ -167,7 +167,7 @@ public class Parser {
                     // Not Array
                     return new Data<int>(label, directive, integer.IntegerValue);
                 }
-            case "float":
+            case "single":
                 var real = require<FloatingPointConstantToken>(tokens, "floating point quantity");
                 if (maybe<ColonToken>(tokens)) {
                     // Is Array

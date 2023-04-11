@@ -51,11 +51,12 @@ public class StepableSimulator {
         if (IsProgramDone)
             return;
         var instr = program[(uint)Cpu.PC];
-        Cpu.PC++;
         
         OnBeforeInstruction(instr);
         Execute(instr);
         OnAfterInstruction(instr);
+
+        Cpu.PC++;
     }
 
     public bool TryStepNext() {

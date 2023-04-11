@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Bitwise XOR of two registers (MIPS xor)
 /// </summary>
 public class Xor : ArithLogInstruction {
-    public static readonly uint BinaryCode = 100110U;
+    public static readonly uint BinaryCode = 0b100110U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -23,5 +23,19 @@ public class Xor : ArithLogInstruction {
         var rhs = cpu.Registers[this.RhsOperand].ReadAsUInt32();
 
         cpu.Registers[this.Destination].WriteUInt32(lhs ^ rhs);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (RegisterEncodedInstruction.TryDecodeBytecode(bytecode, out var opcode, out var source, out var target, out var dest, out var amount, BinaryCode)) {
+            decoded = new Xor {
+                LhsOperand = (RegisterIndex)source,
+                RhsOperand = (RegisterIndex)target,
+                Destination = (RegisterIndex)dest,
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

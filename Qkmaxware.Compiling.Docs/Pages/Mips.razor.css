@@ -1,0 +1,4 @@
+.active {
+    border: 1px solid grey;
+    border-radius: 16px 16px 0 0;
+}

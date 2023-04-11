@@ -47,9 +47,9 @@ public class WordEncoder {
     public uint Decode(Range bits) {
         var mask = 0U;
         var (start, length) = bits.GetOffsetAndLength(32);
-        for (var i = 0; i <length; i++) {
-            mask |= 1;
+        for (var i = 0; i < length; i++) {
             mask <<= 1;
+            mask |= 1;
         }
 
         return (this.Encoded >> start) & mask;

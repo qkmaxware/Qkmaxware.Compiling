@@ -5,8 +5,8 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// <summary>
 /// Unsigned division of two registers (MIPS divu)
 /// </summary>
-public class DivUnsigned : DivMultInstruction {
-    public static readonly uint BinaryCode = 011011U;
+public class Divu : DivMultInstruction {
+    public static readonly uint BinaryCode = 0b011011U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -27,5 +27,18 @@ public class DivUnsigned : DivMultInstruction {
 
         cpu.Registers.LO.WriteUInt32(quotient);
         cpu.Registers.HI.WriteUInt32(remainder);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (RegisterEncodedInstruction.TryDecodeBytecode(bytecode, out var opcode, out var source, out var target, out var dest, out var amount, BinaryCode)) {
+            decoded = new Divu {
+                LhsOperand = (RegisterIndex)source,
+                RhsOperand = (RegisterIndex)target,
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

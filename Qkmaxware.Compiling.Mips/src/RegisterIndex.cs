@@ -29,6 +29,17 @@ public struct RegisterIndex {
         return (uint)ind.val;
     }
 
+    public override bool Equals(object? obj) {
+        if (obj == null || GetType() != obj.GetType()) {
+            return false;
+        }
+        return ((RegisterIndex)obj).val == this.val;
+    }
+
+    public override int GetHashCode() {
+        return this.val.GetHashCode();
+    }
+
     public static RegisterIndex NamedOrThrow(string s) {
         var r = Named(s);
         if (!r.HasValue)

@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Branch on not equals (MIPS bne)
 /// </summary>
 public class Bne : BranchInstruction {
-    public static readonly uint BinaryCode = 000101U;
+    public static readonly uint BinaryCode = 0b000101U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -28,6 +28,20 @@ public class Bne : BranchInstruction {
 
         if (lhs != rhs) {
             cpu.PC += this.AddressOffset;
+        }
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (ImmediateEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var source, out var target, out var immediate)) {
+            decoded = new Bne {
+                Source = (RegisterIndex)source,
+                Target = (RegisterIndex)target,
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
         }
     }
 }

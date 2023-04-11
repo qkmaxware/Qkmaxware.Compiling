@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Set on less than for signed numbers and an immediate value (MIPS slti)
 /// </summary>
 public class Slti : ArithLogIInstruction {
-    public static readonly uint BinaryCode = 001010U;
+    public static readonly uint BinaryCode = 0b001010U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -23,5 +23,19 @@ public class Slti : ArithLogIInstruction {
         var rhs = this.RhsOperand;
 
         cpu.Registers[this.Target].WriteInt32(lhs < rhs ? 1 : 0);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (ImmediateEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var source, out var target, out var immediate)) {
+            decoded = new Slti {
+                Target = (RegisterIndex)target,
+                LhsOperand = (RegisterIndex)source,
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

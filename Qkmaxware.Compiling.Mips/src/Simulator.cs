@@ -46,11 +46,11 @@ public class Simulator : ISimulator {
             if (cpu.PC < 0 || cpu.PC >= instrs.InstructionCount)
                 break;
             var instr = instrs[(uint)cpu.PC];
-            cpu.PC++;
             try {
                 OnBeforeInstruction(instr);
                 Execute(instr);
                 OnAfterInstruction(instr);
+                cpu.PC++;
             } catch (ExitException exit) {
                 return exit.ExitCode;
             }

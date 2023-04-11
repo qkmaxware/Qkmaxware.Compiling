@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Branch on less than or equal to 0 (MIPS blez)
 /// </summary>
 public class Blez : BranchZInstruction {
-    public static readonly uint BinaryCode = 000110U;
+    public static readonly uint BinaryCode = 0b000110U;
     public override uint Opcode => BinaryCode;
 
     public int AddressOffset {
@@ -19,6 +19,19 @@ public class Blez : BranchZInstruction {
 
         if (operand <= 0) {
             cpu.PC += this.AddressOffset;
+        }
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (ImmediateEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var source, out var target, out var immediate)) {
+            decoded = new Blez {
+                Source = (RegisterIndex)source,
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
         }
     }
 }

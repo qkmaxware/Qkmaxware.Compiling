@@ -23,11 +23,20 @@ public abstract class ImmediateEncodedInstruction : IBytecodeInstruction {
         return encoded;
     }
 
-    public static void Decode32(uint instruction, out uint opcode, out uint source, out uint target, out uint imm) {
-        opcode = (instruction >> 26) & 0b111111U;
-        source = (instruction >> 21) & 0b11111U;
-        target = (instruction >> 16) & 0b11111U;
-        imm    = (instruction & 0b11111111_11111111U);
+    protected static bool TryDecodeBytecode(uint bytecode, uint opcode, out uint source, out uint target, out uint immediate) {
+        var word = new WordEncoder(bytecode);
+        var opcode_check = word.Decode(26..32);
+        source = 0;
+        target = 0;
+        immediate = 0;
+        if (opcode_check != opcode) {
+            return false;
+        }
+
+        source = word.Decode(21..26);
+        target = word.Decode(16..21);
+        immediate = word.Decode(0..16);
+        return true;
     }
 }
 

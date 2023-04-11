@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Jump (MIPS j)
 /// </summary>
 public class J : JumpInstruction {
-    public static readonly uint BinaryCode = 000010U;
+    public static readonly uint BinaryCode = 0b000010U;
     public override uint Opcode => BinaryCode;
     
     public int AddressOffset {
@@ -16,5 +16,17 @@ public class J : JumpInstruction {
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         cpu.PC += this.AddressOffset;
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (JumpEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var immediate)) {
+            decoded = new J {
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

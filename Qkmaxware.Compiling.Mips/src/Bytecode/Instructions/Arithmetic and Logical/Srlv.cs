@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Shift right logical of a register by the given amount in another register (MIPS srav)
 /// </summary>
 public class Srlv : ShiftVInstruction {
-    public static readonly uint BinaryCode = 000111U;
+    public static readonly uint BinaryCode = 0b000110U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -23,5 +23,19 @@ public class Srlv : ShiftVInstruction {
         var rhs = cpu.Registers[this.RhsOperand].ReadAsUInt32();
 
         cpu.Registers[this.Destination].WriteUInt32(lhs >> (int)rhs);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (RegisterEncodedInstruction.TryDecodeBytecode(bytecode, out var opcode, out var source, out var target, out var dest, out var amount, BinaryCode)) {
+            decoded = new Srlv {
+                Destination = (RegisterIndex)dest,
+                Target = (RegisterIndex)target, 
+                Source = (RegisterIndex)source
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

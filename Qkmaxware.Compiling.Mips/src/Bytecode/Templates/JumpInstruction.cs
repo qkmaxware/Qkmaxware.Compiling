@@ -25,6 +25,18 @@ public abstract class JumpEncodedInstruction : IBytecodeInstruction {
         opcode = (instruction >> 26) & 0b111111U;
         imm    = (instruction & 0b00000011_11111111_11111111_11111111U);
     }
+
+    protected static bool TryDecodeBytecode(uint bytecode, uint opcode, out uint immediate) {
+        var word = new WordEncoder(bytecode);
+        var opcode_check = word.Decode(26..32);
+        immediate = 0;
+        if (opcode_check != opcode) {
+            return false;
+        }
+        
+        immediate = word.Decode(0..26);
+        return true;
+    }
 }
 
 /// <summary>

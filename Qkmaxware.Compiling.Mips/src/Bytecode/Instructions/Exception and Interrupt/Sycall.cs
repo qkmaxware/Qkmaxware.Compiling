@@ -5,11 +5,31 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// <summary>
 /// System call (MIPS syscall)
 /// </summary>
-public class Syscall : JumpRInstruction {
-    public static readonly uint BinaryCode = 001100U;
-    public override uint Opcode => BinaryCode;
-    
-    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
+public class Syscall : IBytecodeInstruction {
+    public static readonly uint BinaryCode = 0b000000U;
+    public uint Opcode => BinaryCode;
+
+    public uint Encode32() {
+        return new WordEncoder()
+            .Encode(0xC, 0..6)
+            .Encoded;
+    }
+
+    public IEnumerable<uint> GetOperands() {
+        yield break;
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (bytecode == 0xC) {
+            decoded = new Syscall();
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
+    }
+
+    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         // Behaviour changes depending on $v0
         var system_call = cpu.Registers.V0.Read();
         

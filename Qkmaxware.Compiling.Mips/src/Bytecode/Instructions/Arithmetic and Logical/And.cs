@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Bitwise AND of two registers (MIPS and)
 /// </summary>
 public class And : ArithLogInstruction {
-    public static readonly uint BinaryCode = 100100U;
+    public static readonly uint BinaryCode = 0b100100U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -23,5 +23,19 @@ public class And : ArithLogInstruction {
         var rhs = cpu.Registers[this.RhsOperand].ReadAsUInt32();
 
         cpu.Registers[this.Destination].WriteUInt32(lhs & rhs);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (RegisterEncodedInstruction.TryDecodeBytecode(bytecode, out var opcode, out var source, out var target, out var dest, out var amount, BinaryCode)) {
+            decoded = new And {
+                LhsOperand = (RegisterIndex)source,
+                RhsOperand = (RegisterIndex)target,
+                Destination = (RegisterIndex)dest,
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

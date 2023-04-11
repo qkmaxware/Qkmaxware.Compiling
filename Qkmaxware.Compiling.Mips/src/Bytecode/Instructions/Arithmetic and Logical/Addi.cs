@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Signed addition of a register and an immediate value (MIPS addi)
 /// </summary>
 public class Addi : ArithLogIInstruction {
-    public static readonly uint BinaryCode = 001000U;
+    public static readonly uint BinaryCode = 0b001000U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -23,5 +23,19 @@ public class Addi : ArithLogIInstruction {
         var rhs = this.RhsOperand;
 
         cpu.Registers[this.Target].WriteInt32(lhs + rhs);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (ImmediateEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var source, out var target, out var immediate)) {
+            decoded = new Addi {
+                Target = (RegisterIndex)target,
+                LhsOperand = (RegisterIndex)source,
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

@@ -12,25 +12,38 @@ public abstract class RegisterEncodedInstruction : IBytecodeInstruction {
 
     public abstract IEnumerable<uint> GetOperands();
 
-    protected uint Encode32(uint source, uint target, uint dest, uint amount, uint function) {
+    protected uint Encode32(uint opcode, uint source, uint target, uint dest, uint amount, uint function) {
         // Encoding
         // 000000ss sssttttt dddddaaa aaffffff
-        uint encoded = 0;
-        encoded |= (source  & 0b11111U) << 21;
-        encoded |= (target  & 0b11111U) << 16;
-        encoded |= (dest    & 0b11111U) << 11;
-        encoded |= (amount  & 0b11111U) << 6;
-        encoded |= function & 0b111111U;
-        return encoded;
+        return new WordEncoder()
+            .Encode(opcode, 26..32)
+            .Encode(source, 21..26)
+            .Encode(target, 16..21)
+            .Encode(dest, 11..16)
+            .Encode(amount, 6..11)
+            .Encode(function, 0..6)
+            .Encoded;
     }
 
-    public static void Decode32(uint instruction, out uint source, out uint target, out uint dest, out uint amount, out uint function) {
-        source = (instruction >> 21) & 0b11111U;
-        target = (instruction >> 16) & 0b11111U;
-        dest   = (instruction >> 11) & 0b11111U;
-        amount = (instruction >> 6)  & 0b11111U;
-        function=(instruction)       & 0b111111U;
+    protected static bool TryDecodeBytecode(uint bytecode, out uint opcode, out uint source, out uint target, out uint dest, out uint amount, uint function) {
+        var word = new WordEncoder(bytecode);
+        opcode = word.Decode(26..32);
+        uint function_check = word.Decode(0..6);
+        source = 0;
+        target = 0;
+        dest = 0;
+        amount = 0;
+        if (opcode != 0 || function_check != function) {
+            return false;
+        }
+
+        source = word.Decode(21..26);
+        target = word.Decode(16..21);
+        dest = word.Decode(11..16);
+        amount = word.Decode(6..11);
+        return true;
     }
+
 }
 
 /// <summary>
@@ -48,7 +61,7 @@ public abstract class ArithLogInstruction : RegisterEncodedInstruction {
     }
 
     public override uint Encode32() {
-        return Encode32((uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
+        return Encode32(0, (uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
     }
 }
 
@@ -65,7 +78,7 @@ public abstract class DivMultInstruction : RegisterEncodedInstruction {
     }
 
     public override uint Encode32() {
-        return Encode32((uint)Source, (uint)Target, 0, 0, this.Opcode);
+        return Encode32(0, (uint)Source, (uint)Target, 0, 0, this.Opcode);
     }
 }
 
@@ -84,7 +97,7 @@ public abstract class ShiftInstruction : RegisterEncodedInstruction {
     }
 
     public override uint Encode32() {
-        return Encode32(0, (uint)Target, (uint)Destination, this.Amount, this.Opcode);
+        return Encode32(0, 0, (uint)Target, (uint)Destination, this.Amount, this.Opcode);
     }
 }
 
@@ -103,7 +116,7 @@ public abstract class ShiftVInstruction : RegisterEncodedInstruction {
     }
 
     public override uint Encode32() {
-        return Encode32((uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
+        return Encode32(0, (uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
     }
 }
 
@@ -118,7 +131,7 @@ public abstract class JumpRInstruction : RegisterEncodedInstruction {
     }
 
     public override uint Encode32() {
-        return Encode32((uint)Source, 0, 0, 0, this.Opcode);
+        return Encode32(0, (uint)Source, 0, 0, 0, this.Opcode);
     }
 }
 
@@ -133,7 +146,7 @@ public abstract class MoveFromInstruction : RegisterEncodedInstruction {
     }
 
     public override uint Encode32() {
-        return Encode32(0, 0, (uint)Destination, 0, this.Opcode);
+        return Encode32(0, 0, 0, (uint)Destination, 0, this.Opcode);
     }
 }
 
@@ -148,6 +161,6 @@ public abstract class MoveToInstruction : RegisterEncodedInstruction {
     }
 
     public override uint Encode32() {
-        return Encode32((uint)Source, 0, 0, 0, this.Opcode);
+        return Encode32(0, (uint)Source, 0, 0, 0, this.Opcode);
     }
 }

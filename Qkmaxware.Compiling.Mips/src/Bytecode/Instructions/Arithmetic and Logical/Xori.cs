@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Bitwise XOR of a register and an immediate value (MIPS xori)
 /// </summary>
 public class Xori : ArithLogIInstruction {
-    public static readonly uint BinaryCode = 001110U;
+    public static readonly uint BinaryCode = 0b001110U;
     public override uint Opcode => BinaryCode;
 
     public RegisterIndex LhsOperand {
@@ -23,5 +23,19 @@ public class Xori : ArithLogIInstruction {
         var rhs = this.RhsOperand;
 
         cpu.Registers[this.Target].WriteUInt32(lhs ^ rhs);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (ImmediateEncodedInstruction.TryDecodeBytecode(bytecode, BinaryCode, out var source, out var target, out var immediate)) {
+            decoded = new Xori {
+                Target = (RegisterIndex)target,
+                LhsOperand = (RegisterIndex)source,
+                Immediate = immediate
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

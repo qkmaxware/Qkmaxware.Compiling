@@ -6,11 +6,23 @@ namespace Qkmaxware.Compiling.Mips.Bytecode;
 /// Move from lo register (MIPS mflo)
 /// </summary>
 public class Mflo : MoveFromInstruction {
-    public static readonly uint BinaryCode = 010010U;
+    public static readonly uint BinaryCode = 0b010010U;
     public override uint Opcode => BinaryCode;
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var toMove = cpu.Registers.LO.ReadAsUInt32();
         cpu.Registers[this.Destination].WriteUInt32(toMove);
+    }
+
+    public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
+        if (RegisterEncodedInstruction.TryDecodeBytecode(bytecode, out var opcode, out var source, out var target, out var dest, out var amount, BinaryCode)) {
+            decoded = new Mflo {
+                Destination = (RegisterIndex)dest
+            };
+            return true;
+        } else {
+            decoded = null;
+            return false;
+        }
     }
 }

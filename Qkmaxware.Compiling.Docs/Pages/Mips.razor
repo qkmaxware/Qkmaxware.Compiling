@@ -1,13 +1,13 @@
 @page "/mips"
 
 <div class="w3-row">
-    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Program ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = Tab.Program)>
+    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Program ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = currentTab > Tab.Program ? Tab.Program : currentTab)>
         1. Program
     </div>
-    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Assemble ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = Tab.Assemble)>
+    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Assemble ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = currentTab > Tab.Assemble ? Tab.Assemble : currentTab)>
         2. Assemble
     </div>
-    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Execute ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = Tab.Execute)>
+    <div class='w3-buttton w3-third w3-large w3-container @(currentTab == Tab.Execute ? activeTabClass : string.Empty)' @onclick=@(() => currentTab = currentTab > Tab.Execute ? Tab.Execute : currentTab)>
         3. Execute
     </div>
 </div>
@@ -37,7 +37,7 @@
     enum Tab {
         Program, Assemble, Execute
     }
-    private string activeTabClass = "w3-red";
+    private string activeTabClass = "active";
     private Tab currentTab;
 
     private MipsEditor code_editor;

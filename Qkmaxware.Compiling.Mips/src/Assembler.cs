@@ -94,7 +94,7 @@ public class Assembler {
                     }
                 } else if (data is Data<float> real_data) {
                     switch (real_data.StorageClass.Value) {
-                        case "float":
+                        case "single":
                             foreach (var instr in emitter.EncodeWord(data.VariableName.Value, real_data.Values.Select(x => BitConverter.ToUInt32(BitConverter.GetBytes(x))))) {
                                 output.Add(instr);
                                 instructions.Increment();
@@ -379,28 +379,28 @@ internal class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<By
     }
 
     public IEnumerable<IBytecodeInstruction> Accept(Assembly.MultiplySignedWithOverflow instr) {
-        yield return new Bytecode.MultSigned {
+        yield return new Bytecode.Mult {
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperandRegister
         };
     }
 
     public IEnumerable<IBytecodeInstruction> Accept(Assembly.MultiplyUnsignedWithOverflow instr) {
-        yield return new Bytecode.MultUnsigned {
+        yield return new Bytecode.Multu {
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperandRegister
         };
     }
 
     public IEnumerable<IBytecodeInstruction> Accept(Assembly.DivideSignedWithRemainder instr) {
-        yield return new Bytecode.DivSigned {
+        yield return new Bytecode.Div {
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperandRegister
         };
     }
 
     public IEnumerable<IBytecodeInstruction> Accept(Assembly.DivideUnsignedWithRemainder instr) {
-        yield return new Bytecode.DivUnsigned {
+        yield return new Bytecode.Divu {
             LhsOperand = instr.LhsOperandRegister,
             RhsOperand = instr.RhsOperandRegister
         };
@@ -822,7 +822,7 @@ internal class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<By
     public IEnumerable<IBytecodeInstruction> Accept(Assembly.AbsoluteValueSingle instr) {
         yield return new Bytecode.AbsS {
             Destination = instr.ResultRegister,
-            Operand = instr.SourceRegister,
+            Source = instr.SourceRegister,
         };
     }
 }
