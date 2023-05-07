@@ -5,17 +5,17 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// System call (MIPS syscall)
 /// </summary>
-public class Syscall : IBytecodeInstruction {
+public class Syscall : BaseBytecodeInstruction {
     public static readonly uint BinaryCode = 0b000000U;
     public uint Opcode => BinaryCode;
 
-    public uint Encode32() {
+    public override uint Encode32() {
         return new WordEncoder()
             .Encode(0xC, 0..6)
             .Encoded;
     }
 
-    public IEnumerable<uint> GetOperands() {
+    public override IEnumerable<uint> GetOperands() {
         yield break;
     }
 
@@ -29,7 +29,7 @@ public class Syscall : IBytecodeInstruction {
         }
     }
 
-    public void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
+    public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         // Behaviour changes depending on $v0
         var system_call = cpu.Registers.V0.Read();
         
@@ -104,4 +104,10 @@ public class Syscall : IBytecodeInstruction {
                 throw new NotImplementedException($"System call {system_call} is not implemented.");
         }
     }
+    
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()}";
 }

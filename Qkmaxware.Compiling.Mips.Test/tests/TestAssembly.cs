@@ -20,6 +20,11 @@ public class TestAssembly {
       lw   $s5, 0($s5)      # load array size";
 
     [TestMethod]
+    public void TestSupportedOperations() {
+        Assert.AreEqual(Parser.CountAllAssemblyInstructions(), Parser.CountSupportedAssemblyInstructions(), "Some assembly instructions are not able to be parsed.");
+    }
+
+    [TestMethod]
     public void TestLexing() {
         Lexer lexer = new Lexer();
         var tokens = lexer.Tokenize(asm).ToArray();

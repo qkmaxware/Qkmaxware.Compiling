@@ -38,4 +38,19 @@ public class Addi : ArithLogIInstruction {
             return false;
         }
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.ScalarConstantToken rhs;
+        if (!IsAssemblyFormatDestLhsRhs<Addi, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out lhs, out rhs)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Addi {
+            Target = dest.Value,
+            LhsOperand = lhs.Value,
+            RhsOperand = rhs.IntegerValue,
+        };
+        return true;
+    }
 }

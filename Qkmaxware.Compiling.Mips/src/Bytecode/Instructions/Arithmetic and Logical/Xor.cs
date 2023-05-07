@@ -38,4 +38,19 @@ public class Xor : ArithLogInstruction {
             return false;
         }
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.RegisterToken rhs;
+        if (!IsAssemblyFormatDestLhsRhs<Xor, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out lhs, out rhs)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Xor {
+            Destination = dest.Value,
+            LhsOperand = lhs.Value,
+            RhsOperand = rhs.Value,
+        };
+        return true;
+    }
 }

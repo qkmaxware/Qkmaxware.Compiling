@@ -5,12 +5,8 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Base class for instructions with Jump type encoding
 /// </summary>
-public abstract class JumpEncodedInstruction : IBytecodeInstruction {
+public abstract class JumpEncodedInstruction : BaseBytecodeInstruction {
     public abstract uint Opcode {get;}
-    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io);
-    public abstract uint Encode32();
-
-    public abstract IEnumerable<uint> GetOperands();
 
     protected uint Encode32(uint opcode, uint imm) {
         // Encoding
@@ -52,6 +48,12 @@ public abstract class JumpInstruction : JumpEncodedInstruction {
     public override uint Encode32() {
         return Encode32(this.Opcode, this.Immediate);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Immediate}";
 }
 
 /// <summary>
@@ -67,4 +69,10 @@ public abstract class TrapInstruction : JumpEncodedInstruction {
     public override uint Encode32() {
         return Encode32(this.Opcode, this.Immediate);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Immediate}";
 }

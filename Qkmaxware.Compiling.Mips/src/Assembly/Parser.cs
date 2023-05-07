@@ -5,6 +5,8 @@ using Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
+public delegate bool TryDecodeAssembly(IdentifierToken opcode, List<Token> args, out IAssemblyInstruction? decoded);
+
 public class Parser {
     public AssemblyProgram Parse(IEnumerable<Token> tokens) {
         var stream = new BufferedTokenStream(tokens);
@@ -211,6 +213,99 @@ public class Parser {
         return section;
     }
 
+    /// <summary>
+    /// Count of all supported instructions by this parser
+    /// </summary>
+    /// <returns>count</returns>
+    public static int CountSupportedAssemblyInstructions() => decoders.Count;
+    /// <summary>
+    /// Count of all instructions in this assembly
+    /// </summary>
+    /// <returns>count</returns>
+    public static int CountAllAssemblyInstructions() =>
+        typeof(Parser)
+        .Assembly
+        .GetTypes()
+        .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(IAssemblyInstruction)))
+        .Count();
+
+    private static List<TryDecodeAssembly> decoders = new List<TryDecodeAssembly> {
+        #region Arithmetic & Logical
+        //Bytecode.AbsS.TryDecodeAssembly,
+        Bytecode.Add.TryDecodeAssembly,
+        Bytecode.AddS.TryDecodeAssembly,
+        Bytecode.Addi.TryDecodeAssembly,
+        Bytecode.Addiu.TryDecodeAssembly,
+        Bytecode.Addu.TryDecodeAssembly,
+        Bytecode.And.TryDecodeAssembly,
+        //Bytecode.Andi.TryDecodeAssembly,
+        //Bytecode.Div.TryDecodeAssembly,
+        //Bytecode.DivS.TryDecodeAssembly,
+        //Bytecode.Divu.TryDecodeAssembly,
+        //Bytecode.MulS.TryDecodeAssembly,
+        //Bytecode.Mult.TryDecodeAssembly,
+        //Bytecode.Multu.TryDecodeAssembly,
+        Bytecode.Nor.TryDecodeAssembly,
+        Bytecode.Or.TryDecodeAssembly,
+        //Bytecode.Ori.TryDecodeAssembly,
+        //Bytecode.Sllv.TryDecodeAssembly,
+        //Bytecode.Srlv.TryDecodeAssembly,
+        Bytecode.Sub.TryDecodeAssembly,
+        //Bytecode.SubS.TryDecodeAssembly,
+        //Bytecode.Subu.TryDecodeAssembly,
+        Bytecode.Xor.TryDecodeAssembly,
+        //Bytecode.Xori.TryDecodeAssembly,
+        #endregion
+        #region Branch
+        //Bytecode.Beq.TryDecodeAssembly,
+        //Bytecode.Bgtz.TryDecodeAssembly,
+        //Bytecode.Blez.TryDecodeAssembly,
+        //Bytecode.Bne.TryDecodeAssembly,
+        #endregion
+        #region Comparison
+        //Bytecode.Slt.TryDecodeAssembly,
+        //Bytecode.Slti.TryDecodeAssembly,
+        //Bytecode.Sltiu.TryDecodeAssembly,
+        //Bytecode.Sltu.TryDecodeAssembly,
+        #endregion
+        #region Constant Manipulator
+        //Bytecode.Lhi.TryDecodeAssembly,
+        //Bytecode.Llo.TryDecodeAssembly,
+        #endregion
+        #region Data Movement
+        //Bytecode.Mfc1.TryDecodeAssembly,
+        //Bytecode.Mfhi.TryDecodeAssembly,
+        //Bytecode.Mflo.TryDecodeAssembly,
+        //Bytecode.Mtc1.TryDecodeAssembly,
+        //Bytecode.Mthi.TryDecodeAssembly,
+        //Bytecode.Mtlo.TryDecodeAssembly,
+        #endregion
+        #region Exception and Interrupts
+        //Bytecode.Syscall.TryDecodeAssembly,
+        #endregion
+        #region Jump
+        //Bytecode.J.TryDecodeAssembly,
+        //Bytecode.Jal.TryDecodeAssembly,
+        //Bytecode.Jalr.TryDecodeAssembly,
+        //Bytecode.Jr.TryDecodeAssembly,
+        #endregion
+        #region Load
+        //Bytecode.Lb.TryDecodeAssembly,
+        //Bytecode.Lbu.TryDecodeAssembly,
+        //Bytecode.Lh.TryDecodeAssembly,
+        //Bytecode.Lhu.TryDecodeAssembly,
+        //Bytecode.Lw.TryDecodeAssembly,
+        //Bytecode.Lwc1.TryDecodeAssembly,
+        #endregion
+        #region  Store
+        //Bytecode.Sb.TryDecodeAssembly,
+        //Bytecode.Sh.TryDecodeAssembly,
+        //Bytecode.Sw.TryDecodeAssembly,
+        //Bytecode.Swc1.TryDecodeAssembly,
+        #endregion
+    };
+
+
     private IEnumerable<IAssemblyInstruction> parseInstruction(BufferedTokenStream tokens) {
         // Label (can be on its own line)
         if (tokens.IsLookahead<LabelToken>(0)) {
@@ -220,187 +315,38 @@ public class Parser {
 
         // Operation
         IdentifierToken opcode;
+        List<Token> args = new List<Token>();
         if (maybe<IdentifierToken>(tokens, out opcode)) {
-
+            // Got the opcode
+    
+            // Get the operands
+            args.Clear();
+            while (tokens.HasNext() && !tokens.IsLookahead<StatementBreakToken>(0)) {
+                var tok = tokens.Advance();
+                if (tok != null)
+                    args.Add(tok);
+            }        
+            
             // Decode
-            switch (opcode.Value) {
-                // Arithmetic 
-                case "add":
-                    yield return parseAdd(tokens);
-                    break;
-                case "sub":
-                    yield return parseSub(tokens);
-                    break;
-                case "addi":
-                    yield return parseAddi(tokens);
-                    break;
-                case "subi":
-                    yield return parseSubi(tokens);
-                    break;
-                case "addu":
-                    yield return parseAddu(tokens);
-                    break;
-                case "subu":
-                    yield return parseSubu(tokens);
-                    break;
-                case "addiu":
-                    yield return parseAddiu(tokens);
-                    break;
-                case "mult":
-                    yield return parseMult(tokens);
-                    break;
-                case "multu":
-                    yield return parseMultu(tokens);
-                    break;
-                case "div":
-                    yield return parseDiv(tokens);
-                    break;
-                case "divu":
-                    yield return parseDivu(tokens);
-                    break;
-
-                // Logical
-                case "and":
-                    yield return parseAnd(tokens);
-                    break;
-                case "or":
-                    yield return parseOr(tokens);
-                    break;
-                case "nor":
-                    yield return parseNor(tokens);
-                    break;
-                case "xor":
-                    yield return parseXor(tokens);
-                    break;
-                case "andi":
-                    yield return parseAndi(tokens);
-                    break;
-                case "ori":
-                    yield return parseOri(tokens);
-                    break;
-                case "xori":
-                    yield return parseXori(tokens);
-                    break;
-                case "sllv":
-                    yield return parseSllv(tokens);
-                    break;
-                case "srlv":
-                    yield return parseSrlv(tokens);
-                    break;
-
-                // Data Transfer
-                case "lw":
-                    yield return parseLw(tokens);
-                    break;
-                case "sw":
-                    yield return parseSw(tokens);
-                    break;
-                case "lui":
-                    yield return parseLui(tokens);
-                    break;
-                case "la":
-                    yield return parseLa(tokens);
-                    break;
-                case "li":
-                    yield return parseLi(tokens);
-                    break;
-                case "mfhi":
-                    yield return parseMfhi(tokens);
-                    break;
-                case "mflo":
-                    yield return parseMflo(tokens);
-                    break;
-                case "move":
-                    yield return parseMove(tokens);
-                    break;
-
-                // Conditional Branch
-                case "beq":
-                    yield return parseBeq(tokens);
-                    break;
-                case "bgtz":
-                    yield return parseBgtz(tokens);
-                    break;
-                case "blez":
-                    yield return parseBlez(tokens);
-                    break;
-                case "bne":
-                    yield return parseBne(tokens);
-                    break;
-                case "bgt":
-                    yield return parseBgt(tokens);
-                    break;
-                case "bge":
-                    yield return parseBge(tokens);
-                    break;
-                case "blt":
-                    yield return parseBlt(tokens);
-                    break;
-                case "ble":
-                    yield return parseBle(tokens);
-                    break;
-
-                // Comparison
-                case "slt":
-                    yield return parseSlt(tokens);
-                    break;
-                case "slti":
-                    yield return parseSlti(tokens);
-                    break;
-
-                // Unconditional Jump
-                case "j":
-                    yield return parseJ(tokens);
-                    break;
-                case "jr":
-                    yield return parseJr(tokens);
-                    break;
-                case "jal":
-                    yield return parseJal(tokens);
-                    break;
-
-                // System Calls
-                case "syscall":
-                    // System call behavior changes depending on the value in specific registers, not encoded onto operation
-                    yield return new Syscall();
-                    break;
-
-                // FPU specials
-                case "lwc1":
-                    yield return parselwc1(tokens);
-                    break;
-                case "swc1":
-                    yield return parseswc1(tokens);
-                    break;
-                case "mtc1":
-                    yield return parsemtc1(tokens);
-                    break;
-                case "mfc1":
-                    yield return parsemfc1(tokens);
-                    break;
-                case "abs.s":
-                    yield return parseabsS(tokens);
-                    break;
-                case "add.s":
-                    yield return parseaddS(tokens);
-                    break;
-                case "sub.s":
-                    yield return parsesubS(tokens);
-                    break;
-                case "mul.s":
-                    yield return parsemulS(tokens);
-                    break;
-                case "div.s":
-                    yield return parsedivS(tokens);
-                    break;
-
-                // Else
-                default:
-                    throw new AssemblyException(opcode.Position, $"Unknown operation '{opcode.Value}'."); 
+            IAssemblyInstruction? instr = null;
+            foreach (var decoder in decoders) {
+                if (decoder(opcode, args, out instr)) {
+                    if (instr != null) {
+                        break;
+                    }
+                }
             }
+            if (instr == null) {
+                // Couldn't find a decoder that worked
+                throw new AssemblyException(opcode.Position, $"Unknown operation '{opcode.Value}'."); 
+            } 
 
+            // We decoded an instruction successfully
+            yield return instr;
+            
+            // Close
+            eol(tokens);
         }
-        eol(tokens);
     }
 
     private static T parseNoResultOp<Lhs,Rhs, T>(BufferedTokenStream tokens, Func<Lhs, Rhs, T> convert) where Lhs:Token where Rhs:Token where T:IAssemblyInstruction {

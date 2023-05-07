@@ -5,12 +5,8 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Base class for instructions with Immediate type encoding
 /// </summary>
-public abstract class ImmediateEncodedInstruction : IBytecodeInstruction {
+public abstract class ImmediateEncodedInstruction : BaseBytecodeInstruction {
     public abstract uint Opcode {get;}
-    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io);
-    public abstract uint Encode32();
-
-    public abstract IEnumerable<uint> GetOperands();
 
     protected uint Encode32(uint opcode, uint source, uint target, uint imm) {
         // Encoding
@@ -57,6 +53,11 @@ public abstract class ArithLogIInstruction : ImmediateEncodedInstruction {
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, (uint)this.Target, this.Immediate);
     }
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Target}, {this.Source}, {this.Immediate}";
 }
 
 /// <summary>
@@ -74,6 +75,12 @@ public abstract class LoadIInstruction : ImmediateEncodedInstruction {
     public override uint Encode32() {
         return Encode32(this.Opcode, 0, (uint)this.Target, this.Immediate);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Target}, {this.Immediate}";
 }
 
 /// <summary>
@@ -93,6 +100,12 @@ public abstract class BranchInstruction : ImmediateEncodedInstruction {
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, (uint)this.Target, this.Immediate);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Source}, {this.Target}, {this.Immediate}";
 }
 
 /// <summary>
@@ -110,6 +123,12 @@ public abstract class BranchZInstruction : ImmediateEncodedInstruction {
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, 0, this.Immediate);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Source}, {this.Immediate}";
 }
 
 /// <summary>
@@ -129,4 +148,10 @@ public abstract class LoadStoreInstruction : ImmediateEncodedInstruction {
     public override uint Encode32() {
         return Encode32(this.Opcode, (uint)this.Source, (uint)this.Target, this.Immediate);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Target}, {this.Immediate}({this.Source})";
 }

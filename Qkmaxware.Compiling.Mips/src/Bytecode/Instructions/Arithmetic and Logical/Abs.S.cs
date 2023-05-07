@@ -60,4 +60,10 @@ public class AbsS : FloatingPointEncodedInstruction {
         };
         return true;
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}, {this.Source}";
 }

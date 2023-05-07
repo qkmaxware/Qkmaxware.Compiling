@@ -56,4 +56,10 @@ public class Mfc1 : FloatingPointEncodedInstruction {
         };
         return true;
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.CpuRegister}, {this.FpuRegister}";
 }

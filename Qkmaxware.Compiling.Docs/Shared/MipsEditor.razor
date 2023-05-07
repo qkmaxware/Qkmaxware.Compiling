@@ -22,9 +22,9 @@
                 foreach (var instr in all_assembly_instructions) {
                     if (instr != null) {
                     <span class="w3-third w3-padding">
-                        <b>@instr.InstrName()</b>@if(instr is Qkmaxware.Compiling.Targets.Mips.Assembly.IPseudoInstruction){ <small class="w3-margin-left">pseudo</small> }<br>
-                        <i>@instr.InstrFormat()</i><br>
-                        @instr.InstrDescription()<br>
+                        <b>@instr.InstructionName()</b>@if(instr is Qkmaxware.Compiling.Targets.Mips.Assembly.IPseudoInstruction){ <small class="w3-margin-left">pseudo</small> }<br>
+                        <i>@instr.AssemblyFormat()</i><br>
+                        @instr.InstructionDescription()<br>
                     </span>
                     }
                 }

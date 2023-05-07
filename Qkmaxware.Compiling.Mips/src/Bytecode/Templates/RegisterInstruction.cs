@@ -1,3 +1,4 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
 namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
@@ -5,12 +6,8 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Base class for instructions with Register type encoding
 /// </summary>
-public abstract class RegisterEncodedInstruction : IBytecodeInstruction {
+public abstract class RegisterEncodedInstruction : BaseBytecodeInstruction {
     public abstract uint Opcode {get;}
-    public abstract void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io);
-    public abstract uint Encode32();
-
-    public abstract IEnumerable<uint> GetOperands();
 
     protected uint Encode32(uint opcode, uint source, uint target, uint dest, uint amount, uint function) {
         // Encoding
@@ -63,6 +60,12 @@ public abstract class ArithLogInstruction : RegisterEncodedInstruction {
     public override uint Encode32() {
         return Encode32(0, (uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}, {this.Source}, {this.Target}";
 }
 
 /// <summary>
@@ -80,6 +83,12 @@ public abstract class DivMultInstruction : RegisterEncodedInstruction {
     public override uint Encode32() {
         return Encode32(0, (uint)Source, (uint)Target, 0, 0, this.Opcode);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Source}, {this.Target}";
 }
 
 /// <summary>
@@ -99,6 +108,12 @@ public abstract class ShiftInstruction : RegisterEncodedInstruction {
     public override uint Encode32() {
         return Encode32(0, 0, (uint)Target, (uint)Destination, this.Amount, this.Opcode);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}, {this.Target}, {this.Amount}";
 }
 
 /// <summary>
@@ -118,6 +133,12 @@ public abstract class ShiftVInstruction : RegisterEncodedInstruction {
     public override uint Encode32() {
         return Encode32(0, (uint)Source, (uint)Target, (uint)Destination, 0, this.Opcode);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}, {this.Target}, {this.Source}";
 }
 
 /// <summary>
@@ -133,6 +154,12 @@ public abstract class JumpRInstruction : RegisterEncodedInstruction {
     public override uint Encode32() {
         return Encode32(0, (uint)Source, 0, 0, 0, this.Opcode);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Source}";
 }
 
 /// <summary>
@@ -148,6 +175,12 @@ public abstract class MoveFromInstruction : RegisterEncodedInstruction {
     public override uint Encode32() {
         return Encode32(0, 0, 0, (uint)Destination, 0, this.Opcode);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}";
 }
 
 /// <summary>
@@ -163,4 +196,10 @@ public abstract class MoveToInstruction : RegisterEncodedInstruction {
     public override uint Encode32() {
         return Encode32(0, (uint)Source, 0, 0, 0, this.Opcode);
     }
+
+    /// <summary>
+    /// Print this instruction as MIPS assembly code
+    /// </summary>
+    /// <returns>assembly string</returns>
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Source}";
 }

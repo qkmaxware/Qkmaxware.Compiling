@@ -12,6 +12,22 @@ public class AssemblyWriter {
         this.writer = writer;
     }
 
+    /// <summary>
+    /// Emit a sequence of assembly instructions to the text writer
+    /// </summary>
+    /// <param name="instructions">instructions to emit</param>
+    public void Emit(IEnumerable<IAssemblyInstruction> instructions) {
+        writer.WriteLine(".text");
+        foreach (var code in instructions) {
+            writer.Write(TabCharacter);
+            writer.WriteLine(code.ToAssemblyString());
+        }
+    }
+
+    /// <summary>
+    /// Emit a parsed assembly program AST to the text writer
+    /// </summary>
+    /// <param name="program">MIPS assembly program AST</param>
     public void Emit(AssemblyProgram program) {
         foreach (var section in program.GlobalSections) {
             writer.WriteLine(section);
