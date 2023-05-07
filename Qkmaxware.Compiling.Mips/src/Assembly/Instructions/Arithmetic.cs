@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 public class AddSigned : ThreeAddressInstruction {
     public override string InstrName() => "add";

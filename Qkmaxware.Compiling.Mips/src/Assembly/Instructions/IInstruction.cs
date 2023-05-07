@@ -1,6 +1,6 @@
 using System;
 
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 /// <summary>
 /// Base interface for all MIPS instructions
@@ -12,11 +12,17 @@ public interface IAssemblyInstruction {
 
     public void Visit(IInstructionVisitor visitor);
     public T Visit<T>(IInstructionVisitor<T> visitor);
+
     /// <summary>
-    /// Pretty-print the instruction
+    /// Get a string representation of this instruction as MIPS assembly
     /// </summary>
-    /// <returns>string</returns>
-    public string? ToString();
+    /// <returns>MIPS assembly string</returns>
+    //public string? ToAssemblyString();
+    /// <summary>
+    /// Get a representation of this instruction (or pseudo-instruction) as a series of byte-code encoded instructions
+    /// </summary>
+    /// <returns>series of bytecode instructions</returns>
+    //public IEnumerable<uint> ToBytecodeRepresentation();
 }
 
 /// <summary>

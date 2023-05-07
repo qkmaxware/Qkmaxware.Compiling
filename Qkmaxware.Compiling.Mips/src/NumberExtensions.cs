@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips;
 
 public static class NumberExtensions {
     public static uint SignExtend(this uint pattern, int sign_bit) {

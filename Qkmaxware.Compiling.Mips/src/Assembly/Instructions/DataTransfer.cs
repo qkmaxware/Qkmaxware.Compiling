@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 // https://www.dsi.unive.it/~gasparetto/materials/MIPS_Instruction_Set.pdf
 

@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 public class WordEncoder {
     public uint Encoded {get; private set;}

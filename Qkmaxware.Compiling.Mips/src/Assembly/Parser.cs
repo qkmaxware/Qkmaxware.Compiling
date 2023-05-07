@@ -1,9 +1,9 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using Qkmaxware.Compiling.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly;
 
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 public class Parser {
     public AssemblyProgram Parse(IEnumerable<Token> tokens) {

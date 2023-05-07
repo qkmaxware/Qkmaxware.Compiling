@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips;
 
 /// <summary>
 /// Interface that all MIPS simulators must implement

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Qkmaxware.Compiling.Mips.Assembly;
-using Qkmaxware.Compiling.Mips.Bytecode;
+using Qkmaxware.Compiling.Targets.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips;
 
 class Counter {
     public uint Count {get; private set;}
@@ -61,8 +61,8 @@ public class Assembler {
         var instructions = new Counter();
         var label_address = new Dictionary<string, uint>();
         var emitter = new Assembly2BytecodeTransformer(instructions, label_address);
-        var assembler_reserved = RegisterIndex.NamedOrThrow("at");
-        var memory_start = RegisterIndex.NamedOrThrow("gp");
+        var assembler_reserved = RegisterIndex.At;
+        var memory_start = RegisterIndex.GP;
         
         // Handle creating the data in the data section first
         foreach (var section in input.DataSections) {
@@ -172,8 +172,8 @@ internal class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<By
     private Dictionary<string, uint> label_address = new Dictionary<string, uint>();
 
     private Counter count;
-    private RegisterIndex AssemblerReserved = RegisterIndex.NamedOrThrow("at");
-    private RegisterIndex Zero = RegisterIndex.NamedOrThrow("zero");
+    private RegisterIndex AssemblerReserved = RegisterIndex.At;
+    private RegisterIndex Zero = RegisterIndex.Zero;
 
     public bool IsMissingLabelAddress => awaiting_label_computation.Count > 0;
     public IEnumerable<string> UncomputedLabels => awaiting_label_computation.Keys;

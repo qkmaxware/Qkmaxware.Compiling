@@ -44,11 +44,11 @@
     private string assemblerException;
 
     private void assemble() {
-        var assembler = new Qkmaxware.Compiling.Mips.Assembler();
+        var assembler = new Qkmaxware.Compiling.Targets.Mips.Assembler();
         var code = code_editor.Code;
     
         try {
-            var bytecode = (Qkmaxware.Compiling.Mips.Bytecode.InMemoryBytecodeProgram)assembler.ParseAndAssemble(code);
+            var bytecode = (Qkmaxware.Compiling.Targets.Mips.Bytecode.InMemoryBytecodeProgram)assembler.ParseAndAssemble(code);
             binary_inspector.SetProgram(bytecode);
 
             currentTab = Tab.Assemble;

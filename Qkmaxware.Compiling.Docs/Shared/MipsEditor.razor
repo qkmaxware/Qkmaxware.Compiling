@@ -22,7 +22,7 @@
                 foreach (var instr in all_assembly_instructions) {
                     if (instr != null) {
                     <span class="w3-third w3-padding">
-                        <b>@instr.InstrName()</b>@if(instr is Qkmaxware.Compiling.Mips.Assembly.IPseudoInstruction){ <small class="w3-margin-left">pseudo</small> }<br>
+                        <b>@instr.InstrName()</b>@if(instr is Qkmaxware.Compiling.Targets.Mips.Assembly.IPseudoInstruction){ <small class="w3-margin-left">pseudo</small> }<br>
                         <i>@instr.InstrFormat()</i><br>
                         @instr.InstrDescription()<br>
                     </span>
@@ -110,11 +110,11 @@ print:
 
     private List<string> cached_asm = new List<string>();
 
-    private static List<Qkmaxware.Compiling.Mips.Assembly.IAssemblyInstruction?> all_assembly_instructions = 
-        typeof(Qkmaxware.Compiling.Mips.Assembler)
+    private static List<Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction?> all_assembly_instructions = 
+        typeof(Qkmaxware.Compiling.Targets.Mips.Assembler)
         .Assembly.GetTypes()
-        .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(Qkmaxware.Compiling.Mips.Assembly.IAssemblyInstruction)))
-        .Select(type => (Qkmaxware.Compiling.Mips.Assembly.IAssemblyInstruction?)Activator.CreateInstance(type))
+        .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction)))
+        .Select(type => (Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction?)Activator.CreateInstance(type))
         .ToList();
 
     private bool showHelpDialog = false;

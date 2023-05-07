@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 /// <summary>
 /// Possible values of as single bit

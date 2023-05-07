@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 /// <summary>
 /// System call (MIPS syscall)
@@ -20,7 +20,7 @@ public class Syscall : IBytecodeInstruction {
     }
 
     public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {
-        if (bytecode == 0xC) {
+        if (bytecode == 0xCU) {
             decoded = new Syscall();
             return true;
         } else {

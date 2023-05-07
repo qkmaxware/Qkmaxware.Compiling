@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips;
 
 /// <summary>
 /// Extension methods used to allow easier interaction with registers

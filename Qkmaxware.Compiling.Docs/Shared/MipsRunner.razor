@@ -128,14 +128,14 @@
     }
     private MemoryDisplayMode mode;
 
-    private static readonly Qkmaxware.Compiling.Mips.DataSize MemorySize = Qkmaxware.Compiling.Mips.DataSize.KibiBytes(1);
+    private static readonly Qkmaxware.Compiling.Targets.Mips.DataSize MemorySize = Qkmaxware.Compiling.Targets.Mips.DataSize.KibiBytes(1);
 
-    private Qkmaxware.Compiling.Mips.StepableSimulator Simulator;
+    private Qkmaxware.Compiling.Targets.Mips.StepableSimulator Simulator;
 
-    private Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program;
+    private Qkmaxware.Compiling.Targets.Mips.Bytecode.BytecodeProgram program;
     private StringWriter stdout;
-    public Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram Program => program;
-    public void SetProgram(Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram program) {
+    public Qkmaxware.Compiling.Targets.Mips.Bytecode.BytecodeProgram Program => program;
+    public void SetProgram(Qkmaxware.Compiling.Targets.Mips.Bytecode.BytecodeProgram program) {
         this.program = program;
         this.Simulator = null;
         StateHasChanged();
@@ -145,13 +145,13 @@
         try {
             this.stdout = new StringWriter();
             var stdio = new StringReader("");
-            var io = new Mips.SimulatorIO(
+            var io = new Targets.Mips.SimulatorIO(
                 @in: stdio,
                 @out: stdout
             );
-            this.Simulator = new Qkmaxware.Compiling.Mips.StepableSimulator(
+            this.Simulator = new Qkmaxware.Compiling.Targets.Mips.StepableSimulator(
                 io:         io,
-                memory:     new Mips.Hardware.ByteArrayMemory(MemorySize),
+                memory:     new Targets.Mips.Hardware.ByteArrayMemory(MemorySize),
                 program:    program
             );
         } catch (Exception e) {

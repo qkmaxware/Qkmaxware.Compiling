@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Mips.Bytecode;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips;
 
 public delegate bool TryDecodeBytecode(uint bytecode, out Bytecode.IBytecodeInstruction? decoded);
 

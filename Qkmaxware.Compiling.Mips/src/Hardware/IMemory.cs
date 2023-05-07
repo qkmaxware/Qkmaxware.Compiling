@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Hardware;
+namespace Qkmaxware.Compiling.Targets.Mips.Hardware;
 
 /// <summary>
 /// Generic memory interface

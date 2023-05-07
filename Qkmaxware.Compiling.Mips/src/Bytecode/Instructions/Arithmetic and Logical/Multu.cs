@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 /// <summary>
 /// Unsigned multiplication of two registers (MIPS multu)

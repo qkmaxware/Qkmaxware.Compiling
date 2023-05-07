@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Qkmaxware.Compiling.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips;
 
 /// <summary>
 /// Interactive MIPS 32 simulator allowing for stepping through instructions and viewing memory using the console

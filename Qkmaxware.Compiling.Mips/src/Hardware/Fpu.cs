@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Hardware;
+namespace Qkmaxware.Compiling.Targets.Mips.Hardware;
 
 /// <summary>
 /// Register set for the MIPS 32 FPU (Coprocessor 1)

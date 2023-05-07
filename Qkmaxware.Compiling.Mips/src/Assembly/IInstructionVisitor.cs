@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 /// <summary>
 /// Visitor pattern for assembly instructions

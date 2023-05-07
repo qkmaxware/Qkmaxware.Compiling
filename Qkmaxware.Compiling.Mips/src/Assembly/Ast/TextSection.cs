@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly;
 
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 public class TextSection : Section {
     public List<IAssemblyInstruction> Code {get; private set;} = new List<IAssemblyInstruction>();

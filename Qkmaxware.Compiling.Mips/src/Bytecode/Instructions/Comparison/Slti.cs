@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 /// <summary>
 /// Set on less than for signed numbers and an immediate value (MIPS slti)

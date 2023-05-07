@@ -1,10 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Qkmaxware.Compiling.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Qkmaxware.Compiling.Mips.Test;
+namespace Qkmaxware.Compiling.Targets.Mips.Test;
 
 [TestClass]
 public class TestDisassembler {

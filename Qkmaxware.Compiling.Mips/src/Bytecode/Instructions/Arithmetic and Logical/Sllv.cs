@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 /// <summary>
 /// Shift left logical of a register by the given amount in another register (MIPS sllv)

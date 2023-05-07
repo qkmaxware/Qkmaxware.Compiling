@@ -1,6 +1,6 @@
 using System;
 
-namespace Qkmaxware.Compiling.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips;
 
 /// <summary>
 /// Abstraction of an index for a register
@@ -46,6 +46,40 @@ public struct RegisterIndex {
             throw new ArgumentException("No MIPS register with name " + s);
         return r.Value;
     }
+
+    public static readonly RegisterIndex Zero = new RegisterIndex(0);
+    public static readonly RegisterIndex At = new RegisterIndex(1);
+    public static readonly RegisterIndex V0 = new RegisterIndex(2);
+    public static readonly RegisterIndex V1 = new RegisterIndex(3);
+    public static readonly RegisterIndex A0 = new RegisterIndex(4);
+    public static readonly RegisterIndex A1 = new RegisterIndex(5);
+    public static readonly RegisterIndex A2 = new RegisterIndex(6);
+    public static readonly RegisterIndex A3 = new RegisterIndex(7);
+    public static readonly RegisterIndex T0 = new RegisterIndex(8);
+    public static readonly RegisterIndex T1 = new RegisterIndex(9);
+    public static readonly RegisterIndex T2 = new RegisterIndex(10);
+    public static readonly RegisterIndex T3 = new RegisterIndex(11);
+    public static readonly RegisterIndex T4 = new RegisterIndex(12);
+    public static readonly RegisterIndex T5 = new RegisterIndex(13);
+    public static readonly RegisterIndex T6 = new RegisterIndex(14);
+    public static readonly RegisterIndex T7 = new RegisterIndex(15);
+    public static readonly RegisterIndex S0 = new RegisterIndex(16);
+    public static readonly RegisterIndex S1 = new RegisterIndex(17);
+    public static readonly RegisterIndex S2 = new RegisterIndex(18);
+    public static readonly RegisterIndex S3 = new RegisterIndex(19);
+    public static readonly RegisterIndex S4 = new RegisterIndex(20);
+    public static readonly RegisterIndex S5 = new RegisterIndex(21);
+    public static readonly RegisterIndex S6 = new RegisterIndex(22);
+    public static readonly RegisterIndex S7 = new RegisterIndex(23);
+    public static readonly RegisterIndex T8 = new RegisterIndex(24);
+    public static readonly RegisterIndex T9 = new RegisterIndex(25);
+    public static readonly RegisterIndex K0 = new RegisterIndex(26);
+    public static readonly RegisterIndex K1 = new RegisterIndex(27);
+    public static readonly RegisterIndex GP = new RegisterIndex(28);
+    public static readonly RegisterIndex SP = new RegisterIndex(29);
+    public static readonly RegisterIndex FP = new RegisterIndex(30);
+    public static readonly RegisterIndex S8 = new RegisterIndex(30);
+    public static readonly RegisterIndex RA = new RegisterIndex(31);
 
     public static RegisterIndex? Named(string s) {
         switch (s) {

@@ -86,10 +86,10 @@
 
 
 @code {
-    private Qkmaxware.Compiling.Mips.Bytecode.InMemoryBytecodeProgram program;
-    private Qkmaxware.Compiling.Mips.Bytecode.IBytecodeInstruction instruction;
-    public Qkmaxware.Compiling.Mips.Bytecode.BytecodeProgram Program => program;
-    public void SetProgram(Qkmaxware.Compiling.Mips.Bytecode.InMemoryBytecodeProgram program) {
+    private Qkmaxware.Compiling.Targets.Mips.Bytecode.InMemoryBytecodeProgram program;
+    private Qkmaxware.Compiling.Targets.Mips.Bytecode.IBytecodeInstruction instruction;
+    public Qkmaxware.Compiling.Targets.Mips.Bytecode.BytecodeProgram Program => program;
+    public void SetProgram(Qkmaxware.Compiling.Targets.Mips.Bytecode.InMemoryBytecodeProgram program) {
         this.program = program;
         StateHasChanged();
     }

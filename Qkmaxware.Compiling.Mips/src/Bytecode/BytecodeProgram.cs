@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Text;
 
-namespace Qkmaxware.Compiling.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 /// <summary>
 /// Base class for bytecode encoded programs
@@ -12,6 +12,26 @@ public abstract class BytecodeProgram : IEnumerable<IBytecodeInstruction> {
     public abstract IEnumerator<IBytecodeInstruction> GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() {
         return this.GetEnumerator();
+    }
+
+    /// <summary>
+    /// Dump the MIPS binary instructions to the given writer
+    /// </summary>
+    /// <param name="writer">writer to dump to</param>
+    public void Dump(BinaryWriter writer) {
+        foreach (var instr in this) {
+            writer.Write(instr.Encode32());
+        }
+    }
+
+    /// <summary>
+    /// Dump the MIPS binary to file
+    /// </summary>
+    public void DumpToFile(string file_path) {
+        using var file = File.OpenWrite(file_path);
+        using var writer = new BinaryWriter(file);
+
+        Dump(writer);
     }
 }
 
@@ -61,26 +81,6 @@ public class InMemoryBytecodeProgram : BytecodeProgram {
     /// </summary>
     /// <returns>enumerator</returns>
     public override IEnumerator<IBytecodeInstruction> GetEnumerator() => list.GetEnumerator();
-
-    /// <summary>
-    /// Dump the MIPS binary instructions to the given writer
-    /// </summary>
-    /// <param name="writer">writer to dump to</param>
-    public void Dump(BinaryWriter writer) {
-        foreach (var instr in this.list) {
-            writer.Write(instr.Encode32());
-        }
-    }
-
-    /// <summary>
-    /// Dump the MIPS binary to file
-    /// </summary>
-    public void DumpToFile(string file_path) {
-        using var file = File.OpenWrite(file_path);
-        using var writer = new BinaryWriter(file);
-
-        Dump(writer);
-    }
 
     /// <summary>
     /// Write binary program to as hex string

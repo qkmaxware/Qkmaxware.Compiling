@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 public abstract class Data {
     public LabelToken VariableName {get; private set;}
@@ -26,6 +26,8 @@ public class Data<T> : Data {
             return $"{VariableName} .{StorageClass.Value} \"{System.Text.Encoding.ASCII.GetString(ascii)}\"";
         } else if (this.StorageClass.Value == ("asciiz") && Values is byte[] asciiz) {
             return $"{VariableName} .{StorageClass.Value} \"{System.Text.Encoding.ASCII.GetString(asciiz.SkipLast(1).ToArray())}\"";
+        } else if (this.StorageClass.Value == "single") {
+            return $"{VariableName} .{StorageClass.Value} {string.Join(',', Values.Select(x => Convert.ToDouble(x).ToString("0.0###############")))}";
         } else {
             return $"{VariableName} .{StorageClass.Value} {string.Join(',', Values)}";
         }

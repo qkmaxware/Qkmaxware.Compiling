@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 public class AbsoluteValueSingle : IAssemblyInstruction {
     public RegisterIndex ResultRegister;
