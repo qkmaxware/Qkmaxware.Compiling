@@ -9,6 +9,18 @@ public class Lhi : LoadIInstruction {
     public static readonly uint BinaryCode = 0b011001U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest, value";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Store the given value in the high bits of $dest";
+
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var value = (this.Immediate << 16);
         var prev = cpu.Registers[this.Target].ReadAsUInt32().ClearHighHalf();

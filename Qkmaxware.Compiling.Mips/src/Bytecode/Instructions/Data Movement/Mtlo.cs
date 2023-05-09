@@ -9,6 +9,18 @@ public class Mtlo : MoveToInstruction {
     public static readonly uint BinaryCode = 0b010011U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $arg";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Move a value stored in $arg into the special LO register";
+
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var toMove = cpu.Registers[this.Source].ReadAsUInt32();
         cpu.Registers.LO.WriteUInt32(toMove);

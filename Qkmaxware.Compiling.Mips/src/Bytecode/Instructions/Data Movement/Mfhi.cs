@@ -9,6 +9,18 @@ public class Mfhi : MoveFromInstruction {
     public static readonly uint BinaryCode = 0b010000U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Move a value stored in the special HI register into $dest";
+
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var toMove = cpu.Registers.HI.ReadAsUInt32();
         cpu.Registers[this.Destination].WriteUInt32(toMove);

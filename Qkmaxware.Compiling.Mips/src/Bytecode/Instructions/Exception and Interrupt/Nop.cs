@@ -9,6 +9,18 @@ public class Nop : BaseBytecodeInstruction {
     public static readonly uint BinaryCode = 0b000000U;
     public uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName}";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Do nothing";
+
     public override uint Encode32() {
         return new WordEncoder(0U).Encoded;
     }

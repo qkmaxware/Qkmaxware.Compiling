@@ -9,6 +9,18 @@ public class Sw : LoadStoreInstruction {
     public static readonly uint BinaryCode = 0b101011U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $src, offset($base)";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Store a word into memory address $base + offset from $src.";
+
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var address = cpu.Registers[this.Source].ReadAsUInt32() + this.Immediate;
         memory.StoreWord(address, cpu.Registers[this.Target].ReadAsUInt32());

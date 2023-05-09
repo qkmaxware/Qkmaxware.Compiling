@@ -9,6 +9,18 @@ public class Sltiu : ArithLogIInstruction {
     public static readonly uint BinaryCode = 0b001001U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, value";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "if $lhs < value store 1 in $dest otherwise store 0 in $dest";
+
     public RegisterIndex LhsOperand {
         get => this.Source;
         set => this.Source = value;

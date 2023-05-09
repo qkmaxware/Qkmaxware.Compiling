@@ -9,6 +9,18 @@ public class Mtc1 : FloatingPointEncodedInstruction {
     public RegisterIndex CpuRegister {get; set;}
     public RegisterIndex FpuRegister {get; set;}
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $arg";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Move a value from CPU register $arg to FPU register $dest";
+
     public override IEnumerable<uint> GetOperands() {
         yield return (uint) CpuRegister;
         yield return (uint) FpuRegister;

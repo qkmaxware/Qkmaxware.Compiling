@@ -9,6 +9,18 @@ public class Lhu : LoadStoreInstruction {
     public static readonly uint BinaryCode = 0b100101U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest, offset($base)";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Load a half-word from memory address $base + offset into $dest without preserving its sign.";
+
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var raw = memory.LoadHalf(cpu.Registers[this.Source].ReadAsUInt32() + this.Immediate);
         var extended = ((uint)raw);
