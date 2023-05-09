@@ -38,4 +38,19 @@ public class Sltiu : ArithLogIInstruction {
             return false;
         }
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.ScalarConstantToken rhs;
+        if (!IsAssemblyFormatDestLhsRhs<Sltiu, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out lhs, out rhs)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Sltiu {
+            Target = dest.Value,
+            LhsOperand = lhs.Value,
+            RhsOperand = (uint)rhs.IntegerValue,
+        };
+        return true;
+    }
 }

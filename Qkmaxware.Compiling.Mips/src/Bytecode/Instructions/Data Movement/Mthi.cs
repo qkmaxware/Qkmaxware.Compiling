@@ -25,4 +25,17 @@ public class Mthi : MoveToInstruction {
             return false;
         }
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; 
+        if (!IsAssemblyFormatArg<Mthi, Assembly.RegisterToken>(opcode, args, out dest)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Mthi {
+            Source = dest.Value,
+        };
+        return true;
+    }
 }

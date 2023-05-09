@@ -56,6 +56,20 @@ public class Mtc1 : FloatingPointEncodedInstruction {
         return true;
     }
 
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.RegisterToken arg;
+        if (!IsAssemblyFormatDestArg<Mtc1, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out arg)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Mtc1 {
+            FpuRegister = dest.Value,
+            CpuRegister = arg.Value,
+        };
+        return true;
+    }
+
     /// <summary>
     /// Print this instruction as MIPS assembly code
     /// </summary>

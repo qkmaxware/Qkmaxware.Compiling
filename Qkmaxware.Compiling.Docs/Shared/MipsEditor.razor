@@ -111,7 +111,7 @@ print:
     private List<string> cached_asm = new List<string>();
 
     private static List<Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction?> all_assembly_instructions = 
-        typeof(Qkmaxware.Compiling.Targets.Mips.Assembler)
+        typeof(Qkmaxware.Compiling.Targets.Mips.Assembly.Parser)
         .Assembly.GetTypes()
         .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction)))
         .Select(type => (Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction?)Activator.CreateInstance(type))

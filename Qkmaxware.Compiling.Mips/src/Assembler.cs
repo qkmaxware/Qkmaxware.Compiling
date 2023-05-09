@@ -4,7 +4,7 @@ using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
-
+/*
 class Counter {
     public uint Count {get; private set;}
     public Counter () {}
@@ -825,4 +825,4 @@ internal class Assembly2BytecodeTransformer : IInstructionVisitor<IEnumerable<By
             Source = instr.SourceRegister,
         };
     }
-}
+}*/

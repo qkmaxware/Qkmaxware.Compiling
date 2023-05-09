@@ -36,4 +36,17 @@ public class Nop : BaseBytecodeInstruction {
     /// </summary>
     /// <returns>assembly string</returns>
     public override string ToAssemblyString() => $"{this.InstructionName()}";
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        if (opcode.Value != InstructionName<Nop>()) {
+            decoded = null;
+            return false;
+        }
+
+        if (args.Count != 0)
+            throw new Assembly.AssemblyException(args[0].Position, "Invalid number of arguments");
+
+        decoded = new Nop {};
+        return true;
+    }
 }

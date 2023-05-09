@@ -9,6 +9,18 @@ public class Andi : ArithLogIInstruction {
     public static readonly uint BinaryCode = 0b001100U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, value";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Compute $lhs & value and store the result in $dest.";
+
     public RegisterIndex LhsOperand {
         get => this.Source;
         set => this.Source = value;
@@ -37,5 +49,20 @@ public class Andi : ArithLogIInstruction {
             decoded = null;
             return false;
         }
+    }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.ScalarConstantToken rhs;
+        if (!IsAssemblyFormatDestLhsRhs<Andi, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out lhs, out rhs)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Andi {
+            Target = dest.Value,
+            LhsOperand = lhs.Value,
+            RhsOperand = (uint)rhs.IntegerValue,
+        };
+        return true;
     }
 }

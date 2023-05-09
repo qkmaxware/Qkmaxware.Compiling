@@ -231,30 +231,30 @@ public class Parser {
 
     private static List<TryDecodeAssembly> decoders = new List<TryDecodeAssembly> {
         #region Arithmetic & Logical
-        //Bytecode.AbsS.TryDecodeAssembly,
+        Bytecode.AbsS.TryDecodeAssembly,
         Bytecode.Add.TryDecodeAssembly,
         Bytecode.AddS.TryDecodeAssembly,
         Bytecode.Addi.TryDecodeAssembly,
         Bytecode.Addiu.TryDecodeAssembly,
         Bytecode.Addu.TryDecodeAssembly,
         Bytecode.And.TryDecodeAssembly,
-        //Bytecode.Andi.TryDecodeAssembly,
-        //Bytecode.Div.TryDecodeAssembly,
-        //Bytecode.DivS.TryDecodeAssembly,
-        //Bytecode.Divu.TryDecodeAssembly,
-        //Bytecode.MulS.TryDecodeAssembly,
-        //Bytecode.Mult.TryDecodeAssembly,
-        //Bytecode.Multu.TryDecodeAssembly,
+        Bytecode.Andi.TryDecodeAssembly,
+        Bytecode.Div.TryDecodeAssembly,
+        Bytecode.DivS.TryDecodeAssembly,
+        Bytecode.Divu.TryDecodeAssembly,
+        Bytecode.MulS.TryDecodeAssembly,
+        Bytecode.Mult.TryDecodeAssembly,
+        Bytecode.Multu.TryDecodeAssembly,
         Bytecode.Nor.TryDecodeAssembly,
         Bytecode.Or.TryDecodeAssembly,
-        //Bytecode.Ori.TryDecodeAssembly,
-        //Bytecode.Sllv.TryDecodeAssembly,
-        //Bytecode.Srlv.TryDecodeAssembly,
+        Bytecode.Ori.TryDecodeAssembly,
+        Bytecode.Sllv.TryDecodeAssembly,
+        Bytecode.Srlv.TryDecodeAssembly,
         Bytecode.Sub.TryDecodeAssembly,
-        //Bytecode.SubS.TryDecodeAssembly,
-        //Bytecode.Subu.TryDecodeAssembly,
+        Bytecode.SubS.TryDecodeAssembly,
+        Bytecode.Subu.TryDecodeAssembly,
         Bytecode.Xor.TryDecodeAssembly,
-        //Bytecode.Xori.TryDecodeAssembly,
+        Bytecode.Xori.TryDecodeAssembly,
         #endregion
         #region Branch
         //Bytecode.Beq.TryDecodeAssembly,
@@ -263,25 +263,26 @@ public class Parser {
         //Bytecode.Bne.TryDecodeAssembly,
         #endregion
         #region Comparison
-        //Bytecode.Slt.TryDecodeAssembly,
-        //Bytecode.Slti.TryDecodeAssembly,
-        //Bytecode.Sltiu.TryDecodeAssembly,
-        //Bytecode.Sltu.TryDecodeAssembly,
+        Bytecode.Slt.TryDecodeAssembly,
+        Bytecode.Slti.TryDecodeAssembly,
+        Bytecode.Sltiu.TryDecodeAssembly,
+        Bytecode.Sltu.TryDecodeAssembly,
         #endregion
         #region Constant Manipulator
-        //Bytecode.Lhi.TryDecodeAssembly,
-        //Bytecode.Llo.TryDecodeAssembly,
+        Bytecode.Lhi.TryDecodeAssembly,
+        Bytecode.Llo.TryDecodeAssembly,
         #endregion
         #region Data Movement
-        //Bytecode.Mfc1.TryDecodeAssembly,
-        //Bytecode.Mfhi.TryDecodeAssembly,
-        //Bytecode.Mflo.TryDecodeAssembly,
-        //Bytecode.Mtc1.TryDecodeAssembly,
-        //Bytecode.Mthi.TryDecodeAssembly,
-        //Bytecode.Mtlo.TryDecodeAssembly,
+        Bytecode.Mfc1.TryDecodeAssembly,
+        Bytecode.Mfhi.TryDecodeAssembly,
+        Bytecode.Mflo.TryDecodeAssembly,
+        Bytecode.Mtc1.TryDecodeAssembly,
+        Bytecode.Mthi.TryDecodeAssembly,
+        Bytecode.Mtlo.TryDecodeAssembly,
         #endregion
         #region Exception and Interrupts
-        //Bytecode.Syscall.TryDecodeAssembly,
+        Bytecode.Nop.TryDecodeAssembly,
+        Bytecode.Syscall.TryDecodeAssembly,
         #endregion
         #region Jump
         //Bytecode.J.TryDecodeAssembly,
@@ -290,18 +291,18 @@ public class Parser {
         //Bytecode.Jr.TryDecodeAssembly,
         #endregion
         #region Load
-        //Bytecode.Lb.TryDecodeAssembly,
-        //Bytecode.Lbu.TryDecodeAssembly,
-        //Bytecode.Lh.TryDecodeAssembly,
-        //Bytecode.Lhu.TryDecodeAssembly,
-        //Bytecode.Lw.TryDecodeAssembly,
-        //Bytecode.Lwc1.TryDecodeAssembly,
+        Bytecode.Lb.TryDecodeAssembly,
+        Bytecode.Lbu.TryDecodeAssembly,
+        Bytecode.Lh.TryDecodeAssembly,
+        Bytecode.Lhu.TryDecodeAssembly,
+        Bytecode.Lw.TryDecodeAssembly,
+        Bytecode.Lwc1.TryDecodeAssembly,
         #endregion
         #region  Store
-        //Bytecode.Sb.TryDecodeAssembly,
-        //Bytecode.Sh.TryDecodeAssembly,
-        //Bytecode.Sw.TryDecodeAssembly,
-        //Bytecode.Swc1.TryDecodeAssembly,
+        Bytecode.Sb.TryDecodeAssembly,
+        Bytecode.Sh.TryDecodeAssembly,
+        Bytecode.Sw.TryDecodeAssembly,
+        Bytecode.Swc1.TryDecodeAssembly,
         #endregion
     };
 
@@ -310,7 +311,7 @@ public class Parser {
         // Label (can be on its own line)
         if (tokens.IsLookahead<LabelToken>(0)) {
             var label = require<LabelToken>(tokens, "code label");
-            yield return new LabelMarker(label.Value);
+            yield return new Instructions.Label(label.Value);
         }
 
         // Operation
@@ -349,217 +350,9 @@ public class Parser {
         }
     }
 
-    private static T parseNoResultOp<Lhs,Rhs, T>(BufferedTokenStream tokens, Func<Lhs, Rhs, T> convert) where Lhs:Token where Rhs:Token where T:IAssemblyInstruction {
-        var lhs = require<Lhs>(tokens, "left-hand operand");
-        require<CommaToken>(tokens, "comma");
-        var rhs = require<Rhs>(tokens, "right-hand operand");
-        return convert(lhs, rhs);
-    }
+    
 
-    private static T parseOp<Lhs,Rhs, T>(BufferedTokenStream tokens, Func<RegisterToken, Lhs, Rhs, T> convert) where Lhs:Token where Rhs:Token where T:IAssemblyInstruction {
-        var res = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var lhs = require<Lhs>(tokens, "left-hand operand");
-        require<CommaToken>(tokens, "comma");
-        var rhs = require<Rhs>(tokens, "right-hand operand");
-        return convert(res, lhs, rhs);
-    }
-
-    private AddSigned parseAdd(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, AddSigned>(
-        tokens, 
-        (res, lhs, rhs) => new AddSigned {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private SubtractSigned parseSub(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, SubtractSigned>(
-        tokens, 
-        (res, lhs, rhs) => new SubtractSigned {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-
-    private AddSignedImmediate parseAddi(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, AddSignedImmediate>(
-        tokens, 
-        (res, lhs, rhs) => new AddSignedImmediate {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperand = (int)rhs.IntegerValue,
-        }); 
-
-    private SubtractSignedImmediate parseSubi(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, SubtractSignedImmediate>(
-        tokens, 
-        (res, lhs, rhs) => new SubtractSignedImmediate {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperand = (int)rhs.IntegerValue,
-        }); 
-
-    private AddUnsigned parseAddu(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, AddUnsigned>(
-        tokens, 
-        (res, lhs, rhs) => new AddUnsigned {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private SubtractUnsigned parseSubu(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, SubtractUnsigned>(
-        tokens, 
-        (res, lhs, rhs) => new SubtractUnsigned {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private AddUnsignedImmediate parseAddiu(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, AddUnsignedImmediate>(
-        tokens, 
-        (res, lhs, rhs) => new AddUnsignedImmediate {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperand = (uint)rhs.IntegerValue,
-        }); 
-
-    private MultiplySignedWithOverflow parseMult(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, MultiplySignedWithOverflow>(
-        tokens, 
-        (lhs, rhs) => new MultiplySignedWithOverflow {
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-    private MultiplyUnsignedWithOverflow parseMultu(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, MultiplyUnsignedWithOverflow>(
-        tokens, 
-        (lhs, rhs) => new MultiplyUnsignedWithOverflow {
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private DivideSignedWithRemainder parseDiv(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, DivideSignedWithRemainder>(
-        tokens, 
-        (lhs, rhs) => new DivideSignedWithRemainder {
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private DivideUnsignedWithRemainder parseDivu(BufferedTokenStream tokens) => parseNoResultOp<RegisterToken, RegisterToken, DivideUnsignedWithRemainder>(
-        tokens, 
-        (lhs, rhs) => new DivideUnsignedWithRemainder {
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-        
-    private And parseAnd(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, And>(
-        tokens, 
-        (res, lhs, rhs) => new And {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private Or parseOr(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, Or>(
-        tokens, 
-        (res, lhs, rhs) => new Or {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private Nor parseNor(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, Nor>(
-        tokens, 
-        (res, lhs, rhs) => new Nor {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private Xor parseXor(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, Xor>(
-        tokens, 
-        (res, lhs, rhs) => new Xor {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        });
-
-    private AndImmediate parseAndi(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, AndImmediate>(
-        tokens, 
-        (res, lhs, rhs) => new AndImmediate {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperand = (uint)rhs.IntegerValue,
-        }); 
-        
-    private OrImmediate parseOri(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, OrImmediate>(
-        tokens, 
-        (res, lhs, rhs) => new OrImmediate {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperand = (uint)rhs.IntegerValue,
-        }); 
-
-    private XorImmediate parseXori(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, XorImmediate>(
-        tokens, 
-        (res, lhs, rhs) => new XorImmediate {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperand = (uint)rhs.IntegerValue,
-        }); 
-
-    private ShiftLeftLogical parseSllv(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftLeftLogical>(
-        tokens, 
-        (res, lhs, rhs) => new ShiftLeftLogical {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-
-    private ShiftRightLogical parseSrlv(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, ShiftRightLogical>(
-        tokens, 
-        (res, lhs, rhs) => new ShiftRightLogical {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        });
-
-    private LoadWord parseLw(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var offset = require<ScalarConstantToken>(tokens, "memory offset");
-        require<OpenParenthesisToken>(tokens, "open parenthesis");
-        var root = require<RegisterToken>(tokens, "base register");
-        require<CloseParenthesisToken>(tokens, "close parenthesis");
-        return new LoadWord {
-            ResultRegister = res.Value,
-            BaseRegister = root.Value,
-            Offset = (uint)offset.IntegerValue
-        };
-    }
-
-    private StoreWord parseSw(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "source register");
-        require<CommaToken>(tokens, "comma");
-        var offset = require<ScalarConstantToken>(tokens, "memory offset");
-        require<OpenParenthesisToken>(tokens, "open parenthesis");
-        var root = require<RegisterToken>(tokens, "base register");
-        require<CloseParenthesisToken>(tokens, "close parenthesis");
-        return new StoreWord {
-            SourceRegister = res.Value,
-            BaseRegister = root.Value,
-            Offset = (uint)offset.IntegerValue
-        };
-    }
-
-    private LoadUpperImmediate parseLui(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var label = require<ScalarConstantToken>(tokens, "immediate value");
-        return new LoadUpperImmediate {
-            ResultRegister = res.Value,
-            Constant = (uint)label.IntegerValue
-        };
-    }
-
-    private LoadAddress parseLa(BufferedTokenStream tokens) {
+    /*private LoadAddress parseLa(BufferedTokenStream tokens) {
         var res = require<RegisterToken>(tokens, "result register");
         require<CommaToken>(tokens, "comma");
         var label = require<IdentifierToken>(tokens, "label identifier");
@@ -579,20 +372,6 @@ public class Parser {
         };
     }
 
-    private MoveFromHi parseMfhi(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        return new MoveFromHi {
-            ResultRegister = res.Value
-        };
-    }
-
-    private MoveFromLo parseMflo(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        return new MoveFromLo {
-            ResultRegister = res.Value
-        };
-    }
-
     private Move parseMove(BufferedTokenStream tokens) {
         var res = require<RegisterToken>(tokens, "result register");
         require<CommaToken>(tokens, "comma");
@@ -601,196 +380,5 @@ public class Parser {
             ResultRegister = res.Value,
             SourceRegister = from.Value
         };
-    }
-
-    private BranchOnEqual parseBeq(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnEqual>(
-        tokens, 
-        (res, lhs, rhs) => new BranchOnEqual {
-            LhsOperandRegister = res.Value,
-            RhsOperandRegister = lhs.Value,
-            Address = rhs
-        });
-
-    private BranchOnNotEqual parseBne(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnNotEqual>(
-        tokens, 
-        (res, lhs, rhs) => new BranchOnNotEqual {
-            LhsOperandRegister = res.Value,
-            RhsOperandRegister = lhs.Value,
-            Address = rhs
-        });
-
-    private BranchOnGreater parseBgt(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnGreater>(
-        tokens, 
-        (res, lhs, rhs) => new BranchOnGreater {
-            LhsOperandRegister = res.Value,
-            RhsOperandRegister = lhs.Value,
-            Address = rhs
-        });
-
-    private BranchOnGreaterOrEqual parseBge(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnGreaterOrEqual>(
-        tokens, 
-        (res, lhs, rhs) => new BranchOnGreaterOrEqual {
-            LhsOperandRegister = res.Value,
-            RhsOperandRegister = lhs.Value,
-            Address = rhs
-        });
-
-    private BranchOnLess parseBlt(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnLess>(
-        tokens, 
-        (res, lhs, rhs) => new BranchOnLess {
-            LhsOperandRegister = res.Value,
-            RhsOperandRegister = lhs.Value,
-            Address = rhs
-        });
-
-    private BranchOnLessOrEqual parseBle(BufferedTokenStream tokens) => parseOp<RegisterToken, AddressLikeToken, BranchOnLessOrEqual>(
-        tokens, 
-        (res, lhs, rhs) => new BranchOnLessOrEqual {
-            LhsOperandRegister = res.Value,
-            RhsOperandRegister = lhs.Value,
-            Address = rhs
-        });
-
-    private SetOnLessThan parseSlt(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, SetOnLessThan>(
-        tokens, 
-        (res, lhs, rhs) => new SetOnLessThan {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value
-        });
-
-    private SetOnLessThanImmediate parseSlti(BufferedTokenStream tokens) => parseOp<RegisterToken, ScalarConstantToken, SetOnLessThanImmediate>(
-        tokens, 
-        (res, lhs, rhs) => new SetOnLessThanImmediate {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            Constant = rhs.IntegerValue
-        }); 
-
-    private JumpTo parseJ(BufferedTokenStream tokens) {
-        var from = require<AddressLikeToken>(tokens, "target address");
-        return new JumpTo {
-            Address = from
-        };
-    }
-
-    private JumpRegister parseJr(BufferedTokenStream tokens) {
-        var from = require<RegisterToken>(tokens, "target address register");
-        return new JumpRegister {
-            Register = from.Value
-        };
-    }
-
-    private JumpAndLink parseJal(BufferedTokenStream tokens) {
-        var from = require<AddressLikeToken>(tokens, "target address");
-        return new JumpAndLink {
-            Address = from
-        };
-    }
-
-    private BranchGreaterThan0 parseBgtz(BufferedTokenStream tokens) {
-        var reg = require<RegisterToken>(tokens, "register");
-        require<CommaToken>(tokens, "comma");
-        var from = require<AddressLikeToken>(tokens, "target address");
-        return new BranchGreaterThan0 {
-            LhsOperandRegister = reg.Value,
-            Address = from
-        };
-    }
-
-    private BranchLessThanOrEqual0 parseBlez(BufferedTokenStream tokens) {
-        var reg = require<RegisterToken>(tokens, "register");
-        require<CommaToken>(tokens, "comma");
-        var from = require<AddressLikeToken>(tokens, "target address");
-        return new BranchLessThanOrEqual0 {
-            LhsOperandRegister = reg.Value,
-            Address = from
-        };
-    }
-
-    private LoadIntoCoprocessor1 parselwc1(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var offset = require<ScalarConstantToken>(tokens, "memory offset");
-        require<OpenParenthesisToken>(tokens, "open parenthesis");
-        var root = require<RegisterToken>(tokens, "base register");
-        require<CloseParenthesisToken>(tokens, "close parenthesis");
-        return new LoadIntoCoprocessor1 {
-            ResultRegister = res.Value,
-            BaseRegister = root.Value,
-            Offset = (uint)offset.IntegerValue
-        };
-    }
-
-    private StoreFromCoprocessor1 parseswc1(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "source register");
-        require<CommaToken>(tokens, "comma");
-        var offset = require<ScalarConstantToken>(tokens, "memory offset");
-        require<OpenParenthesisToken>(tokens, "open parenthesis");
-        var root = require<RegisterToken>(tokens, "base register");
-        require<CloseParenthesisToken>(tokens, "close parenthesis");
-        return new StoreFromCoprocessor1 {
-            SourceRegister = res.Value,
-            BaseRegister = root.Value,
-            Offset = (uint)offset.IntegerValue
-        };
-    }
-
-    private MoveToCoprocessor1 parsemtc1(BufferedTokenStream tokens) {
-        var cpu = require<RegisterToken>(tokens, "cpu register");
-        require<CommaToken>(tokens, "comma");
-        var fpu = require<RegisterToken>(tokens, "fpu register");
-        return new MoveToCoprocessor1 {
-            CpuRegister = cpu.Value,
-            FpuRegister = fpu.Value
-        };
-    }
-
-    private MoveFromCoprocessor1 parsemfc1(BufferedTokenStream tokens) {
-        var cpu = require<RegisterToken>(tokens, "cpu register");
-        require<CommaToken>(tokens, "comma");
-        var fpu = require<RegisterToken>(tokens, "fpu register");
-        return new MoveFromCoprocessor1 {
-            CpuRegister = cpu.Value,
-            FpuRegister = fpu.Value
-        };
-    }
-
-    private AbsoluteValueSingle parseabsS(BufferedTokenStream tokens) {
-        var dest = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var src = require<RegisterToken>(tokens, "source register");
-        return new AbsoluteValueSingle {
-            ResultRegister = dest.Value,
-            SourceRegister = src.Value
-        };
-    }
-    private AddSingle parseaddS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, AddSingle>(
-        tokens, 
-        (res, lhs, rhs) => new AddSingle {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-    private SubtractSingle parsesubS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, SubtractSingle>(
-        tokens, 
-        (res, lhs, rhs) => new SubtractSingle {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-    private MultiplySingle parsemulS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, MultiplySingle>(
-        tokens, 
-        (res, lhs, rhs) => new MultiplySingle {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
-    private DivideSingle parsedivS(BufferedTokenStream tokens) => parseOp<RegisterToken, RegisterToken, DivideSingle>(
-        tokens, 
-        (res, lhs, rhs) => new DivideSingle {
-            ResultRegister = res.Value,
-            LhsOperandRegister = lhs.Value,
-            RhsOperandRegister = rhs.Value,
-        }); 
+    }*/
 }

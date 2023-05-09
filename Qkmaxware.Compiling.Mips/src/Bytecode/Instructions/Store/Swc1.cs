@@ -27,4 +27,19 @@ public class Swc1 : LoadStoreInstruction {
             return false;
         }
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.RegisterToken @base; Assembly.ScalarConstantToken offset;
+        if (!IsAssemblyFormatSourceOffsetBase<Swc1, Assembly.RegisterToken, Assembly.ScalarConstantToken, Assembly.RegisterToken>(opcode, args, out dest, out offset, out @base)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Swc1 {
+            Target = dest.Value,
+            Source = @base.Value,
+            Immediate = (uint)offset.IntegerValue
+        };
+        return true;
+    }
 }

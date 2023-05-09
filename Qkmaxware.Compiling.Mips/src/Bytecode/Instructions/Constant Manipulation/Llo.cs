@@ -28,4 +28,18 @@ public class Llo : LoadIInstruction {
             return false;
         }
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.ScalarConstantToken arg;
+        if (!IsAssemblyFormatDestArg<Llo, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out arg)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Llo {
+            Target = dest.Value,
+            Immediate = (uint)arg.IntegerValue,
+        };
+        return true;
+    }
 }

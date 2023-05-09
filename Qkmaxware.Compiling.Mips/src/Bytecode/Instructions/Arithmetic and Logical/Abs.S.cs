@@ -9,6 +9,18 @@ public class AbsS : FloatingPointEncodedInstruction {
     public RegisterIndex Destination { get; set; }
     public RegisterIndex Source { get; set; }
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $arg";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Compute the absolute value of the floating point value stored in $arg and store it in $dest.";
+
     public override IEnumerable<uint> GetOperands() {
         yield return (uint) Destination;
         yield return (uint) Source;
@@ -57,6 +69,20 @@ public class AbsS : FloatingPointEncodedInstruction {
         decoded = new AbsS {
             Destination = (RegisterIndex)fd,
             Source = (RegisterIndex)fs
+        };
+        return true;
+    }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; Assembly.RegisterToken arg;
+        if (!IsAssemblyFormatDestArg<AbsS, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out arg)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new AbsS {
+            Destination = dest.Value,
+            Source = arg.Value
         };
         return true;
     }

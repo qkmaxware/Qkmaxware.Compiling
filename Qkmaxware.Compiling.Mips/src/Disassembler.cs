@@ -79,6 +79,7 @@ public class Disassembler {
         Mtlo.TryDecodeBytecode,
         #endregion
         #region Exception and Interrupts
+        Nop.TryDecodeBytecode,
         Syscall.TryDecodeBytecode,
         #endregion
         #region Jump

@@ -9,6 +9,18 @@ public class And : ArithLogInstruction {
     public static readonly uint BinaryCode = 0b100100U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, $rhs";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Compute $lhs & $rhs and store the result in $dest.";
+
     public RegisterIndex LhsOperand {
         get => this.Source;
         set => this.Source = value;

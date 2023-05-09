@@ -9,6 +9,18 @@ public class Div : DivMultInstruction {
     public static readonly uint BinaryCode = 0b011010U;
     public override uint Opcode => BinaryCode;
 
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName} $lhs, $rhs";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "Compute $lhs / $rhs storing the result in LO and compute $lhs % $rhs storing the result in HI.";
+
     public RegisterIndex LhsOperand {
         get => this.Source;
         set => this.Source = value;
@@ -40,6 +52,20 @@ public class Div : DivMultInstruction {
             decoded = null;
             return false;
         }
+    }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken lhs; Assembly.RegisterToken rhs;
+        if (!IsAssemblyFormatLhsRhs<Div, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out lhs, out rhs)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Div {
+            LhsOperand = lhs.Value,
+            RhsOperand = rhs.Value
+        };
+        return true;
     }
 
 }

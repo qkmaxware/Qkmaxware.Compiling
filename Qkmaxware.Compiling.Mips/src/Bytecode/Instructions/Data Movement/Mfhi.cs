@@ -25,4 +25,17 @@ public class Mfhi : MoveFromInstruction {
             return false;
         }
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken dest; 
+        if (!IsAssemblyFormatDest<Mfhi, Assembly.RegisterToken>(opcode, args, out dest)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Mfhi {
+            Destination = dest.Value,
+        };
+        return true;
+    }
 }
