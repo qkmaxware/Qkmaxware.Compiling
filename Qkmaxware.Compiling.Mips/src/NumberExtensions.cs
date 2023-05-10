@@ -1,6 +1,12 @@
 namespace Qkmaxware.Compiling.Targets.Mips;
 
 public static class NumberExtensions {
+    public static uint ReinterpretUint(this int i) {
+        return BitConverter.ToUInt32(BitConverter.GetBytes(i));
+    }
+    public static uint ReinterpretUint(this float i) {
+        return BitConverter.ToUInt32(BitConverter.GetBytes(i));
+    }
     public static uint SignExtend(this uint pattern, int sign_bit) {
         var sign_bit_mask = 1 << sign_bit;      // eg: 00001000
         var mask = 0U;                          // eg: 00001111

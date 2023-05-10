@@ -8,13 +8,13 @@ namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 public class Li : IPseudoInstruction {
 
     public RegisterIndex Destination {get; set;}
-    public ScalarConstantToken? Value {get; set;}
+    public uint Value {get; set;}
 
     public Li() {}
 
     public Li(RegisterIndex dest, ScalarConstantToken value) {
         this.Destination = dest;
-        this.Value = value;
+        this.Value = BitConverter.ToUInt32(BitConverter.GetBytes(value.IntegerValue));
     }
 
     public string InstructionName() => "li";
@@ -26,7 +26,7 @@ public class Li : IPseudoInstruction {
     public string ToAssemblyString() => $"la {Destination}, {Value}";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
-        var bits = BitConverter.ToUInt32(BitConverter.GetBytes(this.Value?.IntegerValue ?? 0));
+        var bits = BitConverter.ToUInt32(BitConverter.GetBytes(this.Value));
         yield return new Lui {
             Destination = this.Destination,
             Immediate = bits.HighHalf()
@@ -62,7 +62,7 @@ public class Li : IPseudoInstruction {
 
         decoded = new Li {
             Destination = dest.Value,
-            Value = arg,
+            Value = BitConverter.ToUInt32(BitConverter.GetBytes(arg.IntegerValue)),
         };
         return true;
     }

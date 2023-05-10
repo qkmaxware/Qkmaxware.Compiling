@@ -115,7 +115,7 @@ public class Assembler {
         // Set the GP pointer to the end of the memory data (for usage with the heap etc)
         foreach (var instr in new Assembly.Instructions.Li {
             Destination = memory_start,
-            Value = new ScalarConstantToken(0, BitConverter.ToInt32(BitConverter.GetBytes(memory.Count)))
+            Value = memory.Count
         }.Assemble(env)) {
             output.Add(instr);
             env.IncrementInstructionCount();

@@ -1,7 +1,7 @@
 using Qkmaxware.Compiling.Targets.Ir;
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
-using Qkmaxware.Compiling.Targets.Mips;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
 
@@ -13,15 +13,15 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
 
     private void exit() {
-        text.Code.Add(new LoadImmediate {
-            ResultRegister = RegisterIndex.V0,
-            Constant = 10
+        text.Code.Add(new Li {
+            Destination = RegisterIndex.V0,
+            Value = 10
         });
         text.Code.Add(new Syscall());
     }
 
     public override void Visit(BasicBlock block) {
-        text.Code.Add(new LabelMarker($"block_{block.GetHashCode()}"));
+        text.Code.Add(new Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions.Label($"block_{block.GetHashCode()}"));
         foreach (var instruction in block) {
             instruction.Visit(this);
         }
@@ -41,10 +41,10 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         // Load value
         text.Code.AddRange(from.MipsInstructionsToLoadValueInto(RegisterIndex.T0));
         // Store value
-        text.Code.Add(new StoreWord {
-            SourceRegister = RegisterIndex.T0,
-            BaseRegister = RegisterIndex.FP,
-            Offset = tuple.To.VariableIndex * 4,
+        text.Code.Add(new Sw {
+            Target = RegisterIndex.T0,
+            Source = RegisterIndex.FP,
+            Immediate = tuple.To.VariableIndex * 4,
         });
     }
 
@@ -68,7 +68,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         throw new NotImplementedException();
     }
 
-    public void Accept(Add tuple)
+    public void Accept(Ir.Add tuple)
     {
         var result = tuple.Result;                          // Is a variable
         if (tuple.LeftOperand is not IMipsValueOperand lhs) // Can be a literal or a variable
@@ -111,7 +111,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         throw new NotImplementedException();
     }
 
-    public void Accept(Sub tuple)
+    public void Accept(Ir.Sub tuple)
     {
         throw new NotImplementedException();
     }
@@ -121,7 +121,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         throw new NotImplementedException();
     }
 
-    public void Accept(Div tuple)
+    public void Accept(Ir.Div tuple)
     {
         throw new NotImplementedException();
     }

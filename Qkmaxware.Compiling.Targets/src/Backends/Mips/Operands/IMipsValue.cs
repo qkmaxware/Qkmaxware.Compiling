@@ -1,4 +1,5 @@
-using Qkmaxware.Compiling.Targets.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
 

@@ -1,7 +1,8 @@
 using Qkmaxware.Compiling.Targets.Ir;
 using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
-using Qkmaxware.Compiling.Targets.Mips;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
 
@@ -29,36 +30,36 @@ internal class MipsAssemblyVisitor : ModuleVisitor {
 
     private void StackPush(TextSection code, RegisterIndex from) {
         var stackRegister = RegisterIndex.SP;
-        code.Code.Add(new StoreWord {
-            SourceRegister = from,
-            BaseRegister = stackRegister,
-            Offset = 0
+        code.Code.Add(new Sw {
+            Target = from,
+            Source = stackRegister,
+            Immediate = 0
         });
-        code.Code.Add(new AddSignedImmediate {
-            ResultRegister      = stackRegister,
-            LhsOperandRegister  = stackRegister,
-            RhsOperand          = -4, // Stack grows from the bottom up
+        code.Code.Add(new Addi {
+            Target      = stackRegister,
+            Source  = stackRegister,
+            Immediate = (-4).ReinterpretUint(), // Stack grows from the bottom up
         });
     }
 
     private void StackPop(TextSection code, RegisterIndex to) {
         var stackRegister = RegisterIndex.SP;
-        code.Code.Add(new LoadWord {
-            ResultRegister = to,
-            BaseRegister = stackRegister,
-            Offset = 0
+        code.Code.Add(new Lw {
+            Target = to,
+            Source = stackRegister,
+            Immediate = 0
         });
-        code.Code.Add(new AddSignedImmediate {
-            ResultRegister      = stackRegister,
-            LhsOperandRegister  = stackRegister,
-            RhsOperand          = 4, // Stack grows from the bottom up
+        code.Code.Add(new Addi {
+            Target      = stackRegister,
+            Source  = stackRegister,
+            Immediate          = 4, // Stack grows from the bottom up
         });
     }
 
     public void VisitSubprogram(Subprogram sub) {
         // Create a text section for this subprogram and setup default instructions
         var text = new TextSection();
-        text.Code.Add(new LabelMarker("proc_" + sub.ProcedureIndex)); // Give this program a name
+        text.Code.Add(new Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions.Label("proc_" + sub.ProcedureIndex)); // Give this program a name
 
         // Push the return address (restored when procedure returns)
         StackPush(text, RegisterIndex.SP);      // Store previous stack pointer
@@ -67,8 +68,8 @@ internal class MipsAssemblyVisitor : ModuleVisitor {
 
         // Store the start of the frame as the current frame-pointer
         text.Code.Add(new Move {
-            SourceRegister = RegisterIndex.SP,
-            ResultRegister = RegisterIndex.FP
+            Source = RegisterIndex.SP,
+            Destination = RegisterIndex.FP
         });
 
         // Define all locals (these are all stored at FP + Local Index)
@@ -127,30 +128,30 @@ internal class MipsAssemblyVisitor : ModuleVisitor {
         var temp = RegisterIndex.T0;
         switch (type) {
             case I32 i32:
-                text.Code.Add(new LoadImmediate{
-                    ResultRegister = temp,
-                    Constant = BitConverter.ToUInt32(BitConverter.GetBytes(i32.DefaultValue())),
+                text.Code.Add(new Li{
+                    Destination = temp,
+                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(i32.DefaultValue())),
                 });
                 StackPush(text, temp);
                 break;
             case U1 u1:
-                text.Code.Add(new LoadImmediate{
-                    ResultRegister = temp,
-                    Constant = BitConverter.ToUInt32(BitConverter.GetBytes(u1.DefaultValue())),
+                text.Code.Add(new Li{
+                    Destination = temp,
+                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(u1.DefaultValue())),
                 });
                 StackPush(text, temp);
                 break;
             case U32 u32:
-                text.Code.Add(new LoadImmediate{
-                    ResultRegister = temp,
-                    Constant = BitConverter.ToUInt32(BitConverter.GetBytes(u32.DefaultValue())),
+                text.Code.Add(new Li{
+                    Destination = temp,
+                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(u32.DefaultValue())),
                 });
                 StackPush(text, temp);
                 break;
             case F32 f32:
-                text.Code.Add(new LoadImmediate{
-                    ResultRegister = temp,
-                    Constant = BitConverter.ToUInt32(BitConverter.GetBytes(f32.DefaultValue())),
+                text.Code.Add(new Li{
+                    Destination = temp,
+                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(f32.DefaultValue())),
                 });
                 StackPush(text, temp);
                 break;
