@@ -1,4 +1,4 @@
-﻿namespace Qkmaxware.Compiling.Targets.Mips;
+﻿namespace Qkmaxware.Compiling.Targets.Mips.Hardware;
 
 /// <summary>
 /// Base class for 32bit CPU registers

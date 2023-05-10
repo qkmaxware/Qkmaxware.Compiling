@@ -35,4 +35,33 @@ public class Li : IPseudoInstruction {
             RhsOperand = bits.LowHalf()
         };
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        if (opcode.Value != "li") {
+            decoded = null;
+            return false;
+        }
+
+        // li $dest, value
+        if (args.Count != 3) {
+            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+        }
+        if (args[0] is not RegisterToken destT) {
+            throw new AssemblyException(args[0].Position, "Missing destination register");
+        }
+        if (args[1] is not CommaToken) {
+            throw new AssemblyException(args[1].Position, "Missing comma between arguments");
+        }
+        if (args[2] is not ScalarConstantToken argT) {
+            throw new AssemblyException(args[2].Position, "Missing constant");
+        }
+        var dest = destT;
+        var arg = argT;
+
+        decoded = new Li {
+            Destination = dest.Value,
+            Value = arg,
+        };
+        return true;
+    }
 }

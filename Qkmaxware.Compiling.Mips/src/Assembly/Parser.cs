@@ -205,8 +205,11 @@ public class Parser {
 
         TextSection section = new TextSection();
         while (tokens.HasNext() && !tokens.IsLookahead<DirectiveToken>(0)) {
-            foreach (var instr in parseInstruction(tokens)) {
+            var instr = parseInstruction(tokens);
+            if (instr != null) {
                 section.Code.Add(instr);
+            } else {
+                break;
             }
         }
 
@@ -230,6 +233,11 @@ public class Parser {
         .Count();
 
     private static List<TryDecodeAssembly> decoders = new List<TryDecodeAssembly> {
+        #region Pseudo
+        Assembly.Instructions.Li.TryDecodeAssembly,
+        Assembly.Instructions.La.TryDecodeAssembly,
+        Assembly.Instructions.Move.TryDecodeAssembly,
+        #endregion
         #region Arithmetic & Logical
         Bytecode.AbsS.TryDecodeAssembly,
         Bytecode.Add.TryDecodeAssembly,
@@ -306,11 +314,13 @@ public class Parser {
     };
 
 
-    private IEnumerable<IAssemblyInstruction> parseInstruction(BufferedTokenStream tokens) {
+    private IAssemblyInstruction? parseInstruction(BufferedTokenStream tokens) {
+        eatNewlines(tokens);
+
         // Label (can be on its own line)
         if (tokens.IsLookahead<LabelToken>(0)) {
             var label = require<LabelToken>(tokens, "code label");
-            yield return new Instructions.Label(label.Value);
+            return new Instructions.Label(label.Value);
         }
 
         // Operation
@@ -318,14 +328,14 @@ public class Parser {
         List<Token> args = new List<Token>();
         if (maybe<IdentifierToken>(tokens, out opcode)) {
             // Got the opcode
-    
+        
             // Get the operands
             args.Clear();
             while (tokens.HasNext() && !tokens.IsLookahead<StatementBreakToken>(0)) {
                 var tok = tokens.Advance();
                 if (tok != null)
                     args.Add(tok);
-            }        
+            }   
             
             // Decode
             IAssemblyInstruction? instr = null;
@@ -341,43 +351,13 @@ public class Parser {
                 throw new AssemblyException(opcode.Position, $"Unknown operation '{opcode.Value}'."); 
             } 
 
-            // We decoded an instruction successfully
-            yield return instr;
-            
             // Close
             eol(tokens);
+
+            // We decoded an instruction successfully
+            return instr;
         }
-    }
 
-    
-
-    /*private LoadAddress parseLa(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var label = require<IdentifierToken>(tokens, "label identifier");
-        return new LoadAddress {
-            ResultRegister = res.Value,
-            Label = label.Value
-        };
-    }
-
-    private LoadImmediate parseLi(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var label = require<ScalarConstantToken>(tokens, "immediate value");
-        return new LoadImmediate {
-            ResultRegister = res.Value,
-            Constant = (uint)label.IntegerValue
-        };
-    }
-
-    private Move parseMove(BufferedTokenStream tokens) {
-        var res = require<RegisterToken>(tokens, "result register");
-        require<CommaToken>(tokens, "comma");
-        var from = require<RegisterToken>(tokens, "source register");
-        return new Move {
-            ResultRegister = res.Value,
-            SourceRegister = from.Value
-        };
-    }*/
+        return null;
+    } 
 }

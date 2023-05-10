@@ -42,6 +42,34 @@ public class La : IPseudoInstruction {
         }
         yield return upper;
         yield return lower;
+    }
 
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        if (opcode.Value != "la") {
+            decoded = null;
+            return false;
+        }
+
+        // la $dest, value
+        if (args.Count != 3) {
+            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+        }
+        if (args[0] is not RegisterToken destT) {
+            throw new AssemblyException(args[0].Position, "Missing destination register");
+        }
+        if (args[1] is not CommaToken) {
+            throw new AssemblyException(args[1].Position, "Missing comma between arguments");
+        }
+        if (args[2] is not IdentifierToken argT) {
+            throw new AssemblyException(args[2].Position, "Missing constant");
+        }
+        var dest = destT;
+        var arg = argT;
+
+        decoded = new La {
+            Destination = dest.Value,
+            Label = arg.Value
+        };
+        return true;
     }
 }

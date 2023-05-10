@@ -9,6 +9,12 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// </summary>
 public interface IBytecodeInstruction {
     /// <summary>
+    /// Name of the instruction
+    /// </summary>
+    /// <returns>instruction's name</returns>
+    public string InstructionName();
+    
+    /// <summary>
     /// Encode the operation in MIPS32 bytecode
     /// </summary>
     /// <returns>encoded operation</returns>
