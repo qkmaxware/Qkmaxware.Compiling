@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Do nothing
 /// </summary>
-public class Nop : BaseBytecodeInstruction {
+public class Nop : BaseBytecodeInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b000000U;
     public uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Nop : BaseBytecodeInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName}";
+    public override string AssemblyFormat() => $"{this.InstructionName()}";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Do nothing";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override uint Encode32() {
         return new WordEncoder(0U).Encoded;

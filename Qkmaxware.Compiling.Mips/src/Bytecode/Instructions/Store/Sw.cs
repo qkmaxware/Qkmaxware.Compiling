@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Store signed word (MIPS sw)
 /// </summary>
-public class Sw : LoadStoreInstruction {
+public class Sw : LoadStoreInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b101011U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Sw : LoadStoreInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $src, offset($base)";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $src, offset($base)";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Store a word into memory address $base + offset from $src.";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var address = cpu.Registers[this.Source].ReadAsUInt32() + this.Immediate;

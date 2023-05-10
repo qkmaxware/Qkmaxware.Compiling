@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Move to hi register (MIPS mthi)
 /// </summary>
-public class Mthi : MoveToInstruction {
+public class Mthi : MoveToInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b010001U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Mthi : MoveToInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $arg";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $arg";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Move a value stored in $arg into the special HI register";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var toMove = cpu.Registers[this.Source].ReadAsUInt32();

@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Subtraction of FPU two registers (MIPS sub.s)
 /// </summary>
-public class SubS : FloatingPointEncodedInstruction {
+public class SubS : FloatingPointEncodedInstruction, Assembly.IAssemblyInstruction {
     public RegisterIndex Destination { get; set; }
     public RegisterIndex LhsOperand { get; set; }
     public RegisterIndex RhsOperand { get; set; }
@@ -14,13 +14,15 @@ public class SubS : FloatingPointEncodedInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, $rhs";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Compute $lhs - $rhs and store the result in $dest.";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override IEnumerable<uint> GetOperands() {
         yield return (uint) Destination;

@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Store signed byte (MIPS sb)
 /// </summary>
-public class Sb : LoadStoreInstruction {
+public class Sb : LoadStoreInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b101000U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Sb : LoadStoreInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $src, offset($base)";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $src, offset($base)";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Store a lowest byte into memory address $base + offset from $src.";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var address = cpu.Registers[this.Source].ReadAsUInt32() + this.Immediate;

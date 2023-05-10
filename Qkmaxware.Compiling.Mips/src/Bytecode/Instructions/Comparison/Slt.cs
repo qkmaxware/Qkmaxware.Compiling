@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Set on less than for signed numbers (MIPS slt)
 /// </summary>
-public class Slt : ArithLogInstruction {
+public class Slt : ArithLogInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b101010U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Slt : ArithLogInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, $rhs";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "if $lhs < $rhs store 1 in $dest otherwise store 0 in $dest";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public RegisterIndex LhsOperand {
         get => this.Source;

@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Move from FPU to CPU register with no conversion  (MIPS mfc1)
 /// </summary>
-public class Mfc1 : FloatingPointEncodedInstruction {
+public class Mfc1 : FloatingPointEncodedInstruction, Assembly.IAssemblyInstruction {
 
     public RegisterIndex CpuRegister {get; set;}
     public RegisterIndex FpuRegister {get; set;}
@@ -14,13 +14,15 @@ public class Mfc1 : FloatingPointEncodedInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $arg";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $arg";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Move a value from FPU register $arg to CPU register $dest";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override IEnumerable<uint> GetOperands() {
         yield return (uint) CpuRegister;

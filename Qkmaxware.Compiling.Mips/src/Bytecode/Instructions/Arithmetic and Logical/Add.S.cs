@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Addition of FPU two registers (MIPS add.s)
 /// </summary>
-public class AddS : FloatingPointEncodedInstruction {
+public class AddS : FloatingPointEncodedInstruction, Assembly.IAssemblyInstruction {
     public RegisterIndex Destination { get; set; }
     public RegisterIndex LhsOperand { get; set; }
     public RegisterIndex RhsOperand { get; set; }
@@ -14,7 +14,7 @@ public class AddS : FloatingPointEncodedInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, $rhs";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
@@ -41,6 +41,7 @@ public class AddS : FloatingPointEncodedInstruction {
     /// <returns>assembly string</returns>
     public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}, {this.LhsOperand}, {this.RhsOperand}";
 
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override uint Encode32() {
         //   OOOOOOCC CCCTTTTT DDDDDIII IIIIIIII

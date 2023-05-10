@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Bitwise XOR of two registers (MIPS xor)
 /// </summary>
-public class Xor : ArithLogInstruction {
+public class Xor : ArithLogInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b100110U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Xor : ArithLogInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, $rhs";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Compute $lhs xor $rhs and store the result in $dest.";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public RegisterIndex LhsOperand {
         get => this.Source;

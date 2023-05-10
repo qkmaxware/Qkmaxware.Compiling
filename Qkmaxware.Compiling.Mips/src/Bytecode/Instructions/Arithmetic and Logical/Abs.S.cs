@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Multiplication of FPU two registers (MIPS abs.s)
 /// </summary>
-public class AbsS : FloatingPointEncodedInstruction {
+public class AbsS : FloatingPointEncodedInstruction, Assembly.IAssemblyInstruction {
     public RegisterIndex Destination { get; set; }
     public RegisterIndex Source { get; set; }
 
@@ -13,7 +13,7 @@ public class AbsS : FloatingPointEncodedInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $arg";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $arg";
 
     /// <summary>
     /// Description of this instruction
@@ -92,4 +92,6 @@ public class AbsS : FloatingPointEncodedInstruction {
     /// </summary>
     /// <returns>assembly string</returns>
     public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}, {this.Source}";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 }

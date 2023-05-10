@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Branch on equals (MIPS beq)
 /// </summary>
-public class Beq : BranchInstruction {
+public class Beq : BranchInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b100000U;
     public override uint Opcode => BinaryCode;
 
@@ -43,5 +43,32 @@ public class Beq : BranchInstruction {
             decoded = null;
             return false;
         }
+    }
+
+    /// <summary>
+    /// The written format of this instruction in assembly
+    /// </summary>
+    /// <returns>description</returns>
+    public override string AssemblyFormat() => $"{this.InstructionName()} $lhs, $rhs, offset";
+
+    /// <summary>
+    /// Description of this instruction
+    /// </summary>
+    /// <returns>description</returns>
+    public override string InstructionDescription() => "If $lhs == $rhs increment the PC by the given offset";
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+        Assembly.RegisterToken lhs; Assembly.RegisterToken rhs; Assembly.ScalarConstantToken offset;
+        if (!IsAssemblyFormatLhsRhsOffset<Beq, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out lhs, out rhs, out offset)) {
+            decoded = null;
+            return false;
+        }
+
+        decoded = new Beq {
+            LhsOperand = lhs.Value,
+            RhsOperand = rhs.Value,
+            AddressOffset = offset.IntegerValue
+        };
+        return true;
     }
 }

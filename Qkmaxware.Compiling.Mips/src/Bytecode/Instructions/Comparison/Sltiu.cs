@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Set on less than for unsigned numbers and an immediate value (MIPS sltiu)
 /// </summary>
-public class Sltiu : ArithLogIInstruction {
+public class Sltiu : ArithLogIInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b001001U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Sltiu : ArithLogIInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, value";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, value";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "if $lhs < value store 1 in $dest otherwise store 0 in $dest";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public RegisterIndex LhsOperand {
         get => this.Source;

@@ -67,8 +67,7 @@ public class Disassembler {
         Sltu.TryDecodeBytecode,
         #endregion
         #region Constant Manipulator
-        Lhi.TryDecodeBytecode,
-        Llo.TryDecodeBytecode,
+        Lui.TryDecodeBytecode,
         #endregion
         #region Data Movement
         Mfc1.TryDecodeBytecode,

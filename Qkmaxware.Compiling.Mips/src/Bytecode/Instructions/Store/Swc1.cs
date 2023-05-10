@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Store word from FPU into memory (MIPS swc1)
 /// </summary>
-public class Swc1 : LoadStoreInstruction {
+public class Swc1 : LoadStoreInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0x3dU;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Swc1 : LoadStoreInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $src, offset($base)";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $src, offset($base)";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Store a word into memory address $base + offset from FPU register $src.";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var address = cpu.Registers[this.Source].ReadAsUInt32() + this.Immediate;

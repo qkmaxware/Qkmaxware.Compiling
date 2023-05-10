@@ -1,3 +1,5 @@
+using Qkmaxware.Compiling.Targets.Mips.Bytecode;
+
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 /// <summary>
@@ -24,6 +26,13 @@ public interface IAssemblyInstruction {
     /// </summary>
     /// <returns>assembly string</returns>
     public string ToAssemblyString();
+
+    /// <summary>
+    /// Assemble this instruction into bytecode
+    /// </summary>
+    /// <param name="env">environment of the current assembler</param>
+    /// <returns>list of bytecode instructions</returns>
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env);
 }
 
 /// <summary>

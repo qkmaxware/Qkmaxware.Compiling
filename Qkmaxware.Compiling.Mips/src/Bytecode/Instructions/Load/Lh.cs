@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Load signed half word (MIPS lh)
 /// </summary>
-public class Lh : LoadStoreInstruction {
+public class Lh : LoadStoreInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b100001U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Lh : LoadStoreInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, offset($base)";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, offset($base)";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Load a half-word from memory address $base + offset into $dest preserving its sign.";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var raw = memory.LoadHalf(cpu.Registers[this.Source].ReadAsUInt32() + this.Immediate);

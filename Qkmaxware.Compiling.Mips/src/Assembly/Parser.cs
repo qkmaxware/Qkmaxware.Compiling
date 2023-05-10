@@ -257,10 +257,10 @@ public class Parser {
         Bytecode.Xori.TryDecodeAssembly,
         #endregion
         #region Branch
-        //Bytecode.Beq.TryDecodeAssembly,
-        //Bytecode.Bgtz.TryDecodeAssembly,
-        //Bytecode.Blez.TryDecodeAssembly,
-        //Bytecode.Bne.TryDecodeAssembly,
+        Bytecode.Beq.TryDecodeAssembly,
+        Bytecode.Bgtz.TryDecodeAssembly,
+        Bytecode.Blez.TryDecodeAssembly,
+        Bytecode.Bne.TryDecodeAssembly,
         #endregion
         #region Comparison
         Bytecode.Slt.TryDecodeAssembly,
@@ -269,8 +269,7 @@ public class Parser {
         Bytecode.Sltu.TryDecodeAssembly,
         #endregion
         #region Constant Manipulator
-        Bytecode.Lhi.TryDecodeAssembly,
-        Bytecode.Llo.TryDecodeAssembly,
+        Bytecode.Lui.TryDecodeAssembly,
         #endregion
         #region Data Movement
         Bytecode.Mfc1.TryDecodeAssembly,

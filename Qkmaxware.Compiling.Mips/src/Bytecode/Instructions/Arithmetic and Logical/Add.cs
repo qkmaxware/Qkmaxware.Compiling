@@ -6,7 +6,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Signed addition of two registers (MIPS add)
 /// </summary>
-public class Add : ArithLogInstruction {
+public class Add : ArithLogInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b100000U;
     public override uint Opcode => BinaryCode;
 
@@ -14,7 +14,7 @@ public class Add : ArithLogInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $dest, $lhs, $rhs";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
@@ -65,4 +65,6 @@ public class Add : ArithLogInstruction {
         };
         return true;
     }
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 }

@@ -5,7 +5,7 @@ namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
 /// <summary>
 /// Unsigned multiplication of two registers (MIPS multu)
 /// </summary>
-public class Multu : DivMultInstruction {
+public class Multu : DivMultInstruction, Assembly.IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b011001U;
     public override uint Opcode => BinaryCode;
 
@@ -13,13 +13,15 @@ public class Multu : DivMultInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName} $lhs, $rhs";
+    public override string AssemblyFormat() => $"{this.InstructionName()} $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
     public override string InstructionDescription() => "Compute $lhs * $rhs storing the result's highest bits in HI lowest bits in LO.";
+
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public RegisterIndex LhsOperand {
         get => this.Source;
