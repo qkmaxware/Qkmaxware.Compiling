@@ -15,6 +15,12 @@ public abstract partial class IrType {
     /// </summary>
     /// <returns>list of valid conversions</returns>
     public abstract IEnumerable<TypeConversion> EnumerateConversions();
+
+    /// <summary>
+    /// Visit this type
+    /// </summary>
+    /// <param name="visitor">visitor visiting this type</param>
+    public abstract void Visit(IIrTypeVisitor visitor);
 }
 
 /// <summary>

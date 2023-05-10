@@ -23,7 +23,7 @@ public class Li : IPseudoInstruction {
 
     public string InstructionDescription() => "Load an immediate value into register $dest.";
 
-    public string ToAssemblyString() => $"la {Destination}, {Value}";
+    public string ToAssemblyString() => $"li {Destination}, {Value}";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
         var bits = BitConverter.ToUInt32(BitConverter.GetBytes(this.Value));

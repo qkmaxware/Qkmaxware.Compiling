@@ -1,7 +1,7 @@
 using Qkmaxware.Compiling.Targets.Ir;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 
-namespace Qkmaxware.Compiling.Targets.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 public class MipsAssemblyBackend : IBackendTargetModule<Mips.Assembly.AssemblyProgram>, IBackendTargetFile {
     public FileInfo TryEmitToFile(Module module, string path_like) {

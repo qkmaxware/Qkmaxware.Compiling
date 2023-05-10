@@ -23,6 +23,12 @@ public sealed class F32 : IrType<float> {
     internal F32() {}
 
     /// <summary>
+    /// Visit this type
+    /// </summary>
+    /// <param name="visitor">visitor visiting this type</param>
+    public override void Visit(IIrTypeVisitor visitor) => visitor.Accept(this);
+
+    /// <summary>
     /// List all types that values of this type can be converted into
     /// </summary>
     /// <returns>list of valid conversions</returns>

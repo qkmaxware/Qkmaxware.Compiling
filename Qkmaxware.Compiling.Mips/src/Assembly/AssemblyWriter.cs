@@ -44,8 +44,10 @@ public class AssemblyWriter {
         foreach (var section in program.TextSections) {
             writer.WriteLine(section);
             foreach (var code in section.Code) {
-                writer.Write(TabCharacter);
-                writer.WriteLine(code);
+                if (code is not Label) {
+                    writer.Write(TabCharacter);
+                }
+                writer.WriteLine(code.ToAssemblyString());
             }
         }
     }

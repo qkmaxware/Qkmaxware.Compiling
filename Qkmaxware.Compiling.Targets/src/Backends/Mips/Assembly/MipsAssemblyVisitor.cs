@@ -4,7 +4,7 @@ using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
-namespace Qkmaxware.Compiling.Targets.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 internal class MipsAssemblyVisitor : ModuleVisitor {
 
@@ -58,7 +58,6 @@ internal class MipsAssemblyVisitor : ModuleVisitor {
 
     public void VisitSubprogram(Subprogram sub) {
         // Create a text section for this subprogram and setup default instructions
-        var text = new TextSection();
         text.Code.Add(new Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions.Label("proc_" + sub.ProcedureIndex)); // Give this program a name
 
         // Push the return address (restored when procedure returns)

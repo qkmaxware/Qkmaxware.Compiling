@@ -3,7 +3,7 @@ using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
-namespace Qkmaxware.Compiling.Targets.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
     private TextSection text;
@@ -101,14 +101,11 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         }
 
         // Step 3: Do operation
-        
+        var operation = new AddOperator(text, res_register, lhs_register, rhs_register);
+        result.TypeOf().Visit(operation);
 
-        // Step 4: Push result onto stack/registers
-        
-        
         // Step 5: Store the result in the variable
-
-        throw new NotImplementedException();
+        tuple.Result.MipsInstructionsToStoreValue(res_register);
     }
 
     public void Accept(Ir.Sub tuple)
@@ -270,9 +267,8 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         exit();
     }
 
-    public void Accept(Jump tuple)
-    {
-        throw new NotImplementedException();
+    public void Accept(Jump tuple) {
+        // TODO 
     }
 
     public void Accept(JumpIfZero tuple)
@@ -295,9 +291,8 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         throw new NotImplementedException();
     }
 
-    public void Accept(ReturnProcedure tuple)
-    {
-        throw new NotImplementedException();
+    public void Accept(ReturnProcedure tuple) {
+        // TODO 
     }
 
     public void Accept(ReturnFunction tuple)

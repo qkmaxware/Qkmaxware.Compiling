@@ -3,7 +3,7 @@ using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
 using Qkmaxware.Compiling.Targets.Mips;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 
-namespace Qkmaxware.Compiling.Targets.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 /// <summary>
 /// Type conversions for MIPS assembly code

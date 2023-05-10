@@ -1,7 +1,7 @@
 using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
-namespace Qkmaxware.Compiling.Targets.Mips;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 /// <summary>
 /// Interface for value operands supported by MIPS
