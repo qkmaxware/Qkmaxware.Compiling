@@ -4,6 +4,8 @@ using Qkmaxware.Compiling.Targets.Mips.Bytecode;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips.Test;
 

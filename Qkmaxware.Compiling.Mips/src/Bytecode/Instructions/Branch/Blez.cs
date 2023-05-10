@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Branch on less than or equal to 0 (MIPS blez)
 /// </summary>
-public class Blez : BranchZInstruction, Assembly.IAssemblyInstruction {
+public class Blez : BranchZInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b000110U;
     public override uint Opcode => BinaryCode;
 
@@ -47,7 +48,7 @@ public class Blez : BranchZInstruction, Assembly.IAssemblyInstruction {
     /// <returns>description</returns>
     public override string InstructionDescription() => "If $source <= 0 increment the PC by the given offset";
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken lhs; Assembly.ScalarConstantToken offset;
         if (!IsAssemblyFormatLhsOffset<Blez, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out lhs, out offset)) {
             decoded = null;

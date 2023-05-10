@@ -1,8 +1,9 @@
 using Qkmaxware.Compiling.Targets.Mips.Bytecode;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
 
-public delegate bool TryDecodeBytecode(uint bytecode, out Bytecode.IBytecodeInstruction? decoded);
+public delegate bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded);
 
 public class Disassembler {
 

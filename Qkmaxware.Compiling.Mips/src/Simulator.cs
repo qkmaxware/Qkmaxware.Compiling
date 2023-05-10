@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
 
@@ -37,7 +38,7 @@ public class Simulator : ISimulator {
     }
     public Simulator(IMemory memory) : this(new SimulatorIO(), memory) {}    
 
-    public void Execute(Bytecode.IBytecodeInstruction instr) {
+    public void Execute(IBytecodeInstruction instr) {
         instr.Invoke(cpu, fpu, memory, this.io);
     }
 
@@ -58,8 +59,8 @@ public class Simulator : ISimulator {
         return 0;
     }
 
-    public virtual void OnBeforeInstruction(Bytecode.IBytecodeInstruction instr) {}
-    public virtual void OnAfterInstruction(Bytecode.IBytecodeInstruction instr) {}
+    public virtual void OnBeforeInstruction(IBytecodeInstruction instr) {}
+    public virtual void OnAfterInstruction(IBytecodeInstruction instr) {}
 }
 
 /// <summary>

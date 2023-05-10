@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Load signed word (MIPS lw)
 /// </summary>
-public class Lw : LoadStoreInstruction, Assembly.IAssemblyInstruction {
+public class Lw : LoadStoreInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b100011U;
     public override uint Opcode => BinaryCode;
 
@@ -42,7 +43,7 @@ public class Lw : LoadStoreInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken @base; Assembly.ScalarConstantToken offset;
         if (!IsAssemblyFormatDestOffsetBase<Lw, Assembly.RegisterToken, Assembly.ScalarConstantToken, Assembly.RegisterToken>(opcode, args, out dest, out offset, out @base)) {
             decoded = null;

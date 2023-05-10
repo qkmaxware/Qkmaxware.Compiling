@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Branch on equals (MIPS beq)
 /// </summary>
-public class Beq : BranchInstruction, Assembly.IAssemblyInstruction {
+public class Beq : BranchInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b100000U;
     public override uint Opcode => BinaryCode;
 
@@ -57,7 +58,7 @@ public class Beq : BranchInstruction, Assembly.IAssemblyInstruction {
     /// <returns>description</returns>
     public override string InstructionDescription() => "If $lhs == $rhs increment the PC by the given offset";
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken lhs; Assembly.RegisterToken rhs; Assembly.ScalarConstantToken offset;
         if (!IsAssemblyFormatLhsRhsOffset<Beq, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out lhs, out rhs, out offset)) {
             decoded = null;

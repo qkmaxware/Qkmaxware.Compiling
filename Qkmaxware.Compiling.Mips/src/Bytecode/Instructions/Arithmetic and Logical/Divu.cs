@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Unsigned division of two registers (MIPS divu)
 /// </summary>
-public class Divu : DivMultInstruction, Assembly.IAssemblyInstruction {
+public class Divu : DivMultInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b011011U;
     public override uint Opcode => BinaryCode;
 
@@ -56,7 +57,7 @@ public class Divu : DivMultInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken lhs; Assembly.RegisterToken rhs;
         if (!IsAssemblyFormatLhsRhs<Divu, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out lhs, out rhs)) {
             decoded = null;

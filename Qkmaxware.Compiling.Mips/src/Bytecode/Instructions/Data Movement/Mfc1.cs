@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Move from FPU to CPU register with no conversion  (MIPS mfc1)
 /// </summary>
-public class Mfc1 : FloatingPointEncodedInstruction, Assembly.IAssemblyInstruction {
+public class Mfc1 : FloatingPointEncodedInstruction, IAssemblyInstruction {
 
     public RegisterIndex CpuRegister {get; set;}
     public RegisterIndex FpuRegister {get; set;}
@@ -71,7 +72,7 @@ public class Mfc1 : FloatingPointEncodedInstruction, Assembly.IAssemblyInstructi
         return true;
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken arg;
         if (!IsAssemblyFormatDestArg<Mfc1, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out arg)) {
             decoded = null;

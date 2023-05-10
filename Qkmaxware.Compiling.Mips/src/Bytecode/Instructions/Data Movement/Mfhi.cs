@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Move from hi register (MIPS mfhi)
 /// </summary>
-public class Mfhi : MoveFromInstruction, Assembly.IAssemblyInstruction {
+public class Mfhi : MoveFromInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b010000U;
     public override uint Opcode => BinaryCode;
 
@@ -40,7 +41,7 @@ public class Mfhi : MoveFromInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; 
         if (!IsAssemblyFormatDest<Mfhi, Assembly.RegisterToken>(opcode, args, out dest)) {
             decoded = null;

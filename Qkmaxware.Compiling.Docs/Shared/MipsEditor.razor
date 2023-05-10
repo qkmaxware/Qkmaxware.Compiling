@@ -110,11 +110,11 @@ print:
 
     private List<string> cached_asm = new List<string>();
 
-    private static List<Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction?> all_assembly_instructions = 
+    private static List<Qkmaxware.Compiling.Targets.IAssemblyInstruction?> all_assembly_instructions = 
         typeof(Qkmaxware.Compiling.Targets.Mips.Assembly.Parser)
         .Assembly.GetTypes()
-        .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction)))
-        .Select(type => (Qkmaxware.Compiling.Targets.Mips.Assembly.IAssemblyInstruction?)Activator.CreateInstance(type))
+        .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(Qkmaxware.Compiling.Targets.IAssemblyInstruction)))
+        .Select(type => (Qkmaxware.Compiling.Targets.IAssemblyInstruction?)Activator.CreateInstance(type))
         .ToList();
 
     private bool showHelpDialog = false;

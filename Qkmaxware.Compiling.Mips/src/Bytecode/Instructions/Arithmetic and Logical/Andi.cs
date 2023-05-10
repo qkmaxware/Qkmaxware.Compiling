@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Bitwise AND of a register and an immediate value (MIPS andi)
 /// </summary>
-public class Andi : ArithLogIInstruction, Assembly.IAssemblyInstruction {
+public class Andi : ArithLogIInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b001100U;
     public override uint Opcode => BinaryCode;
 
@@ -53,7 +54,7 @@ public class Andi : ArithLogIInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.ScalarConstantToken rhs;
         if (!IsAssemblyFormatDestLhsRhs<Andi, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out lhs, out rhs)) {
             decoded = null;

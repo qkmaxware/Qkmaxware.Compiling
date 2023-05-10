@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// System call (MIPS syscall)
 /// </summary>
-public class Syscall : BaseBytecodeInstruction, Assembly.IAssemblyInstruction {
+public class Syscall : BaseBytecodeInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b000000U;
     public uint Opcode => BinaryCode;
 
@@ -125,7 +126,7 @@ public class Syscall : BaseBytecodeInstruction, Assembly.IAssemblyInstruction {
     /// <returns>assembly string</returns>
     public override string ToAssemblyString() => $"{this.InstructionName()}";
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         if (opcode.Value != InstructionName<Syscall>()) {
             decoded = null;
             return false;

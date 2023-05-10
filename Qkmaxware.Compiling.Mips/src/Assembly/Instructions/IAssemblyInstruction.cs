@@ -1,6 +1,7 @@
 using Qkmaxware.Compiling.Targets.Mips.Bytecode;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
+namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
 /// <summary>
 /// Interface for all MIPS assembly instructions

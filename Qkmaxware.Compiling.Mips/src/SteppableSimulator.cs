@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
 
@@ -25,13 +26,13 @@ public class StepableSimulator {
     }
     public StepableSimulator(IMemory memory, Bytecode.BytecodeProgram program) : this(new SimulatorIO(), memory, program) {}    
 
-    protected void Execute(Bytecode.IBytecodeInstruction instr) {
+    protected void Execute(IBytecodeInstruction instr) {
         instr.Invoke(Cpu, Fpu, Memory, this.io);
     }
 
     public bool IsProgramDone => program == null ? true : Cpu.PC < 0 || Cpu.PC >= program.InstructionCount;
 
-    public Bytecode.IBytecodeInstruction? NextInstruction => IsProgramDone ? null : program[(uint)Cpu.PC];
+    public IBytecodeInstruction? NextInstruction => IsProgramDone ? null : program[(uint)Cpu.PC];
 
     public int RunAll () {
         while (true) {
@@ -68,6 +69,6 @@ public class StepableSimulator {
         }
     }
 
-    public virtual void OnBeforeInstruction(Bytecode.IBytecodeInstruction instr) {}
-    public virtual void OnAfterInstruction(Bytecode.IBytecodeInstruction instr) {}
+    public virtual void OnBeforeInstruction(IBytecodeInstruction instr) {}
+    public virtual void OnAfterInstruction(IBytecodeInstruction instr) {}
 }

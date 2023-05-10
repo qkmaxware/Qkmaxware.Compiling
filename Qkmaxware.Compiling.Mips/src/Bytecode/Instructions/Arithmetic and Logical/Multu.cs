@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Unsigned multiplication of two registers (MIPS multu)
 /// </summary>
-public class Multu : DivMultInstruction, Assembly.IAssemblyInstruction {
+public class Multu : DivMultInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b011001U;
     public override uint Opcode => BinaryCode;
 
@@ -55,7 +56,7 @@ public class Multu : DivMultInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken lhs; Assembly.RegisterToken rhs;
         if (!IsAssemblyFormatLhsRhs<Multu, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out lhs, out rhs)) {
             decoded = null;

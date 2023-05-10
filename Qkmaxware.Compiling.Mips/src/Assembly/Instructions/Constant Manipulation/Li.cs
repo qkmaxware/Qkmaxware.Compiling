@@ -1,3 +1,5 @@
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
+
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
 /// <summary>
@@ -23,20 +25,20 @@ public class Li : IPseudoInstruction {
 
     public string ToAssemblyString() => $"la {Destination}, {Value}";
 
-    public IEnumerable<Bytecode.IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
         var bits = BitConverter.ToUInt32(BitConverter.GetBytes(this.Value?.IntegerValue ?? 0));
-        yield return new Bytecode.Lui {
+        yield return new Lui {
             Destination = this.Destination,
             Immediate = bits.HighHalf()
         };
-        yield return new Bytecode.Ori {
+        yield return new Ori {
             Destination = this.Destination,
             LhsOperand = this.Destination,
             RhsOperand = bits.LowHalf()
         };
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         if (opcode.Value != "li") {
             decoded = null;
             return false;

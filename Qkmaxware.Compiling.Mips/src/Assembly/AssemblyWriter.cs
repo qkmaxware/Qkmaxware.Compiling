@@ -1,3 +1,5 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
+
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
 /// <summary>

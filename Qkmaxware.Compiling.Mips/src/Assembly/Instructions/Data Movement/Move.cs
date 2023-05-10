@@ -1,3 +1,5 @@
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
+
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
 /// <summary>
@@ -23,15 +25,15 @@ public class Move : IPseudoInstruction {
 
     public string ToAssemblyString() => $"move {Destination}, {Source}";
 
-    public IEnumerable<Bytecode.IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
-        yield return new Bytecode.Add {
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
+        yield return new Add {
             Destination = this.Destination,
             LhsOperand = this.Source,
             RhsOperand = RegisterIndex.Zero
         };
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         if (opcode.Value != "move") {
             decoded = null;
             return false;

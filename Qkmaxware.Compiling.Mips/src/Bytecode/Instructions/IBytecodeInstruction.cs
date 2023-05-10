@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Interface for all MIPS bytecode instructions

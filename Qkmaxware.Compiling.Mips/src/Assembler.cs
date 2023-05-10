@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode;
 
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
+
 namespace Qkmaxware.Compiling.Targets.Mips;
 
 class Counter {
@@ -158,7 +160,7 @@ public class Assembler {
         return output;
     }
 
-    private IEnumerable<Bytecode.IBytecodeInstruction> EncodeBytes(Counter MemoryUsed, AssemblerEnvironment env, string label, IEnumerable<byte> integers) {
+    private IEnumerable<IBytecodeInstruction> EncodeBytes(Counter MemoryUsed, AssemblerEnvironment env, string label, IEnumerable<byte> integers) {
         // Save address in memory for the stored data
         var address = MemoryUsed.Count;
         env.SetLabelAddress(label, address);
@@ -166,13 +168,13 @@ public class Assembler {
         // Store the data
         foreach (var element in integers) {
             // Load value
-            yield return new Bytecode.Ori {
+            yield return new Ori {
                 Immediate = element,
                 Target = RegisterIndex.At
             };
 
             // Store value
-            yield return new Bytecode.Sb {
+            yield return new Sb {
                 Target = RegisterIndex.At,      // Register containing the value to save
                 Source = RegisterIndex.Zero,    // Register containing the "base" address
                 Immediate = MemoryUsed.Count    // Current memory pointer
@@ -183,7 +185,7 @@ public class Assembler {
         }
     }
 
-    private IEnumerable<Bytecode.IBytecodeInstruction> EncodeHalf(Counter MemoryUsed, AssemblerEnvironment env, string label, IEnumerable<Int16> integers) {
+    private IEnumerable<IBytecodeInstruction> EncodeHalf(Counter MemoryUsed, AssemblerEnvironment env, string label, IEnumerable<Int16> integers) {
         // Save address in memory for the stored data
         var address = MemoryUsed.Count;
         env.SetLabelAddress(label, address);
@@ -191,13 +193,13 @@ public class Assembler {
         // Store the data
         foreach (var element in integers) {
             // Load value
-            yield return new Bytecode.Ori {
+            yield return new Ori {
                 Immediate = BitConverter.ToUInt16(BitConverter.GetBytes(element)),
                 Target = RegisterIndex.At
             };
 
             // Store value
-            yield return new Bytecode.Sh {
+            yield return new Sh {
                 Target = RegisterIndex.At,      // Register containing the value to save
                 Source = RegisterIndex.Zero,    // Register containing the "base" address
                 Immediate = MemoryUsed.Count    // Current memory pointer
@@ -208,7 +210,7 @@ public class Assembler {
         }
     }
 
-    private IEnumerable<Bytecode.IBytecodeInstruction> EncodeWord(Counter MemoryUsed, AssemblerEnvironment env, string label, IEnumerable<UInt32> integers) {
+    private IEnumerable<IBytecodeInstruction> EncodeWord(Counter MemoryUsed, AssemblerEnvironment env, string label, IEnumerable<UInt32> integers) {
         // Save address in memory for the stored data
         var address = MemoryUsed.Count;
         env.SetLabelAddress(label, address);
@@ -216,17 +218,17 @@ public class Assembler {
         // Store the data
         foreach (var element in integers) {
             // Load value
-            yield return new Bytecode.Lui {
+            yield return new Lui {
                 Immediate = element >> 16,
                 Target = RegisterIndex.At
             };
-            yield return new Bytecode.Ori {
+            yield return new Ori {
                 Immediate = element & 0b11111111_11111111,
                 Target = RegisterIndex.At
             };
 
             // Store value
-            yield return new Bytecode.Sw {
+            yield return new Sw {
                 Target = RegisterIndex.At,      // Register containing the value to save
                 Source = RegisterIndex.Zero,    // Register containing the "base" address
                 Immediate = MemoryUsed.Count    // Current memory pointer

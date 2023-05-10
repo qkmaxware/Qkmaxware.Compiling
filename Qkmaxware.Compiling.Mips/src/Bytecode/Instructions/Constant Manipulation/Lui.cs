@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Load bits into the upper half-word, the lower half-word is cleared
 /// </summary>
-public class Lui : LoadIInstruction, Assembly.IAssemblyInstruction {
+public class Lui : LoadIInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0xF;
     public override uint Opcode => BinaryCode;
 
@@ -47,7 +48,7 @@ public class Lui : LoadIInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.ScalarConstantToken arg;
         if (!IsAssemblyFormatDestArg<Lui, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out arg)) {
             decoded = null;

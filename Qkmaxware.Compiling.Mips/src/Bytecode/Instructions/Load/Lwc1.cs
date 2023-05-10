@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Load word into FPU from memory (MIPS lwc1)
 /// </summary>
-public class Lwc1 : LoadStoreInstruction, Assembly.IAssemblyInstruction {
+public class Lwc1 : LoadStoreInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0x31U;
     public override uint Opcode => BinaryCode;
 
@@ -42,7 +43,7 @@ public class Lwc1 : LoadStoreInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken @base; Assembly.ScalarConstantToken offset;
         if (!IsAssemblyFormatDestOffsetBase<Lwc1, Assembly.RegisterToken, Assembly.ScalarConstantToken, Assembly.RegisterToken>(opcode, args, out dest, out offset, out @base)) {
             decoded = null;

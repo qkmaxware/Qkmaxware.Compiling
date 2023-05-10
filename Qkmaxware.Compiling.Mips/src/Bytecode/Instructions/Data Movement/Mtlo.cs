@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Move to lo register (MIPS mtlo)
 /// </summary>
-public class Mtlo : MoveToInstruction, Assembly.IAssemblyInstruction {
+public class Mtlo : MoveToInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b010011U;
     public override uint Opcode => BinaryCode;
 
@@ -40,7 +41,7 @@ public class Mtlo : MoveToInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; 
         if (!IsAssemblyFormatArg<Mtlo, Assembly.RegisterToken>(opcode, args, out dest)) {
             decoded = null;

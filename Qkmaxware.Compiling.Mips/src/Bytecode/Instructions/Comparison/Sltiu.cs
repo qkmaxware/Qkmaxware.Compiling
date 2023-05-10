@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 // ADD
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Set on less than for unsigned numbers and an immediate value (MIPS sltiu)
 /// </summary>
-public class Sltiu : ArithLogIInstruction, Assembly.IAssemblyInstruction {
+public class Sltiu : ArithLogIInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b001001U;
     public override uint Opcode => BinaryCode;
 
@@ -53,7 +54,7 @@ public class Sltiu : ArithLogIInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.ScalarConstantToken rhs;
         if (!IsAssemblyFormatDestLhsRhs<Sltiu, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out lhs, out rhs)) {
             decoded = null;

@@ -1,3 +1,5 @@
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
+
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
 /// <summary>
@@ -21,7 +23,7 @@ public class Label : IPseudoInstruction {
 
     public string ToAssemblyString() => $"{Name}:";
 
-    public IEnumerable<Bytecode.IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
         if (this.Name != null) {
             env.SetLabelAddress(this.Name, env.CurrentMemoryAddress());
         }

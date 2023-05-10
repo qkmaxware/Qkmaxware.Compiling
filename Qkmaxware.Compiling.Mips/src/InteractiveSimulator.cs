@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips;
 
@@ -11,7 +12,7 @@ public class ConsoleInteractiveSimulator : Simulator {
     public ConsoleInteractiveSimulator(SimulatorIO io, IMemory memory) : base(io, memory) {}
     public ConsoleInteractiveSimulator(IMemory memory) : base(memory) {}
 
-    public override void OnBeforeInstruction(Bytecode.IBytecodeInstruction instr) {
+    public override void OnBeforeInstruction(IBytecodeInstruction instr) {
         Console.WriteLine("CPU");
         Console.Write("    "); Console.WriteLine(cpu);
         Console.WriteLine("FPU");

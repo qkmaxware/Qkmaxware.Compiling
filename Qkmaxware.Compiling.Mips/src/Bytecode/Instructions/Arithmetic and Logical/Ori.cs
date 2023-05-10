@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Bitwise OR of a register and an immediate value (MIPS ori)
 /// </summary>
-public class Ori : ArithLogIInstruction, Assembly.IAssemblyInstruction {
+public class Ori : ArithLogIInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b001101U;
     public override uint Opcode => BinaryCode;
 
@@ -58,7 +59,7 @@ public class Ori : ArithLogIInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.ScalarConstantToken rhs;
         if (!IsAssemblyFormatDestLhsRhs<Ori, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.ScalarConstantToken>(opcode, args, out dest, out lhs, out rhs)) {
             decoded = null;

@@ -1,3 +1,5 @@
+using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
+
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
 /// <summary>
@@ -23,12 +25,12 @@ public class La : IPseudoInstruction {
 
     public string ToAssemblyString() => $"la {Destination}, {Label}";
 
-    public IEnumerable<Bytecode.IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
-        var upper = new Bytecode.Lui {
+    public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
+        var upper = new Lui {
             Destination = this.Destination,
             Immediate = 0
         };
-        var lower = new Bytecode.Ori {
+        var lower = new Ori {
             Destination = this.Destination,
             LhsOperand  = this.Destination,
             RhsOperand  = 0
@@ -44,7 +46,7 @@ public class La : IPseudoInstruction {
         yield return lower;
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         if (opcode.Value != "la") {
             decoded = null;
             return false;

@@ -1,11 +1,12 @@
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Multiplication of FPU two registers (MIPS abs.s)
 /// </summary>
-public class AbsS : FloatingPointEncodedInstruction, Assembly.IAssemblyInstruction {
+public class AbsS : FloatingPointEncodedInstruction, IAssemblyInstruction {
     public RegisterIndex Destination { get; set; }
     public RegisterIndex Source { get; set; }
 
@@ -73,7 +74,7 @@ public class AbsS : FloatingPointEncodedInstruction, Assembly.IAssemblyInstructi
         return true;
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken arg;
         if (!IsAssemblyFormatDestArg<AbsS, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out arg)) {
             decoded = null;

@@ -1,7 +1,7 @@
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Base class for instructions with Register type encoding

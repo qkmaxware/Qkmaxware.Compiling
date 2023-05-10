@@ -1,11 +1,12 @@
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Hardware;
 
-namespace Qkmaxware.Compiling.Targets.Mips.Bytecode;
+namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
 /// Bitwise NOR (not or) of two registers (MIPS nor)
 /// </summary>
-public class Nor : ArithLogInstruction, Assembly.IAssemblyInstruction {
+public class Nor : ArithLogInstruction, IAssemblyInstruction {
     public static readonly uint BinaryCode = 0b100111U;
     public override uint Opcode => BinaryCode;
 
@@ -53,7 +54,7 @@ public class Nor : ArithLogInstruction, Assembly.IAssemblyInstruction {
         }
     }
 
-    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out Mips.Assembly.IAssemblyInstruction? decoded) {
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.RegisterToken rhs;
         if (!IsAssemblyFormatDestLhsRhs<Nor, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out lhs, out rhs)) {
             decoded = null;

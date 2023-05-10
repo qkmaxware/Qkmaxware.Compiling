@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using Qkmaxware.Compiling.Targets.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
@@ -239,77 +239,77 @@ public class Parser {
         Assembly.Instructions.Move.TryDecodeAssembly,
         #endregion
         #region Arithmetic & Logical
-        Bytecode.AbsS.TryDecodeAssembly,
-        Bytecode.Add.TryDecodeAssembly,
-        Bytecode.AddS.TryDecodeAssembly,
-        Bytecode.Addi.TryDecodeAssembly,
-        Bytecode.Addiu.TryDecodeAssembly,
-        Bytecode.Addu.TryDecodeAssembly,
-        Bytecode.And.TryDecodeAssembly,
-        Bytecode.Andi.TryDecodeAssembly,
-        Bytecode.Div.TryDecodeAssembly,
-        Bytecode.DivS.TryDecodeAssembly,
-        Bytecode.Divu.TryDecodeAssembly,
-        Bytecode.MulS.TryDecodeAssembly,
-        Bytecode.Mult.TryDecodeAssembly,
-        Bytecode.Multu.TryDecodeAssembly,
-        Bytecode.Nor.TryDecodeAssembly,
-        Bytecode.Or.TryDecodeAssembly,
-        Bytecode.Ori.TryDecodeAssembly,
-        Bytecode.Sllv.TryDecodeAssembly,
-        Bytecode.Srlv.TryDecodeAssembly,
-        Bytecode.Sub.TryDecodeAssembly,
-        Bytecode.SubS.TryDecodeAssembly,
-        Bytecode.Subu.TryDecodeAssembly,
-        Bytecode.Xor.TryDecodeAssembly,
-        Bytecode.Xori.TryDecodeAssembly,
+        Bytecode.Instructions.AbsS.TryDecodeAssembly,
+        Bytecode.Instructions.Add.TryDecodeAssembly,
+        Bytecode.Instructions.AddS.TryDecodeAssembly,
+        Bytecode.Instructions.Addi.TryDecodeAssembly,
+        Bytecode.Instructions.Addiu.TryDecodeAssembly,
+        Bytecode.Instructions.Addu.TryDecodeAssembly,
+        Bytecode.Instructions.And.TryDecodeAssembly,
+        Bytecode.Instructions.Andi.TryDecodeAssembly,
+        Bytecode.Instructions.Div.TryDecodeAssembly,
+        Bytecode.Instructions.DivS.TryDecodeAssembly,
+        Bytecode.Instructions.Divu.TryDecodeAssembly,
+        Bytecode.Instructions.MulS.TryDecodeAssembly,
+        Bytecode.Instructions.Mult.TryDecodeAssembly,
+        Bytecode.Instructions.Multu.TryDecodeAssembly,
+        Bytecode.Instructions.Nor.TryDecodeAssembly,
+        Bytecode.Instructions.Or.TryDecodeAssembly,
+        Bytecode.Instructions.Ori.TryDecodeAssembly,
+        Bytecode.Instructions.Sllv.TryDecodeAssembly,
+        Bytecode.Instructions.Srlv.TryDecodeAssembly,
+        Bytecode.Instructions.Sub.TryDecodeAssembly,
+        Bytecode.Instructions.SubS.TryDecodeAssembly,
+        Bytecode.Instructions.Subu.TryDecodeAssembly,
+        Bytecode.Instructions.Xor.TryDecodeAssembly,
+        Bytecode.Instructions.Xori.TryDecodeAssembly,
         #endregion
         #region Branch
-        Bytecode.Beq.TryDecodeAssembly,
-        Bytecode.Bgtz.TryDecodeAssembly,
-        Bytecode.Blez.TryDecodeAssembly,
-        Bytecode.Bne.TryDecodeAssembly,
+        Bytecode.Instructions.Beq.TryDecodeAssembly,
+        Bytecode.Instructions.Bgtz.TryDecodeAssembly,
+        Bytecode.Instructions.Blez.TryDecodeAssembly,
+        Bytecode.Instructions.Bne.TryDecodeAssembly,
         #endregion
         #region Comparison
-        Bytecode.Slt.TryDecodeAssembly,
-        Bytecode.Slti.TryDecodeAssembly,
-        Bytecode.Sltiu.TryDecodeAssembly,
-        Bytecode.Sltu.TryDecodeAssembly,
+        Bytecode.Instructions.Slt.TryDecodeAssembly,
+        Bytecode.Instructions.Slti.TryDecodeAssembly,
+        Bytecode.Instructions.Sltiu.TryDecodeAssembly,
+        Bytecode.Instructions.Sltu.TryDecodeAssembly,
         #endregion
         #region Constant Manipulator
-        Bytecode.Lui.TryDecodeAssembly,
+        Bytecode.Instructions.Lui.TryDecodeAssembly,
         #endregion
         #region Data Movement
-        Bytecode.Mfc1.TryDecodeAssembly,
-        Bytecode.Mfhi.TryDecodeAssembly,
-        Bytecode.Mflo.TryDecodeAssembly,
-        Bytecode.Mtc1.TryDecodeAssembly,
-        Bytecode.Mthi.TryDecodeAssembly,
-        Bytecode.Mtlo.TryDecodeAssembly,
+        Bytecode.Instructions.Mfc1.TryDecodeAssembly,
+        Bytecode.Instructions.Mfhi.TryDecodeAssembly,
+        Bytecode.Instructions.Mflo.TryDecodeAssembly,
+        Bytecode.Instructions.Mtc1.TryDecodeAssembly,
+        Bytecode.Instructions.Mthi.TryDecodeAssembly,
+        Bytecode.Instructions.Mtlo.TryDecodeAssembly,
         #endregion
         #region Exception and Interrupts
-        Bytecode.Nop.TryDecodeAssembly,
-        Bytecode.Syscall.TryDecodeAssembly,
+        Bytecode.Instructions.Nop.TryDecodeAssembly,
+        Bytecode.Instructions.Syscall.TryDecodeAssembly,
         #endregion
         #region Jump
-        //Bytecode.J.TryDecodeAssembly,
-        //Bytecode.Jal.TryDecodeAssembly,
-        //Bytecode.Jalr.TryDecodeAssembly,
-        //Bytecode.Jr.TryDecodeAssembly,
+        //Bytecode.Instructions.J.TryDecodeAssembly,
+        //Bytecode.Instructions.Jal.TryDecodeAssembly,
+        //Bytecode.Instructions.Jalr.TryDecodeAssembly,
+        //Bytecode.Instructions.Jr.TryDecodeAssembly,
         #endregion
         #region Load
-        Bytecode.Lb.TryDecodeAssembly,
-        Bytecode.Lbu.TryDecodeAssembly,
-        Bytecode.Lh.TryDecodeAssembly,
-        Bytecode.Lhu.TryDecodeAssembly,
-        Bytecode.Lw.TryDecodeAssembly,
-        Bytecode.Lwc1.TryDecodeAssembly,
+        Bytecode.Instructions.Lb.TryDecodeAssembly,
+        Bytecode.Instructions.Lbu.TryDecodeAssembly,
+        Bytecode.Instructions.Lh.TryDecodeAssembly,
+        Bytecode.Instructions.Lhu.TryDecodeAssembly,
+        Bytecode.Instructions.Lw.TryDecodeAssembly,
+        Bytecode.Instructions.Lwc1.TryDecodeAssembly,
         #endregion
         #region  Store
-        Bytecode.Sb.TryDecodeAssembly,
-        Bytecode.Sh.TryDecodeAssembly,
-        Bytecode.Sw.TryDecodeAssembly,
-        Bytecode.Swc1.TryDecodeAssembly,
+        Bytecode.Instructions.Sb.TryDecodeAssembly,
+        Bytecode.Instructions.Sh.TryDecodeAssembly,
+        Bytecode.Instructions.Sw.TryDecodeAssembly,
+        Bytecode.Instructions.Swc1.TryDecodeAssembly,
         #endregion
     };
 
