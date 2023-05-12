@@ -24,6 +24,11 @@ public class Andi : ArithLogIInstruction, IAssemblyInstruction {
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
+    public RegisterIndex Destination {
+        get => this.Target;
+        set => this.Target = value;
+    }
+
     public RegisterIndex LhsOperand {
         get => this.Source;
         set => this.Source = value;

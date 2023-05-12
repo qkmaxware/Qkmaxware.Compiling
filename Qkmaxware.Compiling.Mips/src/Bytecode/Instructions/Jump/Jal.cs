@@ -15,7 +15,7 @@ public class Jal : JumpInstruction {
     }
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
-        cpu.Registers[new RegisterIndex(31)].WriteInt32(cpu.PC << 2); // save old pc (as bytes not words)
+        cpu.Registers[RegisterIndex.RA].WriteInt32(cpu.PC << 2);      // save old pc (as bytes not words)
         cpu.PC += this.AddressOffset;                                 // goto new pc
     }
 

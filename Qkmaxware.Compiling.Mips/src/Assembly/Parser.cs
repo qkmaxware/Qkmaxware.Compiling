@@ -234,6 +234,7 @@ public class Parser {
 
     private static List<TryDecodeAssembly> decoders = new List<TryDecodeAssembly> {
         #region Pseudo
+        Assembly.Instructions.Label.TryDecodeAssembly, // Does nothing
         Assembly.Instructions.Li.TryDecodeAssembly,
         Assembly.Instructions.La.TryDecodeAssembly,
         Assembly.Instructions.Move.TryDecodeAssembly,
@@ -292,10 +293,10 @@ public class Parser {
         Bytecode.Instructions.Syscall.TryDecodeAssembly,
         #endregion
         #region Jump
-        //Bytecode.Instructions.J.TryDecodeAssembly,
-        //Bytecode.Instructions.Jal.TryDecodeAssembly,
-        //Bytecode.Instructions.Jalr.TryDecodeAssembly,
-        //Bytecode.Instructions.Jr.TryDecodeAssembly,
+        Assembly.Instructions.J.TryDecodeAssembly,
+        Assembly.Instructions.Jal.TryDecodeAssembly,
+        Assembly.Instructions.Jalr.TryDecodeAssembly,
+        Assembly.Instructions.Jr.TryDecodeAssembly,
         #endregion
         #region Load
         Bytecode.Instructions.Lb.TryDecodeAssembly,

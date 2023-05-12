@@ -9,4 +9,6 @@ public class ScalarConstantToken : AddressLikeToken {
     public ScalarConstantToken(long pos, int value) : base(pos, value.ToString()) {
         this.IntegerValue = value;
     }
+
+    public override AddressLikeValue GetAddress() => new IntegerAddress((uint)this.IntegerValue);
 }

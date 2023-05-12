@@ -10,4 +10,6 @@ public class LabelToken : AddressLikeToken {
     public override string ToString() {
         return this.Value + ":";
     }
+
+    public override AddressLikeValue GetAddress() => new LabelAddress(this.Value);
 }

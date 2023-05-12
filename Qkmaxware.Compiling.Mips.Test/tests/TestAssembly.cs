@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
+using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,21 @@ namespace Qkmaxware.Compiling.Targets.Mips.Test;
 
 [TestClass]
 public class TestAssembly {
+
+    [TestMethod]
+    public void TestSupportedOperations() {
+        if (Parser.CountAllAssemblyInstructions() != Parser.CountSupportedAssemblyInstructions()) {
+            var all_assembly_instrcutions = 
+                typeof(Parser)
+                .Assembly
+                .GetTypes()
+                .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(IAssemblyInstruction)));
+            foreach (var instr in all_assembly_instrcutions) {
+                System.Console.WriteLine(instr.FullName);
+            }
+            Assert.Fail("Some assembly instructions are not able to be parsed.");
+        }
+    }
 
     private static string asm =
 @".data
@@ -18,11 +34,6 @@ public class TestAssembly {
       la   $s0, fibs        # load address of array
       la   $s5, size        # load address of size variable
       lw   $s5, 0($s5)      # load array size";
-
-    [TestMethod]
-    public void TestSupportedOperations() {
-        Assert.AreEqual(Parser.CountAllAssemblyInstructions(), Parser.CountSupportedAssemblyInstructions(), "Some assembly instructions are not able to be parsed.");
-    }
 
     [TestMethod]
     public void TestLexing() {

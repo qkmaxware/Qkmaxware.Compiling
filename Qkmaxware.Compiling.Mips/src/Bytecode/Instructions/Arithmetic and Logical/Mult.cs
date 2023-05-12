@@ -39,8 +39,8 @@ public class Mult : DivMultInstruction, IAssemblyInstruction {
 
         var product = (long)lhs * (long)rhs;
 
-        cpu.Registers.LO.WriteInt32((int)(product >> 32));
-        cpu.Registers.HI.WriteInt32((int)(product & 0xFFFFFFFF));
+        cpu.Registers.HI.WriteInt32((int)(product >> 32));
+        cpu.Registers.LO.WriteInt32((int)(product & 0xFFFFFFFF));
     }
 
     public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {

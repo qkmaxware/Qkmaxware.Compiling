@@ -102,7 +102,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest
         if (args.Count != 1) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TDest destT) {
             throw new AssemblyException(args[0].Position, "Missing destination register");
@@ -124,7 +124,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest
         if (args.Count != 1) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TArg argT) {
             throw new AssemblyException(args[0].Position, "Missing operand");
@@ -148,7 +148,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest, $arg
         if (args.Count != 3) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TDest destT) {
             throw new AssemblyException(args[0].Position, "Missing destination register");
@@ -179,7 +179,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest, $arg
         if (args.Count != 3) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TLhs destT) {
             throw new AssemblyException(args[0].Position, "Missing left-hand side operand");
@@ -212,7 +212,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest, $lhs, $rhs
         if (args.Count != 5) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TDest destT) {
             throw new AssemblyException(args[0].Position, "Missing destination register");
@@ -250,7 +250,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $lhs, offset
         if (args.Count != 3) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TLhs destT) {
             throw new AssemblyException(args[0].Position, "Missing operand");
@@ -258,8 +258,8 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
         if (args[1] is not CommaToken) {
             throw new AssemblyException(args[1].Position, "Missing comma between arguments");
         }
-        if (args[4] is not TOffset rhsT) {
-            throw new AssemblyException(args[4].Position, "Missing offset");
+        if (args[2] is not TOffset rhsT) {
+            throw new AssemblyException(args[2].Position, "Missing offset");
         }
         lhs = destT;
         offset = rhsT;
@@ -283,7 +283,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest, $lhs, $rhs
         if (args.Count != 5) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TLhs destT) {
             throw new AssemblyException(args[0].Position, "Missing left-hand side operand");
@@ -306,12 +306,12 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
         return true;
         #nullable restore
     }
-    protected static bool IsAssemblyFormatDestOffsetBase<TInstr, TDest, TBase, TOffset> (
+    protected static bool IsAssemblyFormatDestOffsetBase<TInstr, TDest, TOffset, TBase> (
         Mips.Assembly.IdentifierToken opcode, 
         List<Mips.Assembly.Token> args, 
         out TDest dest, 
-        out TBase @base, 
-        out TOffset offset
+        out TOffset offset,
+        out TBase @base
     ) where TInstr:IBytecodeInstruction {
         #nullable disable
         dest = default(TDest);
@@ -323,7 +323,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest, offset(base)
         if (args.Count != 6) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TDest destT) {
             throw new AssemblyException(args[0].Position, "Missing destination register");
@@ -349,12 +349,12 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
         return true;
         #nullable restore
     }
-    protected static bool IsAssemblyFormatSourceOffsetBase<TInstr, TSrc, TBase, TOffset> (
+    protected static bool IsAssemblyFormatSourceOffsetBase<TInstr, TSrc, TOffset, TBase> (
         Mips.Assembly.IdentifierToken opcode, 
         List<Mips.Assembly.Token> args, 
         out TSrc src, 
-        out TBase @base, 
-        out TOffset offset
+        out TOffset offset,
+        out TBase @base
     ) where TInstr:IBytecodeInstruction {
         #nullable disable
         src = default(TSrc);
@@ -366,7 +366,7 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
 
         // OPCODE $dest, offset(base)
         if (args.Count != 6) {
-            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
+            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
         }
         if (args[0] is not TSrc destT) {
             throw new AssemblyException(args[0].Position, "Missing source register");

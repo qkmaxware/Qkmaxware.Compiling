@@ -5,9 +5,9 @@ using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly;
 
-internal class AddOperator : BinaryOperator {
+internal class MulOperator : BinaryOperator {
 
-    public AddOperator(TextSection code, RegisterIndex result, RegisterIndex lhs, RegisterIndex rhs) : base(code, result, lhs, rhs) {}
+    public MulOperator(TextSection code, RegisterIndex result, RegisterIndex lhs, RegisterIndex rhs) : base(code, result, lhs, rhs) {}
 
     public override void Accept(F32 type) {
         // Move to FPU
@@ -20,8 +20,8 @@ internal class AddOperator : BinaryOperator {
             FpuRegister = FpuRhsOperand,
         });
 
-        // Do add
-        Section.Code.Add(new AddS {
+        // Do operator
+        Section.Code.Add(new MulS {
             Destination = FpuResult,
             LhsOperand = FpuLhsOperand,
             RhsOperand = FpuRhsOperand 
@@ -36,28 +36,37 @@ internal class AddOperator : BinaryOperator {
 
     public override void Accept(I32 type) {
         // Direct instruction support
-        Section.Code.Add(new Bytecode.Instructions.Add {
-            Destination = this.Result,
+        Section.Code.Add(new Bytecode.Instructions.Mult {
             LhsOperand = this.LhsOperand,
             RhsOperand = this.RhsOperand
+        });
+        // Ignore overflow...
+        Section.Code.Add(new Bytecode.Instructions.Mflo {
+            Destination = this.Result
         });
     }
 
     public override void Accept(U32 type) {
         // Direct instruction support
-        Section.Code.Add(new Bytecode.Instructions.Addu {
-            Destination = this.Result,
+        Section.Code.Add(new Bytecode.Instructions.Multu {
             LhsOperand = this.LhsOperand,
             RhsOperand = this.RhsOperand
+        });
+        // Ignore overflow...
+        Section.Code.Add(new Bytecode.Instructions.Mflo {
+            Destination = this.Result
         });
     }
 
     public override void Accept(U1 type) {
         // Direct instruction support
-        Section.Code.Add(new Bytecode.Instructions.Addu {
-            Destination = this.Result,
+        Section.Code.Add(new Bytecode.Instructions.Multu {
             LhsOperand = this.LhsOperand,
             RhsOperand = this.RhsOperand
+        });
+        // Ignore overflow...
+        Section.Code.Add(new Bytecode.Instructions.Mflo {
+            Destination = this.Result
         });
     }
 }

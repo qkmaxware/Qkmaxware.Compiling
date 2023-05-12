@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qkmaxware.Compiling", "Qkmaxware.Compiling\Qkmaxware.Compiling.csproj", "{B6B18665-9576-4486-B675-B626A6758C64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qkmaxware.Compiling.Mips", "Qkmaxware.Compiling.Mips\Qkmaxware.Compiling.Mips.csproj", "{B6B18665-9576-4486-B675-B626A6758C64}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qkmaxware.Compiling.Mips.Test", "Qkmaxware.Compiling.Mips.Test\Qkmaxware.Compiling.Mips.Test.csproj", "{9E999418-D3CE-4108-9C5A-4707A631569D}"
 EndProject

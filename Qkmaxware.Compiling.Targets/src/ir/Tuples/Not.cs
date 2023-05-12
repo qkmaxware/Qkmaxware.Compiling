@@ -31,7 +31,7 @@ public abstract class UnaryOperatorTuple : Tuple {
 }
 
 /// <summary>
-/// Bitwise Not instruction
+/// Logical Not instruction
 /// </summary>
 public class Not : UnaryOperatorTuple {
     public Not(ValueOperand op, Declaration result) : base(op, result) { }

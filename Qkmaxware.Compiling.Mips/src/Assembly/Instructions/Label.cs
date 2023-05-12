@@ -31,4 +31,9 @@ public class Label : IPseudoInstruction {
         // Alternatively you could do a NOP
         yield break; 
     }
+
+    public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
+        decoded = null;
+        return false;
+    }
 }
