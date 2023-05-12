@@ -248,9 +248,9 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
             Destination = UnaryResultRegister,
             Source = RegisterIndex.Zero
         });
-        text.Code.Add(new Bgtz {
+        text.Code.Add(new Assembly.Instructions.Bgtz {
             Source = UnaryOperandRegister,
-            AddressOffset = 16 // Skip 2 instructions (IE skip the LI instruction below (which is 2 instructions when expanded))
+            Address = new IntegerAddress(16) // Skip 2 instructions (IE skip the LI instruction below (which is 2 instructions when expanded))
         });
         text.Code.Add (new Li {
             Destination = UnaryResultRegister,

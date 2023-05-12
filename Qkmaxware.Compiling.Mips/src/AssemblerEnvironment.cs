@@ -24,8 +24,8 @@ public class AssemblerEnvironment {
 
     uint instruction_count = 0;
 
-    public uint CurrentMemoryAddress() {
-        return instruction_count;
+    public uint CurrentInstructionAddress() {
+        return instruction_count << 4;
     }
 
     internal void IncrementInstructionCount() {

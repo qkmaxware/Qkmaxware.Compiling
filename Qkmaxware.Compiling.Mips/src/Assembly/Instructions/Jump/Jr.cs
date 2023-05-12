@@ -4,7 +4,7 @@ using Qkmaxware.Compiling.Targets.Mips.Hardware;
 namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 
 /// <summary>
-/// Jump return
+/// Jump register
 /// </summary>
 public class Jr : IAssemblyInstruction {
     public string InstructionName() => "jr";
@@ -15,8 +15,12 @@ public class Jr : IAssemblyInstruction {
 
     public string ToAssemblyString() => $"{InstructionName()}";
 
+    public RegisterIndex AddressRegister {get; set;}
+
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
-        var j = new Bytecode.Instructions.Jr {};
+        var j = new Bytecode.Instructions.Jr {
+            Source = AddressRegister
+        };
         yield return j;
     }
 
@@ -27,10 +31,17 @@ public class Jr : IAssemblyInstruction {
         }
 
         // jalr $dest
-        if (args.Count != 0) {
-            throw new AssemblyException(opcode.Position, "Invalid number of argument(s)");
+        if (args.Count != 1) {
+            throw new AssemblyException(opcode.Position, "Missing required argument(s)");
         }
-        decoded = new Assembly.Instructions.Jr {};
+        if (args[0] is RegisterToken r) {
+            decoded = new Assembly.Instructions.Jr {
+                AddressRegister = r.Value
+            };
+            return true;
+        } else {
+            throw new AssemblyException(args[0].Position, "Missing register containing address");
+        }  
         return true;
     }
 }

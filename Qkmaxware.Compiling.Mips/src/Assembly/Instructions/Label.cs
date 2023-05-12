@@ -25,7 +25,7 @@ public class Label : IPseudoInstruction {
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
         if (this.Name != null) {
-            env.SetLabelAddress(this.Name, env.CurrentMemoryAddress());
+            env.SetLabelAddress(this.Name, env.CurrentInstructionAddress());
         }
         // Makes no new instructions, simply sets the label address
         // Alternatively you could do a NOP

@@ -266,10 +266,10 @@ public class Parser {
         Bytecode.Instructions.Xori.TryDecodeAssembly,
         #endregion
         #region Branch
-        Bytecode.Instructions.Beq.TryDecodeAssembly,
-        Bytecode.Instructions.Bgtz.TryDecodeAssembly,
-        Bytecode.Instructions.Blez.TryDecodeAssembly,
-        Bytecode.Instructions.Bne.TryDecodeAssembly,
+        Assembly.Instructions.Beq.TryDecodeAssembly,
+        Assembly.Instructions.Bgtz.TryDecodeAssembly,
+        Assembly.Instructions.Blez.TryDecodeAssembly,
+        Assembly.Instructions.Bne.TryDecodeAssembly,
         #endregion
         #region Comparison
         Bytecode.Instructions.Slt.TryDecodeAssembly,

@@ -19,9 +19,9 @@ public class LabelAddress : AddressLikeValue {
 }
 
 public class IntegerAddress : AddressLikeValue {
-    public uint Value;
+    public int Value;
 
-    public IntegerAddress (uint val) {
+    public IntegerAddress (int val) {
         this.Value = val;
     }
 

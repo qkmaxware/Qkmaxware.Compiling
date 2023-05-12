@@ -15,7 +15,7 @@ public class Jal : IAssemblyInstruction {
 
     public string ToAssemblyString() => $"{InstructionName()} {Address}";
 
-    public AddressLikeToken? Address {get; set;}
+    public AddressLikeValue? Address {get; set;}
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
         if (Address == null)
@@ -24,10 +24,10 @@ public class Jal : IAssemblyInstruction {
         var j = new Bytecode.Instructions.Jal {
             AddressOffset = 0
         };
-        if (Address is LabelToken Label) {
+        if (Address is LabelAddress Label) {
             env.ResolveLabelAddressOnceComputed(Label.Value, (addr) => j.AddressOffset = (int)addr);
-        } else if (Address is ScalarConstantToken scalar) {
-            j.AddressOffset = scalar.IntegerValue;
+        } else if (Address is IntegerAddress scalar) {
+            j.AddressOffset = (int)scalar.Value;
         }
         yield return j;
     }
@@ -42,18 +42,13 @@ public class Jal : IAssemblyInstruction {
         if (args.Count != 1) {
             throw new AssemblyException(opcode.Position, "Missing required argument(s)");
         }
-        if (args[0] is LabelToken l) {
+        if (args[0] is AddressLikeToken l) {
             decoded = new Assembly.Instructions.Jal {
-                Address = l
-            };
-            return true;
-        } else if (args[0] is ScalarConstantToken addr) {
-            decoded = new Assembly.Instructions.Jal {
-                Address = addr
+                Address = l.GetAddress()
             };
             return true;
         } else {
             throw new AssemblyException(args[0].Position, "Missing destination address");
-        }   
+        }
     }
 }
