@@ -11,7 +11,7 @@ public class Jalr : JumpRInstruction {
     
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         cpu.Registers[new RegisterIndex(31)].WriteInt32(cpu.PC << 2); // save old pc (as bytes not words)
-        cpu.PC += cpu.Registers[this.Source].ReadAsInt32() >> 2;      // goto new pc (as word not bytes)
+        cpu.PC = cpu.Registers[this.Source].ReadAsInt32() >> 2;      // goto new pc (as word not bytes)
     }
 
     public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {

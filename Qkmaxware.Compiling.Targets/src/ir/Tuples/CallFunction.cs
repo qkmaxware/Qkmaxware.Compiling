@@ -14,7 +14,7 @@ public class CallFunction : Tuple {
     /// Arguments to pass to the subprogram
     /// </summary>
     /// <returns>arguments</returns>
-    public List<TupleOperand> Arguments {get; private set;} = new List<TupleOperand>();
+    public List<Declaration> Arguments {get; private set;} = new List<Declaration>();
 
     /// <summary>
     /// The variable to store the results of the function into
@@ -28,7 +28,7 @@ public class CallFunction : Tuple {
     /// <value>description</value>
     public override string Description => $"Call function (value-value returning function) {Called} and store the results in {ReturnVariable}";
 
-    public CallFunction(Subprogram called, Declaration returns, params TupleOperand[] args) {
+    public CallFunction(Subprogram called, Declaration returns, params Declaration[] args) {
         this.Called = called;
         this.ReturnVariable = returns;
         this.Arguments.AddRange(args);

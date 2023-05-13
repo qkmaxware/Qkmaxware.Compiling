@@ -28,7 +28,7 @@ public class Bne : BranchInstruction {
         var rhs = cpu.Registers[this.RhsOperand].ReadAsInt32();
 
         if (lhs != rhs) {
-            cpu.PC += this.AddressOffset;
+            cpu.PC += this.AddressOffset >> 2;
         }
     }
 

@@ -15,7 +15,7 @@ public class J : JumpInstruction {
     }
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
-        cpu.PC += this.AddressOffset;
+        cpu.PC = this.AddressOffset >> 2;
     }
 
     public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {

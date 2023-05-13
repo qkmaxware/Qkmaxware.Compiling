@@ -16,7 +16,7 @@ public class Jal : JumpInstruction {
 
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         cpu.Registers[RegisterIndex.RA].WriteInt32(cpu.PC << 2);      // save old pc (as bytes not words)
-        cpu.PC += this.AddressOffset;                                 // goto new pc
+        cpu.PC = this.AddressOffset >> 4;                                 // goto new pc
     }
 
     public static bool TryDecodeBytecode(uint bytecode, out IBytecodeInstruction? decoded) {

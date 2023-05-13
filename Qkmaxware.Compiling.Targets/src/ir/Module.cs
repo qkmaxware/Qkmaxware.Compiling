@@ -34,7 +34,7 @@ public class Module : IEnumerable<Subprogram> {
     public Subprogram MakeProcedure(params IrType[] args) {
         var sub = new Subprogram(nextProcedureInd++);
         foreach (var arg in args) {
-            sub.MakeLocal(arg, "arg");
+            sub.MakeLocal(arg, "arg").SetAsArgument(true);
         }
         _subprograms.Add(sub);
         return sub;
@@ -48,12 +48,12 @@ public class Module : IEnumerable<Subprogram> {
     /// <returns>subprogram</returns>
     public Subprogram MakeFunction(IrType returns, params IrType[] args) {
         var sub = new Subprogram(nextProcedureInd++);
+        foreach (var arg in args) {
+            sub.MakeLocal(arg, "arg").SetAsArgument(true);
+        }
         var ret = sub.MakeLocal(returns, "return");
         sub.ReturnLocal = ret;
         sub.Exit.Transition = new ReturnFunction(ret); // Last instruction is to load the return value before the we exit the subprogram
-        foreach (var arg in args) {
-            sub.MakeLocal(arg, "arg");
-        }
         _subprograms.Add(sub);
         return sub;
     }

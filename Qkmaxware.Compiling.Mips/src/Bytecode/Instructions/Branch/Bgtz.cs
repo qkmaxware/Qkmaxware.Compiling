@@ -19,7 +19,7 @@ public class Bgtz : BranchZInstruction {
         var operand = cpu.Registers[this.Source].ReadAsInt32();
 
         if (operand > 0) {
-            cpu.PC += this.AddressOffset;
+            cpu.PC += this.AddressOffset >> 2;
         }
     }
 

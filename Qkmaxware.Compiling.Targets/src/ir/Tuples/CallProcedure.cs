@@ -14,7 +14,7 @@ public class CallProcedure : Tuple {
     /// Arguments to pass to the subprogram
     /// </summary>
     /// <returns>arguments</returns>
-    public List<TupleOperand> Arguments {get; private set;} = new List<TupleOperand>();
+    public List<Declaration> Arguments {get; private set;} = new List<Declaration>();
 
     /// <summary>
     /// Description of the tuple's function
@@ -22,7 +22,7 @@ public class CallProcedure : Tuple {
     /// <value>description</value>
     public override string Description => $"Call procedure (non-value returning function) {Called}";
 
-    public CallProcedure(Subprogram called, params TupleOperand[] args) {
+    public CallProcedure(Subprogram called, params Declaration[] args) {
         this.Called = called;
         this.Arguments.AddRange(args);
     }

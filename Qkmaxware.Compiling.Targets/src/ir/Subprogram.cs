@@ -49,6 +49,13 @@ public class Subprogram {
     /// List of local variables to this subroutine
     /// </summary>
     public ReadOnlyList<Declaration> Locals {get; private set;}
+
+    /// <summary>
+    /// List of all local variables that are used as subprogram arguments
+    /// </summary>
+    /// <typeparam name="Local"></typeparam>
+    /// <returns>list of arguments</returns>
+    public IEnumerable<Local> Arguments => _locals.OfType<Local>().Where(local => local.IsArgument);
     
     /// <summary>
     /// Local used as a return value from this subprogram (can be null for no return value)

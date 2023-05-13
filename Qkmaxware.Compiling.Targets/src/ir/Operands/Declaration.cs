@@ -46,5 +46,11 @@ public partial class Global : Declaration {
 /// </summary>
 /// <typeparam name="T">type of the stored value</typeparam>
 public partial class Local : Declaration {
+    public bool IsArgument {get; private set;}
+
     public Local(uint index, IrType type, string name) : base(index, type, name) {}
+
+    internal void SetAsArgument(bool isArgument) {
+        this.IsArgument = isArgument;
+    }
 }
