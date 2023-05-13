@@ -42,6 +42,5 @@ public class Jr : IAssemblyInstruction {
         } else {
             throw new AssemblyException(args[0].Position, "Missing register containing address");
         }  
-        return true;
     }
 }

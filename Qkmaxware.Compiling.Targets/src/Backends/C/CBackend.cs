@@ -2,7 +2,7 @@ using Qkmaxware.Compiling.Targets.Ir;
 
 namespace Qkmaxware.Compiling.Targets.C;
 
-public class CBackend : IBackendTargetFile {
+public partial class CBackend : IBackendTargetFile {
 
     public static readonly string Tab = "    ";
 
@@ -25,12 +25,16 @@ public class CBackend : IBackendTargetFile {
             // Write guard in header
             hwriter.WriteLine($"#ifndef {guard}");
             hwriter.WriteLine($"#define {guard}");
+            hwriter.WriteLine();
+            hwriter.Write(stdlib);
+            hwriter.WriteLine();
 
             // Write include in implementation
             iwriter.WriteLine($"#include <stdio.h>");
             iwriter.WriteLine($"#include <stdlib.h>");
             iwriter.WriteLine($"#include <math.h>");
             iwriter.WriteLine($"#include \"{hname}\"");
+            iwriter.WriteLine();
 
             new CModuleVisitor(hwriter, iwriter).VisitModule(module);
 
