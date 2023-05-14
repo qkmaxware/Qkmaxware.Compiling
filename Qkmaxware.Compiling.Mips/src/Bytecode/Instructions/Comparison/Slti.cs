@@ -14,13 +14,13 @@ public class Slti : ArithLogIInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, value";
+    public string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, value";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "if $lhs < value store 1 in $dest otherwise store 0 in $dest";
+    public string InstructionDescription() => "if $lhs < value store 1 in $dest otherwise store 0 in $dest";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

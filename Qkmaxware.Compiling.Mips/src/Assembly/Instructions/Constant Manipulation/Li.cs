@@ -8,13 +8,21 @@ namespace Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 public class Li : IPseudoInstruction {
 
     public RegisterIndex Destination {get; set;}
-    public uint Value {get; set;}
+    public uint UintValue {get; set;}
+    public int IntValue {
+        get => BitConverter.ToInt32(BitConverter.GetBytes(UintValue));
+        set => BitConverter.ToUInt32(BitConverter.GetBytes(value));
+    }
+    public float FloatValue {
+        get => BitConverter.ToSingle(BitConverter.GetBytes(UintValue));
+        set => BitConverter.ToUInt32(BitConverter.GetBytes(value));
+    }
 
     public Li() {}
 
     public Li(RegisterIndex dest, ScalarConstantToken value) {
         this.Destination = dest;
-        this.Value = BitConverter.ToUInt32(BitConverter.GetBytes(value.IntegerValue));
+        this.IntValue = value.IntegerValue;
     }
 
     public string InstructionName() => "li";
@@ -23,10 +31,10 @@ public class Li : IPseudoInstruction {
 
     public string InstructionDescription() => "Load an immediate value into register $dest.";
 
-    public string ToAssemblyString() => $"li {Destination}, {Value}";
+    public string ToAssemblyString() => $"li {Destination}, {UintValue}";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) {
-        var bits = BitConverter.ToUInt32(BitConverter.GetBytes(this.Value));
+        var bits = BitConverter.ToUInt32(BitConverter.GetBytes(this.UintValue));
         yield return new Lui {
             Destination = this.Destination,
             Immediate = bits.HighHalf()
@@ -62,7 +70,7 @@ public class Li : IPseudoInstruction {
 
         decoded = new Li {
             Destination = dest.Value,
-            Value = BitConverter.ToUInt32(BitConverter.GetBytes(arg.IntegerValue)),
+            UintValue = BitConverter.ToUInt32(BitConverter.GetBytes(arg.IntegerValue)),
         };
         return true;
     }

@@ -76,18 +76,6 @@ public abstract class BaseBytecodeInstruction : IBytecodeInstruction {
     /// <returns>enumerable of all operands in the order in which they are specified</returns>
     public abstract IEnumerable<uint> GetOperands();
 
-    /// <summary>
-    /// The written format of this instruction in assembly
-    /// </summary>
-    /// <returns>description</returns>
-    public virtual string AssemblyFormat() => string.Empty;
-
-    /// <summary>
-    /// Description of this instruction
-    /// </summary>
-    /// <returns>description</returns>
-    public virtual string InstructionDescription() => string.Empty;
-
     #region Assembly Formats
     protected static bool IsAssemblyFormatDest<TInstr, TDest> (
         Mips.Assembly.IdentifierToken opcode, 

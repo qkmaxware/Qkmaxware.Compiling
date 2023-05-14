@@ -15,6 +15,9 @@ public static class RegisterExtensions {
     public static int ReadAsInt32(this Hardware.Register<uint> reg) {
         return BitConverter.ToInt32(BitConverter.GetBytes(reg.Read()));
     }
+    public static int ReadAsInt32(this Hardware.Register<float> reg) {
+        return BitConverter.ToInt32(BitConverter.GetBytes(reg.Read()));
+    }
 
     public static bool ReadAsBool(this Hardware.Register<uint> reg) {
         return reg.Read() != 0;
@@ -25,6 +28,9 @@ public static class RegisterExtensions {
     }
 
     public static void WriteUInt32(this Hardware.Register<float> reg, uint value) {
+        reg.Write(BitConverter.ToSingle(BitConverter.GetBytes(value)));
+    }
+    public static void WriteInt32(this Hardware.Register<float> reg, int value) {
         reg.Write(BitConverter.ToSingle(BitConverter.GetBytes(value)));
     }
     public static void ConvertUInt32(this Hardware.Register<float> reg, uint value) {

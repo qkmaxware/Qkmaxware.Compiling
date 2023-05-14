@@ -4,9 +4,9 @@ using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
-/// Multiplication of FPU two registers (MIPS abs.s)
+/// negation of an FPU register (MIPS neg.s)
 /// </summary>
-public class AbsS : FloatingPointEncodedInstruction, IAssemblyInstruction {
+public class NegS : FloatingPointEncodedInstruction, IAssemblyInstruction {
     public RegisterIndex Destination { get; set; }
     public RegisterIndex Source { get; set; }
 
@@ -20,7 +20,7 @@ public class AbsS : FloatingPointEncodedInstruction, IAssemblyInstruction {
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public string InstructionDescription() => "Compute the absolute value of the floating point value stored in $arg and store it in $dest.";
+    public string InstructionDescription() => "Compute the negative of the floating point value stored in $arg and store it in $dest.";
 
     public override IEnumerable<uint> GetOperands() {
         yield return (uint) Destination;
@@ -30,13 +30,13 @@ public class AbsS : FloatingPointEncodedInstruction, IAssemblyInstruction {
     public override void Invoke(Cpu cpu, Fpu fpu, IMemory memory, SimulatorIO io) {
         var lhs = fpu.Registers[this.Source].Read();
 
-        fpu.Registers[this.Destination].Write(Math.Abs(lhs));
+        fpu.Registers[this.Destination].Write(-(lhs));
     }
 
     public override uint Encode32() {
         //   OOOOOOCC CCCTTTTT DDDDDIII IIIIIIII
         return new WordEncoder()
-            .Encode(0x11U, 26..32).Encode(0, 21..26).Encode(0, 16..21).Encode((uint)Source, 11..16).Encode((uint)Destination, 6..11).Encode(5, 0..6)
+            .Encode(0x11U, 26..32).Encode(0x10U, 21..26).Encode(0, 16..21).Encode((uint)Source, 11..16).Encode((uint)Destination, 6..11).Encode(7, 0..6)
             .Encoded;
     }
 
@@ -50,7 +50,7 @@ public class AbsS : FloatingPointEncodedInstruction, IAssemblyInstruction {
         }
 
         var group = word.Decode(21..26);
-        if (group != 0) {
+        if (group != 0x10U) {
             return false; // Group 0
         }
 
@@ -60,14 +60,14 @@ public class AbsS : FloatingPointEncodedInstruction, IAssemblyInstruction {
         }
 
         var func = word.Decode(0..6);
-        if (func != 5) {
-            return false; // Function 5
+        if (func != 7) {
+            return false; // Function 7
         }
 
         var fd = word.Decode(6..11);        // Destination
         var fs = word.Decode(11..16);       // Source operand
 
-        decoded = new AbsS {
+        decoded = new NegS {
             Destination = (RegisterIndex)fd,
             Source = (RegisterIndex)fs
         };
@@ -76,12 +76,12 @@ public class AbsS : FloatingPointEncodedInstruction, IAssemblyInstruction {
 
     public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
         Assembly.RegisterToken dest; Assembly.RegisterToken arg;
-        if (!IsAssemblyFormatDestArg<AbsS, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out arg)) {
+        if (!IsAssemblyFormatDestArg<NegS, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out arg)) {
             decoded = null;
             return false;
         }
 
-        decoded = new AbsS {
+        decoded = new NegS {
             Destination = dest.Value,
             Source = arg.Value
         };

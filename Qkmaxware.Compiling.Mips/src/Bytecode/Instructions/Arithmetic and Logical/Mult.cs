@@ -14,13 +14,13 @@ public class Mult : DivMultInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $lhs, $rhs";
+    public string AssemblyFormat() => $"{this.InstructionName()} $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Compute $lhs * $rhs storing the result's highest bits in HI lowest bits in LO.";
+    public string InstructionDescription() => "Compute $lhs * $rhs storing the result's highest bits in HI lowest bits in LO.";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

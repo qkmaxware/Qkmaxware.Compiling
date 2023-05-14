@@ -9,7 +9,7 @@ public partial class LiteralI32 : IMipsValueOperand {
     public IEnumerable<IAssemblyInstruction> MipsInstructionsToLoadValueInto(RegisterIndex index) {
         yield return new Li{
             Destination = index,
-            Value = BitConverter.ToUInt32(BitConverter.GetBytes(this.Value)),
+            UintValue = BitConverter.ToUInt32(BitConverter.GetBytes(this.Value)),
         };
     }
 }

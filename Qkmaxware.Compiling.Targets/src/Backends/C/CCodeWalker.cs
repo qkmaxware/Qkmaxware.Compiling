@@ -20,6 +20,7 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
 
     private void exit() {
+        code.Write(CBackend.Tab);
         code.Write("exit(0);");
     }
 
@@ -38,7 +39,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
 
     public void Accept(Copy tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.To.Name);
         code.Write(" = ");
         foreach (var step in TypeConversion.EnumerateConversions(from: tuple.From.TypeOf(), to: tuple.To.TypeOf()))
@@ -52,7 +52,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     public void Accept(CopyToOffset tuple) {}
 
     private void Accept(BinaryOperatorTuple tuple, string @operator) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
@@ -82,7 +81,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         Accept(tuple, "%");
     }
     public void Accept(Pow tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
@@ -114,7 +112,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(Not tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
         foreach (var step in TypeConversion.EnumerateConversions(from: IrType.F32, to: tuple.Result.TypeOf()))
@@ -124,7 +121,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         code.WriteLine(");");
     }
     public void Accept(Negate tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
@@ -136,7 +132,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(Complement tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
         foreach (var step in TypeConversion.EnumerateConversions(from: IrType.F32, to: tuple.Result.TypeOf()))
@@ -146,7 +141,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         code.WriteLine(");");
     }
     public void Accept(AbsoluteValue tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
@@ -158,7 +152,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(ATan tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
         foreach (var step in TypeConversion.EnumerateConversions(from: IrType.F32, to: tuple.Result.TypeOf()))
@@ -168,7 +161,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         code.WriteLine(");");
     }
     public void Accept(Cos tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
@@ -180,7 +172,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(Sin tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
         foreach (var step in TypeConversion.EnumerateConversions(from: IrType.F32, to: tuple.Result.TypeOf()))
@@ -190,7 +181,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         code.WriteLine(");");
     }
     public void Accept(Sqrt tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
@@ -202,7 +192,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(Ln tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
         foreach (var step in TypeConversion.EnumerateConversions(from: IrType.F32, to: tuple.Result.TypeOf()))
@@ -213,7 +202,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(Inc tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
         foreach (var step in TypeConversion.EnumerateConversions(from: IrType.F32, to: tuple.Result.TypeOf()))
@@ -223,7 +211,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         code.WriteLine(" + 1);");
     }
     public void Accept(Dec tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.Result.Name);
         code.Write(" = ");
@@ -259,13 +246,11 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(Jump tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write("goto "); 
         code.Write(generateLabel(tuple.Goto));
         code.WriteLine(';');
     }
     public void Accept(JumpIfZero tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write("if (v");
         code.Write(tuple.ConditionVariable.Name);
@@ -277,7 +262,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         }
         code.WriteLine('}');
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write("else {");
         {
             code.Write("goto ");
@@ -288,7 +272,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(JumpIfNotZero tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write("if (v");
         code.Write(tuple.ConditionVariable.Name);
         code.Write(" != 0){");
@@ -298,7 +281,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
             code.Write(';');
         }
         code.WriteLine('}');
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write("else {");
         {
@@ -319,7 +301,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(CallProcedure tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.Write(CModuleVisitor.GenerateFuncName(tuple.Called));
         code.Write('(');
         bool first = true;
@@ -332,7 +313,6 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
         code.WriteLine(");");
     }
     public void Accept(CallFunction tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write('v'); code.Write(tuple.ReturnVariable.Name);
         code.Write(" = ");
@@ -351,11 +331,9 @@ internal class CCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     public void Accept(ReturnProcedure tuple) {
         code.Write(CBackend.Tab);
-        code.Write(CBackend.Tab);
         code.WriteLine("return;"); 
     }
     public void Accept(ReturnFunction tuple) {
-        code.Write(CBackend.Tab);
         code.Write(CBackend.Tab);
         code.Write("return "); 
         code.Write(this.ret_name); 

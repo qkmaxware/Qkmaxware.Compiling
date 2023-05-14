@@ -14,13 +14,13 @@ public class Lb : LoadStoreInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, offset($base)";
+    public string AssemblyFormat() => $"{this.InstructionName()} $dest, offset($base)";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Load a byte from memory address $base + offset into $dest preserving its sign.";
+    public string InstructionDescription() => "Load a byte from memory address $base + offset into $dest preserving its sign.";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

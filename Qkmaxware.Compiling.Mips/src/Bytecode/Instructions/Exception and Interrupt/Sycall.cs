@@ -14,13 +14,13 @@ public class Syscall : BaseBytecodeInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()}";
+    public string AssemblyFormat() => $"{this.InstructionName()}";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Execute a system dependent instruction depending on the value stored in $v0";
+    public string InstructionDescription() => "Execute a system dependent instruction depending on the value stored in $v0";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

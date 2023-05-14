@@ -14,13 +14,13 @@ public class Divu : DivMultInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $lhs, $rhs";
+    public string AssemblyFormat() => $"{this.InstructionName()} $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Compute $lhs / $rhs storing the result in LO and compute $lhs % $rhs storing the result in HI.";
+    public string InstructionDescription() => "Compute $lhs / $rhs storing the result in LO and compute $lhs % $rhs storing the result in HI.";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

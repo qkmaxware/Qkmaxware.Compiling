@@ -19,7 +19,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
     private void exit() {
         text.Code.Add(new Li {
             Destination = RegisterIndex.V0,
-            Value = 10                      // 10 is the exit syscall in my simulator 
+            UintValue = 10                      // 10 is the exit syscall in my simulator 
         });
         text.Code.Add(new Syscall());
     }
@@ -254,7 +254,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         });
         text.Code.Add (new Li {
             Destination = UnaryResultRegister,
-            Value = 1.ReinterpretUint()
+            UintValue = 1.ReinterpretUint()
         });
     }
 
@@ -286,7 +286,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 var ipow = 1 + 2 * k; // Number of times to multiply x
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = (1.0f).ReinterpretUint()
+                    FloatValue = (1.0f)
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = numerator,
@@ -302,7 +302,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 // Multiply numerator by multiplier
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = multiplier.ReinterpretUint()
+                    FloatValue = multiplier
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = fpuTemp,
@@ -319,7 +319,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 var factorial = (float)(1 + 2 * k);
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = factorial.ReinterpretUint()
+                    FloatValue = factorial
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = denominator,
@@ -375,7 +375,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 var ipow = 2 * k; // Number of times to multiply x
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = (1.0f).ReinterpretUint()
+                    FloatValue = (1.0f)
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = numerator,
@@ -391,7 +391,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 // Multiply numerator by multiplier
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = multiplier.ReinterpretUint()
+                    FloatValue = multiplier
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = fpuTemp,
@@ -408,7 +408,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 var factorial = (float)this.factorial(2 * k);
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = factorial.ReinterpretUint()
+                    FloatValue = factorial
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = denominator,
@@ -437,7 +437,10 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
     }
     */
     private void clamp(RegisterIndex value, RegisterIndex min, RegisterIndex max) {
-        
+        // if (value < min)
+        //     value = min
+        // if (value > max)
+        //     value = max
     }
     private void repeatFloat(RegisterIndex arg, RegisterIndex length_temp, RegisterIndex calculation_temp, RegisterIndex min, RegisterIndex max) {
         // For a range 0..length like maybe 0 and 2pi? (though my tailor series do fall off in accuracy at 2pi so maybe -pi to pi is better?)
@@ -494,7 +497,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 var ipow = 1 + 2 * k; // Number of times to multiply x
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = (1.0f).ReinterpretUint()
+                    FloatValue = (1.0f)
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = numerator,
@@ -510,7 +513,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 // Multiply numerator by multiplier
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = multiplier.ReinterpretUint()
+                    FloatValue = multiplier
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = fpuTemp,
@@ -527,7 +530,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
                 var factorial = (float)this.factorial(1 + 2 * k);
                 text.Code.Add(new Li {
                     Destination = cpuTemp,
-                    Value = factorial.ReinterpretUint()
+                    FloatValue = factorial
                 });
                 text.Code.Add(new Mtc1{
                     FpuRegister = denominator,

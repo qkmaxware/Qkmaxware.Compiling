@@ -14,13 +14,13 @@ public class Sh : LoadStoreInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $src, offset($base)";
+    public string AssemblyFormat() => $"{this.InstructionName()} $src, offset($base)";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Store a lower half-word into memory address $base + offset from $src.";
+    public string InstructionDescription() => "Store a lower half-word into memory address $base + offset from $src.";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

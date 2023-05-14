@@ -129,28 +129,28 @@ internal class MipsAssemblyVisitor : ModuleVisitor {
             case I32 i32:
                 text.Code.Add(new Li{
                     Destination = temp,
-                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(i32.DefaultValue())),
+                    IntValue = i32.DefaultValue(),
                 });
                 StackPush(text, temp);
                 break;
             case U1 u1:
                 text.Code.Add(new Li{
                     Destination = temp,
-                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(u1.DefaultValue())),
+                    UintValue = u1.DefaultValue(),
                 });
                 StackPush(text, temp);
                 break;
             case U32 u32:
                 text.Code.Add(new Li{
                     Destination = temp,
-                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(u32.DefaultValue())),
+                    UintValue = u32.DefaultValue(),
                 });
                 StackPush(text, temp);
                 break;
             case F32 f32:
                 text.Code.Add(new Li{
                     Destination = temp,
-                    Value = BitConverter.ToUInt32(BitConverter.GetBytes(f32.DefaultValue())),
+                    FloatValue = f32.DefaultValue(),
                 });
                 StackPush(text, temp);
                 break;

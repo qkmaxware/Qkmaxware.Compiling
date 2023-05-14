@@ -14,13 +14,13 @@ public class Mtc1 : FloatingPointEncodedInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $arg";
+    public string AssemblyFormat() => $"{this.InstructionName()} $dest, $arg";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Move a value from CPU register $arg to FPU register $dest";
+    public string InstructionDescription() => "Move a value from CPU register $arg to FPU register $dest";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

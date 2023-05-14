@@ -19,13 +19,13 @@ public class Lui : LoadIInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, value";
+    public string AssemblyFormat() => $"{this.InstructionName()} $dest, value";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Store the given value in the high half-word of $dest the lower half-word are cleared";
+    public string InstructionDescription() => "Store the given value in the high half-word of $dest the lower half-word are cleared";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

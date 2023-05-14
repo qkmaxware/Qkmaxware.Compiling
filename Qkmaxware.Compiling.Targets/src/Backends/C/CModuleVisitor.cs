@@ -38,16 +38,16 @@ internal class CModuleVisitor : ModuleVisitor {
     }
 
     public void VisitSubprogram(Subprogram sub) {
+        if (sub.Name != null) {
+            header.Write("// ");
+            header.WriteLine(sub.Name);
+        }
         {
             var aliases = new CTypeAliases(header);
             if (sub.ReturnLocal != null) {
                 sub.ReturnLocal.TypeOf().Visit(aliases);
             } else {
                 header.Write("void");
-            }
-            if (sub.Name != null) {
-                header.Write("// ");
-                header.WriteLine(sub.Name);
             }
             header.Write(GenerateFuncName(sub));
 
@@ -61,16 +61,16 @@ internal class CModuleVisitor : ModuleVisitor {
             }
             header.WriteLine(");");
         } 
+        if (sub.Name != null) {
+            implementation.Write("// ");
+            implementation.WriteLine(sub.Name);
+        }
         {
             var aliases = new CTypeAliases(implementation);
             if (sub.ReturnLocal != null) {
                 sub.ReturnLocal.TypeOf().Visit(aliases);
             } else {
                 implementation.Write("void");
-            }
-            if (sub.Name != null) {
-                implementation.Write("// ");
-                implementation.WriteLine(sub.Name);
             }
             implementation.Write(GenerateFuncName(sub)); 
 

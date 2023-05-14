@@ -4,10 +4,10 @@ using Qkmaxware.Compiling.Targets.Mips.Hardware;
 namespace Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
 /// <summary>
-/// Addition of FPU two registers (MIPS add.s)
+/// Compare FPU registers for equality (MIPS c.eq.s)
 /// </summary>
-public class AddS : FloatingPointEncodedInstruction, IAssemblyInstruction {
-    public RegisterIndex Destination { get; set; }
+public class CLtS : FloatingPointEncodedInstruction, IAssemblyInstruction {
+    public uint FlagIndex { get; set; }
     public RegisterIndex LhsOperand { get; set; }
     public RegisterIndex RhsOperand { get; set; }
 
@@ -15,16 +15,16 @@ public class AddS : FloatingPointEncodedInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, $rhs";
+    public string AssemblyFormat() => $"{this.InstructionName()} cc, $lhs, $rhs";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public string InstructionDescription() => "Compute $lhs + $rhs and store the result in $dest.";
+    public string InstructionDescription() => "If $lhs < $rhs set the FPU flag given by cc.";
 
     public override IEnumerable<uint> GetOperands() {
-        yield return (uint) Destination;
+        yield return (uint) FlagIndex;
         yield return (uint) LhsOperand;
         yield return (uint) RhsOperand;
     }
@@ -33,21 +33,28 @@ public class AddS : FloatingPointEncodedInstruction, IAssemblyInstruction {
         var lhs = fpu.Registers[this.LhsOperand].Read();
         var rhs = fpu.Registers[this.RhsOperand].Read();
 
-        fpu.Registers[this.Destination].Write(lhs + rhs);
+        fpu.Flags[(int)this.FlagIndex].SetIf(lhs < rhs);
     }
 
     /// <summary>
     /// Print this instruction as MIPS assembly code
     /// </summary>
     /// <returns>assembly string</returns>
-    public override string ToAssemblyString() => $"{this.InstructionName()} {this.Destination}, {this.LhsOperand}, {this.RhsOperand}";
+    public override string ToAssemblyString() => $"{this.InstructionName()} {this.FlagIndex}, {this.LhsOperand}, {this.RhsOperand}";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 
     public override uint Encode32() {
         //   OOOOOOCC CCCTTTTT DDDDDIII IIIIIIII
         return new WordEncoder()
-            .Encode(0x11U, 26..32).Encode(0x10, 21..26).Encode((uint)RhsOperand, 16..21).Encode((uint)LhsOperand, 11..16).Encode((uint)Destination, 6..11).Encode(0, 0..6)
+            .Encode(0x11U, 26..32)
+            .Encode(0x10U, 21..26)
+            .Encode(this.RhsOperand, 16..21)
+            .Encode(this.LhsOperand, 11..16)
+            .Encode(this.FlagIndex, 8..11)
+            .Encode(0, 6..8)
+            .Encode(0, 4..6) // FC what does this mean?
+            .Encode(0xCU, 0..4)
             .Encoded;
     }
 
@@ -55,44 +62,37 @@ public class AddS : FloatingPointEncodedInstruction, IAssemblyInstruction {
         // 0x11 0x10 ft fs fd 0
         decoded = null;
         var word = new WordEncoder(bytecode);
-        var opcode = word.Decode(26..32);
-        if (opcode != 0x11U) {
-            return false; // Single precision opcodes
-        }
 
-        var group = word.Decode(21..26);
-        if (group != 0x10) {
-            return false; // Group 
-        }
+        if (!word.Is(26..32, 0x11U)) return false;
+        if (!word.Is(21..26, 0x10U)) return false;
 
-        var ft = word.Decode(16..21);
 
-        var fs = word.Decode(11..16);     
+        var rhs = word.Decode(16..21);
 
-        var fd = word.Decode(6..11);        
+        var lhs = word.Decode(11..16);     
 
-        var func = word.Decode(0..6);
-        if (func != 0) {
-            return false; // Function
-        }
+        var cc = word.Decode(8..11);        
 
-        decoded = new AddS {
-            Destination = (RegisterIndex)fd,
-            LhsOperand = (RegisterIndex)fs,
-            RhsOperand = (RegisterIndex)ft
+        if (!word.Is(6..8, 0U)) return false;
+        if (!word.Is(0..4, 0xCU)) return false;
+
+        decoded = new CLtS {
+            FlagIndex = cc,
+            LhsOperand = (RegisterIndex)lhs,
+            RhsOperand = (RegisterIndex)rhs
         };
         return true;
     }
 
     public static bool TryDecodeAssembly(Assembly.IdentifierToken opcode, List<Mips.Assembly.Token> args, out IAssemblyInstruction? decoded) {
-        Assembly.RegisterToken dest; Assembly.RegisterToken lhs; Assembly.RegisterToken rhs;
-        if (!IsAssemblyFormatDestLhsRhs<AddS, Assembly.RegisterToken, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out dest, out lhs, out rhs)) {
+        Assembly.ScalarConstantToken cc; Assembly.RegisterToken lhs; Assembly.RegisterToken rhs;
+        if (!IsAssemblyFormatDestLhsRhs<CLtS, Assembly.ScalarConstantToken, Assembly.RegisterToken, Assembly.RegisterToken>(opcode, args, out cc, out lhs, out rhs)) {
             decoded = null;
             return false;
         }
 
-        decoded = new AddS {
-            Destination = dest.Value,
+        decoded = new CLtS {
+            FlagIndex = (uint)cc.IntegerValue,
             LhsOperand = lhs.Value,
             RhsOperand = rhs.Value,
         };

@@ -45,10 +45,31 @@ public class FpuRegisterSet {
     }
 }
 
+public class FpuFlagSet {
+    // Eight independent condition code (cc) flags, from 0 to 7
+    // usage: c.eq.d cc fsrc0, fsrc1 – compare double for equality | flag cc := fsrc0 == fsrc1 ? true : false
+    private Flag[] flags = new Flag[]{
+        new Flag(),
+        new Flag(),
+        new Flag(),
+        new Flag(),
+        new Flag(),
+        new Flag(),
+        new Flag(),
+        new Flag(),
+    };
+    public Flag this[int index] {
+        get {
+            return this.flags[index];
+        }
+    }
+}
+
 /// <summary>
 /// MIPS 32 FPU (Coprocessor 1)
 /// </summary>
 public class Fpu {
+    public FpuFlagSet Flags {get; private set;} = new FpuFlagSet();
     public FpuRegisterSet Registers {get; private set;} = new FpuRegisterSet();
 
     public override string ToString() {

@@ -14,13 +14,13 @@ public class Ori : ArithLogIInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, value";
+    public string AssemblyFormat() => $"{this.InstructionName()} $dest, $lhs, value";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Compute $lhs | value and store the result in $dest.";
+    public string InstructionDescription() => "Compute $lhs | value and store the result in $dest.";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

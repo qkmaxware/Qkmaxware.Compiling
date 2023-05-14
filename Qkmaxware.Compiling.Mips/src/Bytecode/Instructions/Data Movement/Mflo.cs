@@ -14,13 +14,13 @@ public class Mflo : MoveFromInstruction, IAssemblyInstruction {
     /// The written format of this instruction in assembly
     /// </summary>
     /// <returns>description</returns>
-    public override string AssemblyFormat() => $"{this.InstructionName()} $dest";
+    public string AssemblyFormat() => $"{this.InstructionName()} $dest";
 
     /// <summary>
     /// Description of this instruction
     /// </summary>
     /// <returns>description</returns>
-    public override string InstructionDescription() => "Move a value stored in the special LO register into $dest";
+    public string InstructionDescription() => "Move a value stored in the special LO register into $dest";
 
     public IEnumerable<IBytecodeInstruction> Assemble(AssemblerEnvironment env) { yield return this; }
 

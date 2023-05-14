@@ -12,6 +12,10 @@ public class WordEncoder {
         this.Encoded = default(uint);
     }
 
+    public WordEncoder Encode(int value, Range bits) {
+        return Encode(value.ReinterpretUint(), bits);
+    }
+
     public WordEncoder Encode(uint value, Range bits) {
         // Create bitmask
         var mask = 0U;
@@ -28,6 +32,10 @@ public class WordEncoder {
         this.Encoded |= value << start;
 
         return this;
+    }
+
+    public bool Is(Range bits, uint value) {
+        return this.Decode(bits) == value;
     }
 
     public Bit[] ToBitArray() {
