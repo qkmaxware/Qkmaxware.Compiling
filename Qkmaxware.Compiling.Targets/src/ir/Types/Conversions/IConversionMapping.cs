@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+namespace Qkmaxware.Compiling.Ir.TypeSystem;
 
 public interface IConversionMapping {
     public void Convert(I32ToF32 conv);

@@ -3,7 +3,7 @@ using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 public partial class LiteralU1 : IMipsValueOperand {
     public IEnumerable<IAssemblyInstruction> MipsInstructionsToLoadValueInto(RegisterIndex index) {

@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// A 32bit unsigned integer
@@ -20,6 +20,12 @@ public sealed partial class LiteralU1 : Literal<uint> {
     /// </summary>
     /// <param name="i">value of the literal</param>
     public LiteralU1(bool i) : base(i ? 1U : 0U) {}
+
+    /// <summary>
+    /// Render this tuple to string
+    /// </summary>
+    /// <returns>string</returns>
+    public override string PrintString() => Value.ToString();
 
     public override string ToString() => Value.ToString();
 }

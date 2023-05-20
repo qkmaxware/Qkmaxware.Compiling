@@ -1,4 +1,5 @@
-using Qkmaxware.Compiling.Targets.Ir;
+using Qkmaxware.Compiling.Ir;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;
@@ -75,7 +76,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
     private RegisterIndex BinaryLhsOperatorRegister = RegisterIndex.T0;
     private RegisterIndex BinaryRhsOperatorRegister = RegisterIndex.T2;
 
-    private void load(ValueOperand raw_arg, out IMipsValueOperand arg) {
+    private RegisterIndex load(ValueOperand raw_arg, out IMipsValueOperand arg) {
         if (raw_arg is not IMipsValueOperand) // Can be a literal or a variable
         {
             throw new NotImplementedException("Operand types must be supported by the MIPS ISA");
@@ -84,9 +85,10 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
 
         // Step 1: Load values into registers/stack
         this.text.Code.AddRange(arg.MipsInstructionsToLoadValueInto(UnaryOperandRegister)); 
+        return UnaryOperandRegister;
     }
 
-    private void load(ValueOperand lhs_arg, ValueOperand rhs_arg, out IMipsValueOperand lhs, out IMipsValueOperand rhs) {
+    private (RegisterIndex, RegisterIndex) load(ValueOperand lhs_arg, ValueOperand rhs_arg, out IMipsValueOperand lhs, out IMipsValueOperand rhs) {
         if (lhs_arg is not IMipsValueOperand) // Can be a literal or a variable
         {
             throw new NotImplementedException("Operand types must be supported by the MIPS ISA");
@@ -101,24 +103,42 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         // Step 1: Load values into registers/stack
         this.text.Code.AddRange(lhs.MipsInstructionsToLoadValueInto(BinaryLhsOperatorRegister)); 
         this.text.Code.AddRange(rhs.MipsInstructionsToLoadValueInto(BinaryRhsOperatorRegister));
+        return (BinaryLhsOperatorRegister, BinaryRhsOperatorRegister);
+    }
+
+    private void convert(RegisterIndex reg, IrType from, IrType to) {
+        var lhs_conversions = Ir.TypeSystem.TypeConversion.EnumerateConversions(from: from, to: to);
+        var lhs_converter = new MipsAssemblyConversions(this.text, reg);
+        foreach (var conversion in lhs_conversions) {
+            conversion.GenerateInstructions(lhs_converter);
+        }
+    }
+
+    private RegisterIndex moveToFpu(RegisterIndex reg, RegisterIndex? destination = null) {
+        var fpuResult = destination ?? new RegisterIndex(2);
+        this.text.Code.Add(new Mtc1 {
+            CpuRegister = reg,
+            FpuRegister = fpuResult,
+        });
+        return fpuResult;
+    }
+    private RegisterIndex moveFromFpu(RegisterIndex reg, RegisterIndex? destination = null) {
+        var cpuResult = destination ?? UnaryOperandRegister;
+        this.text.Code.Add(new Mfc1 {
+            CpuRegister = UnaryOperandRegister,
+            FpuRegister = reg,
+        });
+        return UnaryOperandRegister;
     }
 
     private void accept(Declaration result, ValueOperand lhs_arg, ValueOperand rhs_arg, BinaryOperator operation) {
         // Step 1: Load values into registers/stack
         IMipsValueOperand lhs; IMipsValueOperand rhs;
-        load(lhs_arg, rhs_arg, out lhs, out rhs);
+        var (lhs_reg, rhs_reg) = load(lhs_arg, rhs_arg, out lhs, out rhs);
 
         // Step 2: Convert to common type (preserve stack/registers)
-        var lhs_conversions = Ir.TypeSystem.TypeConversion.EnumerateConversions(from: lhs_arg.TypeOf(), to: result.TypeOf());
-        var lhs_converter = new MipsAssemblyConversions(this.text, BinaryLhsOperatorRegister);
-        foreach (var conversion in lhs_conversions) {
-            conversion.GenerateInstructions(lhs_converter);
-        }
-        var rhs_conversions = Ir.TypeSystem.TypeConversion.EnumerateConversions(from: rhs_arg.TypeOf(), to: result.TypeOf());
-        var rhs_converter = new MipsAssemblyConversions(this.text, BinaryRhsOperatorRegister);
-        foreach (var conversion in rhs_conversions) {
-            conversion.GenerateInstructions(rhs_converter);
-        }
+        convert(lhs_reg, from: lhs_arg.TypeOf(), to: result.TypeOf());
+        convert(rhs_reg, from: rhs_arg.TypeOf(), to: result.TypeOf());
 
         // Step 3: Do operation
         result.TypeOf().Visit(operation);
@@ -258,19 +278,35 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         });
     }
 
-    public void Accept(Negate tuple) 
-    {
+    public void Accept(Negate tuple)  {
+        // Load
+        IMipsValueOperand arg;
+        var reg = load(tuple.Operand, out arg);
+
+        // Do operation
+        tuple.Operand.TypeOf().Visit(new NegateOperator(this.text, UnaryResultRegister, reg));
+
+        // Save as variable
+        convert(UnaryResultRegister, from: tuple.Operand.TypeOf(), to: tuple.Result.TypeOf());
+        tuple.Result.MipsInstructionsToStoreValue(UnaryResultRegister);
+
+    }
+
+    public void Accept(Complement tuple) {
         throw new NotImplementedException();
     }
 
-    public void Accept(Complement tuple)
-    {
-        throw new NotImplementedException();
-    }
+    public void Accept(AbsoluteValue tuple) {
+        // Load
+        IMipsValueOperand arg;
+        var reg = load(tuple.Operand, out arg);
 
-    public void Accept(AbsoluteValue tuple)
-    {
-        throw new NotImplementedException();
+        // Do operation
+        tuple.Operand.TypeOf().Visit(new AbsOperator(this.text, UnaryResultRegister, reg));
+
+        // Save as variable
+        convert(UnaryResultRegister, from: tuple.Operand.TypeOf(), to: tuple.Result.TypeOf());
+        tuple.Result.MipsInstructionsToStoreValue(UnaryResultRegister);
     }
 
     private void taylorExpansionAtan(RegisterIndex y, RegisterIndex x, RegisterIndex cpuTemp, RegisterIndex fpuTemp, RegisterIndex numerator, RegisterIndex denominator, int order = 5) {
@@ -436,13 +472,42 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         return Clamp(t - Mathf.Floor(t / length) * length, 0.0f, length);
     }
     */
-    private void clamp(RegisterIndex value, RegisterIndex min, RegisterIndex max) {
+    private void clampFpu(RegisterIndex value, RegisterIndex min, RegisterIndex max) {
+        var flag = 0U;
+
         // if (value < min)
+        text.Code.Add(new CLtS {
+            FlagIndex = flag,
+            LhsOperand = value,
+            RhsOperand = min
+        });
+        text.Code.Add(new Assembly.Instructions.Bc1t {
+            ConditionFlagIndex = flag,
+            Address = new IntegerAddress(8) // Skip the next 1 instruction
+        });        
         //     value = min
-        // if (value > max)
+        text.Code.Add(new Move {
+            Destination = value,
+            Source = min
+        });
+        // if (value > max)     -- or -- if (!(value <= max))
+        text.Code.Add(new CLeS {
+            FlagIndex = flag,
+            LhsOperand = value,
+            RhsOperand = max
+        });
+        text.Code.Add(new Assembly.Instructions.Bc1f {
+            ConditionFlagIndex = flag,
+            Address = new IntegerAddress(8) // Skip the next 1 instruction
+        }); 
         //     value = max
+        text.Code.Add(new Move {
+            Destination = value,
+            Source = max
+        });
     }
-    private void repeatFloat(RegisterIndex arg, RegisterIndex length_temp, RegisterIndex calculation_temp, RegisterIndex min, RegisterIndex max) {
+    private void repeatFpu(RegisterIndex arg, RegisterIndex length_temp, RegisterIndex calculation_temp, RegisterIndex min, RegisterIndex max) {
+        // x = x - (x_max - x_min) * floor( x / (x_max - x_min));
         // For a range 0..length like maybe 0 and 2pi? (though my tailor series do fall off in accuracy at 2pi so maybe -pi to pi is better?)
         text.Code.Add(new SubS {
             Destination = length_temp,
@@ -450,30 +515,83 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
             RhsOperand = min
         });
         // Compute temp1 = arg / length
+        text.Code.Add(new DivS {
+            Destination = calculation_temp,
+            LhsOperand = arg,
+            RhsOperand = length_temp
+        });
         // Compute temp2 = floor(temp1)
+        text.Code.Add(new FloorWS {
+            Destination = calculation_temp,
+            Source = calculation_temp
+        });
+        text.Code.Add(new CvtSW {
+            Source = calculation_temp,
+            Destination = calculation_temp
+        });
         // Compute temp3 = temp2 * length
+        text.Code.Add(new MulS {
+            Destination = calculation_temp,
+            LhsOperand = calculation_temp,
+            RhsOperand = length_temp
+        });
         // Compute temp4 = arg - temp3
+        text.Code.Add(new SubS {
+            Destination = arg, 
+            LhsOperand = arg,
+            RhsOperand = calculation_temp
+        });
         // Compute temp5 = clamp(temp4, 0, length)
-
+        clampFpu(arg, min, max);
     }
 
     public void Accept(Cos tuple)
     {
-        // Load values
-        // Convert to F32 (copy to FPU)
-        // Get value in range of -2pi and 2pi
-        // Do cos (no native FPU instruction) -- https://www.wolframalpha.com/input?i=taylor+expansion+of+cos%28x%29
+        // Load value
+        IMipsValueOperand value;
+        var reg = load(tuple.Operand, out value);
+
+        // Convert to F32
+        convert(reg, from: tuple.Operand.TypeOf(), to: IrType.F32);
+
+        // Move to FPU
+        var fpuReg = moveToFpu(reg, destination: new RegisterIndex(8));
+
+        // Get value in range of -pi and pi
+        var min = new RegisterIndex(14);
+        text.Code.Add(new Li {
+            Destination = RegisterIndex.At,
+            FloatValue = -MathF.PI
+        });
+        moveToFpu(RegisterIndex.At, destination: min);  // load -pi into min
+        var max = new RegisterIndex(16);
+         text.Code.Add(new Li {
+            Destination = RegisterIndex.At,
+            FloatValue = MathF.PI
+        });
+        moveToFpu(RegisterIndex.At, destination: max);  // load pi into max
+        repeatFpu(fpuReg, new RegisterIndex(18), new RegisterIndex(20), min, max);
+
+        // Do sin (no native FPU instruction) // -- https://www.wolframalpha.com/input?i=taylor+expansion+of+sin%28x%29
+                                              // -- https://www.wolframalpha.com/input?i=plot+x+-+x%5E3%2F6+%2B+x%5E5%2F120+-+x%5E7%2F5040+%2B+x%5E9%2F362880+-+x%5E11%2F39916800+%2B+x%5E13%2F6227020800+-+x%5E15%2F1307674368000+%2B+x%5E17%2F355687428096000%2C+sin%28x%29+between+-2*pi+and+2*pi+
+        var resultFpuReg = new RegisterIndex(2);
         taylorExpansionCos(
-            y:          new RegisterIndex(2),   // result stored in y
-            x:          new RegisterIndex(8),   // argument stored and untouched in x
+            y:          resultFpuReg,           // result stored in y
+            x:          fpuReg,                 // argument stored and untouched in x
             cpuTemp:    RegisterIndex.At,       // temp register to copy CPU values into
             fpuTemp:    new RegisterIndex(10),  // temp register to copy FPU values into
             numerator:  new RegisterIndex(4),   // temp register to partially compute the numerator of the current expansion term
             denominator:new RegisterIndex(6)    // temp register to partially compute the denominator of the current expansion term
         );
-        // Convert back to result type 
-        // Copy to result register
-        throw new NotImplementedException();
+
+        // Move back to CPU
+        var cpuReg = moveFromFpu(resultFpuReg);
+
+        // Convert back to type
+        convert(cpuReg, from: IrType.F32, tuple.Result.TypeOf());
+
+        // Save as variable
+        tuple.Result.MipsInstructionsToStoreValue(cpuReg);
     }
 
     private int factorial(int n) {
@@ -554,28 +672,78 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
 
     public void Accept(Sin tuple)
     {
-        // Load values
-        // Convert to F32 (copy to FPU)
-        // Get value in range of -2pi and 2pi
+        // Load value
+        IMipsValueOperand value;
+        var reg = load(tuple.Operand, out value);
+
+        // Convert to F32
+        convert(reg, from: tuple.Operand.TypeOf(), to: IrType.F32);
+
+        // Move to FPU
+        var fpuReg = moveToFpu(reg, destination: new RegisterIndex(8));
+
+        // Get value in range of -pi and pi
+        var min = new RegisterIndex(14);
+        text.Code.Add(new Li {
+            Destination = RegisterIndex.At,
+            FloatValue = -MathF.PI
+        });
+        moveToFpu(RegisterIndex.At, destination: min);  // load -pi into min
+        var max = new RegisterIndex(16);
+         text.Code.Add(new Li {
+            Destination = RegisterIndex.At,
+            FloatValue = MathF.PI
+        });
+        moveToFpu(RegisterIndex.At, destination: max);  // load pi into max
+        repeatFpu(fpuReg, new RegisterIndex(18), new RegisterIndex(20), min, max);
+
         // Do sin (no native FPU instruction) // -- https://www.wolframalpha.com/input?i=taylor+expansion+of+sin%28x%29
                                               // -- https://www.wolframalpha.com/input?i=plot+x+-+x%5E3%2F6+%2B+x%5E5%2F120+-+x%5E7%2F5040+%2B+x%5E9%2F362880+-+x%5E11%2F39916800+%2B+x%5E13%2F6227020800+-+x%5E15%2F1307674368000+%2B+x%5E17%2F355687428096000%2C+sin%28x%29+between+-2*pi+and+2*pi+
+        var resultFpuReg = new RegisterIndex(2);
         taylorExpansionSin(
-            y:          new RegisterIndex(2),   // result stored in y
-            x:          new RegisterIndex(8),   // argument stored and untouched in x
+            y:          resultFpuReg,           // result stored in y
+            x:          fpuReg,                 // argument stored and untouched in x
             cpuTemp:    RegisterIndex.At,       // temp register to copy CPU values into
             fpuTemp:    new RegisterIndex(10),  // temp register to copy FPU values into
             numerator:  new RegisterIndex(4),   // temp register to partially compute the numerator of the current expansion term
             denominator:new RegisterIndex(6)    // temp register to partially compute the denominator of the current expansion term
         );
-        // Convert back to result type 
-        // Copy to result register
-        throw new NotImplementedException();
+
+        // Move back to CPU
+        var cpuReg = moveFromFpu(resultFpuReg);
+
+        // Convert back to type
+        convert(cpuReg, from: IrType.F32, tuple.Result.TypeOf());
+
+        // Save as variable
+        tuple.Result.MipsInstructionsToStoreValue(cpuReg);
     }
 
-    public void Accept(Sqrt tuple)
-    {
-        // Has native FPU instr
-        throw new NotImplementedException();
+    public void Accept(Sqrt tuple) {
+        // Load value
+        IMipsValueOperand value;
+        var reg = load(tuple.Operand, out value);
+
+        // Convert to F32
+        convert(reg, from: tuple.Operand.TypeOf(), to: IrType.F32);
+
+        // Move to FPU
+        var fpuReg = moveToFpu(reg);
+
+        // Do sqrt
+        this.text.Code.Add(new SqrtS {
+            Destination = fpuReg,
+            Source = fpuReg
+        });
+
+        // Move back to CPU
+        var cpuReg = moveFromFpu(fpuReg);
+
+        // Convert back to type
+        convert(cpuReg, from: IrType.F32, tuple.Result.TypeOf());
+
+        // Save as variable
+        tuple.Result.MipsInstructionsToStoreValue(cpuReg);
     }
 
     public void Accept(Ln tuple)
@@ -588,48 +756,59 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         throw new NotImplementedException();
     }
 
-    public void Accept(Inc tuple)
-    {
+    public void Accept(Inc tuple) {
+        // Load value
+        IMipsValueOperand value;
+        var reg = load(tuple.Operand, out value);
+
+        // Do operator
+        tuple.Operand.TypeOf().Visit(new IncOperator(this.text, UnaryResultRegister, reg));
+
+        // Save as variable
+        convert(UnaryResultRegister, from: tuple.Operand.TypeOf(), to: tuple.Result.TypeOf());
+        tuple.Result.MipsInstructionsToStoreValue(UnaryResultRegister);
+    }
+
+    public void Accept(Dec tuple) {
+        // Load value
+        IMipsValueOperand value;
+        var reg = load(tuple.Operand, out value);
+
+        // Do operator
+        tuple.Operand.TypeOf().Visit(new DecOperator(this.text, UnaryResultRegister, reg));
+
+        // Save as variable
+        convert(UnaryResultRegister, from: tuple.Operand.TypeOf(), to: tuple.Result.TypeOf());
+        tuple.Result.MipsInstructionsToStoreValue(UnaryResultRegister);
+    }
+
+    public void Accept(IncDeref tuple) {
         throw new NotImplementedException();
     }
 
-    public void Accept(Dec tuple)
-    {
+    public void Accept(DecDeref tuple) {
         throw new NotImplementedException();
     }
 
-    public void Accept(IncDeref tuple)
-    {
+    public void Accept(LessThan tuple) {
+        accept(tuple.Result, tuple.LeftOperand, tuple.RightOperand, new LtOperator(this.text, BinaryResultRegister, BinaryLhsOperatorRegister, BinaryRhsOperatorRegister));
+    }
+
+    public void Accept(LessThanEqualTo tuple) {
+        //accept(tuple.Result, tuple.LeftOperand, tuple.RightOperand, new LteOperator(this.text, BinaryResultRegister, BinaryLhsOperatorRegister, BinaryRhsOperatorRegister));
         throw new NotImplementedException();
     }
 
-    public void Accept(DecDeref tuple)
-    {
+    public void Accept(GreaterThan tuple) {
+        accept(tuple.Result, tuple.LeftOperand, tuple.RightOperand, new GtOperator(this.text, BinaryResultRegister, BinaryLhsOperatorRegister, BinaryRhsOperatorRegister));
+    }
+
+    public void Accept(GreaterThanEqualTo tuple){
+        //accept(tuple.Result, tuple.LeftOperand, tuple.RightOperand, new GteOperator(this.text, BinaryResultRegister, BinaryLhsOperatorRegister, BinaryRhsOperatorRegister));
         throw new NotImplementedException();
     }
 
-    public void Accept(LessThan tuple)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Accept(LessThanEqualTo tuple)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Accept(GreaterThan tuple)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Accept(GreaterThanEqualTo tuple)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Accept(Equality tuple)
-    {
+    public void Accept(Equality tuple) {
         /*IMipsValueOperand lhs; IMipsValueOperand rhs;
         load(tuple.LeftOperand, tuple.RightOperand, out lhs, out rhs);
         text.Code.Add(new Bytecode.Instructions. {
@@ -641,8 +820,7 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         throw new NotImplementedException();
     }
 
-    public void Accept(Inequality tuple)
-    {
+    public void Accept(Inequality tuple) {
         throw new NotImplementedException();
     }
 
@@ -654,32 +832,61 @@ internal class MipsAssemblyCodeWalker : BasicBlockWalker, ITupleVisitor {
         text.Code.Add(new Assembly.Instructions.J { Address = new LabelAddress(generateLabel(tuple.Goto))});
     }
 
-    public void Accept(JumpIfZero tuple)
-    {
+    public void Accept(JumpIfZero tuple) {
+        // Load
+        IMipsValueOperand arg;
+        var reg = load(tuple.ConditionVariable, out arg);
+
+        // Check condition
+        text.Code.Add(new Assembly.Instructions.Beq {
+            LhsOperand = reg,
+            RhsOperand = RegisterIndex.Zero,
+            Address = new IntegerAddress(8) // skip next instruction (!=0)
+        });
+        // If condition != 0
+        text.Code.Add(new Assembly.Instructions.J {
+            Address = new LabelAddress(generateLabel(tuple.GotoNotZero))
+        });
+        // If condition == 0
+        text.Code.Add(new Assembly.Instructions.J {
+            Address = new LabelAddress(generateLabel(tuple.GotoIfZero))
+        });
+    }
+
+    public void Accept(JumpIfNotZero tuple) {
+        // Load
+        IMipsValueOperand arg;
+        var reg = load(tuple.ConditionVariable, out arg);
+
+        // Check condition
+        text.Code.Add(new Assembly.Instructions.Beq {
+            LhsOperand = reg,
+            RhsOperand = RegisterIndex.Zero,
+            Address = new IntegerAddress(8) // skip next instruction (!=0)
+        });
+        // If condition != 0
+        text.Code.Add(new Assembly.Instructions.J {
+            Address = new LabelAddress(generateLabel(tuple.GotoNotZero))
+        });
+        // If condition == 0
+        text.Code.Add(new Assembly.Instructions.J {
+            Address = new LabelAddress(generateLabel(tuple.GotoIfZero))
+        });
+    }
+
+    public void Accept(CallProcedure tuple) {
         throw new NotImplementedException();
     }
 
-    public void Accept(JumpIfNotZero tuple)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Accept(CallProcedure tuple)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Accept(CallFunction tuple)
-    {
+    public void Accept(CallFunction tuple) {
         throw new NotImplementedException();
     }
 
     public void Accept(ReturnProcedure tuple) {
-        // TODO 
+        throw new NotImplementedException();
     }
 
-    public void Accept(ReturnFunction tuple)
-    {
+    public void Accept(ReturnFunction tuple) {
         throw new NotImplementedException();
     }
 }

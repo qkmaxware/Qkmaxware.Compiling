@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 public abstract class BasicBlockWalker {
     public void StartWalk(BasicBlock startAt) {

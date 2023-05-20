@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Base class for unary operators
@@ -49,5 +49,5 @@ public class Not : UnaryOperatorTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := !{Operand}";
+    public override string PrintString() => $"{Result.PrintString()} := !{Operand.PrintString()}";
 }

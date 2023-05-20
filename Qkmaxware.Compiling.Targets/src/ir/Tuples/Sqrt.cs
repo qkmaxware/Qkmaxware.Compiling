@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Sqrt of a number
@@ -19,5 +19,5 @@ public class Sqrt : BuiltinFunctionTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := SQRT({Operand})";
+    public override string PrintString() => $"{Result.PrintString()} := SQRT({Operand.PrintString()})";
 }

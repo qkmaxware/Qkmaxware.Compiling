@@ -1,4 +1,4 @@
-using Qkmaxware.Compiling.Targets.Ir;
+using Qkmaxware.Compiling.Ir;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode;
 

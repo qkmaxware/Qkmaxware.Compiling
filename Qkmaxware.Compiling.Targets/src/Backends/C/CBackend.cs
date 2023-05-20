@@ -1,4 +1,4 @@
-using Qkmaxware.Compiling.Targets.Ir;
+using Qkmaxware.Compiling.Ir;
 
 namespace Qkmaxware.Compiling.Targets.C;
 

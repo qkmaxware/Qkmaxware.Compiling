@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+namespace Qkmaxware.Compiling.Ir.TypeSystem;
 
 public class F32ToI32 : TypeConversion {
     public override IrType From => IrType.F32;

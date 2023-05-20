@@ -1,8 +1,8 @@
 using Qkmaxware.Compiling.Targets.Mips;
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 
-namespace Qkmaxware.Compiling.Targets.Ir.Test;
+namespace Qkmaxware.Compiling.Ir.Test;
 
 [TestClass]
 public class TestIr2Mips {
@@ -23,22 +23,19 @@ public class TestIr2Mips {
     public void TestAdd() {
         var module = new Ir.Module();
         {
-            var proc = module.MakeProcedure();
-            proc.Name = "AddI32";
+            var proc = module.MakeProcedure("AddI32");
             var returns = proc.MakeLocal(IrType.I32, "return");
             // 4 + 6
             proc.Entrypoint.Instructions.Add(new Add(new LiteralI32(4), new LiteralI32(6), returns));
         }
         {
-            var proc = module.MakeProcedure();
-            proc.Name = "AddU32";
+            var proc = module.MakeProcedure("AddU32");
             var returns = proc.MakeLocal(IrType.U32, "return");
             // 4 + 6
             proc.Entrypoint.Instructions.Add(new Add(new LiteralU32(4), new LiteralU32(6), returns));
         }
         {
-            var proc = module.MakeProcedure();
-            proc.Name = "AddF32";
+            var proc = module.MakeProcedure("AddF32");
             var returns = proc.MakeLocal(IrType.F32, "return");
             // 4 + 6
             proc.Entrypoint.Instructions.Add(new Add(new LiteralF32(4), new LiteralF32(6), returns));

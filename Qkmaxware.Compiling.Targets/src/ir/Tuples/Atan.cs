@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// ATan of a number
@@ -19,5 +19,5 @@ public class ATan : BuiltinFunctionTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := ATAN({Operand})";
+    public override string PrintString() => $"{Result.PrintString()} := ATAN({Operand.PrintString()})";
 }

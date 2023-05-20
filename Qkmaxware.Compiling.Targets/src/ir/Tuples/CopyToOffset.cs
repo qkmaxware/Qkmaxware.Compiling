@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Copy to memory
@@ -44,7 +44,7 @@ public class CopyToOffset : Tuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString()        => $"{Indentation}*({Base}+{Offset}) := {From}";
+    public override string PrintString()        => $"*({Base.PrintString()}+{Offset.PrintString()}) := {From.PrintString()}";
     /// <summary>
     /// Print this tuple as a string
     /// </summary>

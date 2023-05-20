@@ -1,7 +1,7 @@
 using Qkmaxware.Compiling.Targets.Mips;
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir.Test;
+namespace Qkmaxware.Compiling.Ir.Test;
 
 [TestClass]
 public class TestIrTypeConversion {

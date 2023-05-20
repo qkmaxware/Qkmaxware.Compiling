@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// An IR branching instruction
@@ -47,7 +47,7 @@ public class JumpIfNotZero : IBranch {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public string RenderString() => $"{Indentation}if {ConditionVariable} != 0 then jump {GotoNotZero.GetHashCode()} else jump {GotoIfZero.GetHashCode()}";
+    public string RenderString() => $"if {ConditionVariable} != 0 then jump {GotoNotZero.GetHashCode()} else jump {GotoIfZero.GetHashCode()}";
 
     /// <summary>
     /// Print this tuple as a string

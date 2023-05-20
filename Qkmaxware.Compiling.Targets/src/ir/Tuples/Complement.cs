@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Bitwise complement
@@ -19,5 +19,5 @@ public class Complement : UnaryOperatorTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := ~{Operand}";
+    public override string PrintString() => $"{Result.PrintString()} := ~{Operand.PrintString()}";
 }

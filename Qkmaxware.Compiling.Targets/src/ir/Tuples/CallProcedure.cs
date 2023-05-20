@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Call a non-returning program
@@ -36,7 +36,7 @@ public class CallProcedure : Tuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString()        => $"{Indentation}{Called}({string.Join(',', this.Arguments)})";
+    public override string PrintString()        => $"{Called}({string.Join(',', this.Arguments.Select(x => x.PrintString()))})";
     /// <summary>
     /// Print this tuple as a string
     /// </summary>

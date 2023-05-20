@@ -1,8 +1,8 @@
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 using Qkmaxware.Compiling.Targets.Mips;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 public interface IIrTypeVisitor {
     public void Accept(F32 type);

@@ -1,0 +1,59 @@
+# Example of what serisalization might look like in yaml
+# Advantages: Can make use of anchors and aliases to link variables/blocks/programs together preventing duplication
+# Disadvantages: Might be difficult to handle serialization of block bodies due to polymorphic nature, might still be too verbose
+globals:
+  - name: &pi
+    type: F32
+programs:
+  - uid: &program_0
+    name: "square"
+    arguments:
+    - uid: &program_0_local_0
+      name: "number"
+      type: F32
+    locals:
+    - uid: &program_0_local_1
+      name: "return"
+      type: F32
+    blocks:
+      - uid: &block_1412
+        body:
+        - instruction: multiply
+          result: *program_0_local_1
+          arguments:
+          - *program_0_local_0
+          - *program_0_local_0
+        - instruction: return
+          arguments: 
+          - *program_0_local_1
+        transition: "exit"
+  - uid: &program_1
+    name: "area"
+    arguments:
+    - uid: &program_1_local_0
+      name: "radius"
+      type: F32
+    locals:
+    - uid: &program_1_local_1
+      name: "radius^2"
+      type: F32
+    - uid: &program_1_local_2
+      name: "return"
+      type: F32
+    blocks: 
+      - uid: &block_1413
+        body:
+        - instruction: call_func
+          program: *program_0
+          result: *program_1_local_1
+          arguments:
+          - *program_1_local_0
+        - instruction: multiply
+          result: *program_1_local_2
+          arguments:
+          - *pi
+          - *program_1_local_1
+        - instruction: return
+          arguments: 
+          - *program_1_local_2
+        transition: "exit"

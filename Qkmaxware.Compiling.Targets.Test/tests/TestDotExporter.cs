@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir.Test;
+namespace Qkmaxware.Compiling.Ir.Test;
 
 [TestClass]
 public class TestDotExporter {
@@ -12,11 +12,9 @@ public class TestDotExporter {
 
         // square (value) => value * value
         // area (radius) => pi * square(radius)
-        var square = module.MakeFunction(IrType.I32, IrType.I32);
-        square.Name = "square(int value):int";
-        var area = module.MakeFunction(IrType.I32, IrType.I32);
+        var square = module.MakeFunction("square(int value):int", IrType.I32, IrType.I32);
+        var area = module.MakeFunction("area(int radius):int", IrType.I32, IrType.I32);
         var temp1 = area.MakeLocal(IrType.I32, "temp");
-        area.Name = "area(int radius):int";
 
         if (square.ReturnLocal == null)
             Assert.Fail();

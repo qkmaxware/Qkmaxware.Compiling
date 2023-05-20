@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Cos of a number
@@ -19,5 +19,5 @@ public class Cos : BuiltinFunctionTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := COS({Operand})";
+    public override string PrintString() => $"{Result.PrintString()} := COS({Operand.PrintString()})";
 }

@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 public class ReadOnlyList<T> : IEnumerable<T> {
 

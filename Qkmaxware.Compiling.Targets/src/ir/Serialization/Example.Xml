@@ -1,0 +1,61 @@
+<!--
+Example of what serialization might look like for XML
+Advantages:     C# has a built in XML serializer/deserializer and we may be able to bootstrap our IR modules to this
+Disadvantages:  Quite verbose, some information may be duplicated depending on how the serializer works. Lack of customization 
+-->
+<Module>
+    <Globals>
+        <Global type="F32" name="pi"/>
+    </Globals>
+    <Programs>
+        <Program name="square">
+            <Arguments>
+                <Argument type="F32" name="number"/>
+            </Arguments>
+            <Locals>
+                <Local type="F32" name="return">
+            </Locals>
+            <Blocks>
+                <Block id="block_1412">
+                    <Multiply local="return">
+                        <Lhs>
+                            <Argument name="number">
+                        </Lhs>
+                        <Rhs>
+                            <Argument name="number">
+                        </Rhs>
+                    </Multiply>
+                    <Return/>
+                    <Exit/>
+                </Block>
+            </Blocks>
+        </Program>
+        <Program name="area">
+            <Arguments>
+                <Argument type="F32" name="radius"/>
+            </Arguments>
+            <Locals>
+                <Local type="F32" name="rr">
+                <Local type="F32" name="return">
+            </Locals>
+            <Blocks>
+                <!-- area = pi * r^2 -->
+                <Block id="block_1413">
+                    <Call program=0 local="rr">
+                        <Argument name="radius">/>
+                    </Call>
+                    <Multiply local="return">
+                        <Lhs>
+                            <Global name="pi"/>
+                        </Lhs>
+                        <Rhs>
+                            <Local name="rr"/>
+                        </Rhs>
+                    </Multiply>
+                    <Return/>
+                    <Exit/>
+                </Block>
+            </Blocks>
+        </Program>
+    </Programs>
+</Module>

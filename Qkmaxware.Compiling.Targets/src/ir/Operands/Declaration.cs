@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Variable declaration
@@ -39,6 +39,14 @@ public abstract partial class Declaration : ValueOperand {
 /// <typeparam name="T">type of the stored value</typeparam>
 public partial class Global : Declaration {
     public Global(uint index, IrType type, string name) : base(index, type, name) {}
+
+    /// <summary>
+    /// Render this tuple to string
+    /// </summary>
+    /// <returns>string</returns>
+    public override string PrintString() {
+        return $"global '{this.Name.UnicodeEscape()}'";
+    }
 }
 
 /// <summary>
@@ -52,5 +60,13 @@ public partial class Local : Declaration {
 
     internal void SetAsArgument(bool isArgument) {
         this.IsArgument = isArgument;
+    }
+
+    /// <summary>
+    /// Render this tuple to string
+    /// </summary>
+    /// <returns>string</returns>
+    public override string PrintString() {
+        return $"local '{this.Name.UnicodeEscape()}'";
     }
 }

@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// A subroutine composed on IR tuples
@@ -16,13 +16,13 @@ public class Subprogram {
     /// Optional alias for a subprogram
     /// </summary>
     /// <value>optional name</value>
-    public string? Name {get; set;}
+    public string Name {get; set;}
 
     /// <summary>
     /// Create a new subprogram with the given index within the compilation module
     /// </summary>
     /// <param name="index">compilation module subprogram index</param>
-    public Subprogram(uint index) : this(index, new BasicBlock(), new BasicBlock()) {}
+    public Subprogram(uint index, string name) : this(index, name, new BasicBlock()) {}
 
     /// <summary>
     /// Create a new subprogram with the given index and code blocks.
@@ -30,25 +30,24 @@ public class Subprogram {
     /// <param name="index">compilation module subprogram index</param>
     /// <param name="entry">entrypoint code</param>
     /// <param name="exit">exit code</param>
-    public Subprogram(uint index, BasicBlock entry, BasicBlock exit) {
+    public Subprogram(uint index, string name, BasicBlock entry) {
+        this.Name = name;
         this.ProcedureIndex = index;
         this.Entrypoint = entry;
-        this.Exit = exit;
 
-        this.Locals = new ReadOnlyList<Declaration>(this._locals);
+        this.Locals = new ReadOnlyList<Local>(this._locals);
 
-        this.Entrypoint.Transition = new Jump(this.Exit);
-        this.Exit.Transition = new ReturnProcedure();
+        this.Entrypoint.Transition = new ReturnProcedure();
     }
 
-    private List<Declaration> _locals = new List<Declaration>();
-    private Dictionary<string, Declaration> locals = new Dictionary<string, Declaration>();
+    private List<Local> _locals = new List<Local>();
+    private Namespace _localNamespace = new Namespace();
     uint nextLocalIndex = 0U;
 
     /// <summary>
     /// List of local variables to this subroutine
     /// </summary>
-    public ReadOnlyList<Declaration> Locals {get; private set;}
+    public ReadOnlyList<Local> Locals {get; private set;}
 
     /// <summary>
     /// List of all local variables that are used as subprogram arguments
@@ -61,7 +60,17 @@ public class Subprogram {
     /// Local used as a return value from this subprogram (can be null for no return value)
     /// </summary>
     /// <value>local</value>
-    public Declaration? ReturnLocal {get; internal set;}
+    public Local? ReturnLocal {get; internal set;}
+
+    /// <summary>
+    /// Checks if this subprogram acts like a function (subprogram returns a value)
+    /// </summary>
+    public bool IsFunction => ReturnLocal != null;
+
+    /// <summary>
+    /// Checks if this subprogram acts like a procedure (subprogram does not return a value)
+    /// </summary>
+    public bool IsProcedure => ReturnLocal == null;
 
     /// <summary>
     /// Make a new local variable for this subroutine
@@ -70,15 +79,10 @@ public class Subprogram {
     /// <returns>reference to local variable</returns>
     public Local MakeLocal(IrType type, string desiredName = "local") {
         // Make "unique" name
-        var name = desiredName;
-        int index = 0;
-        while (locals.ContainsKey(name)) {
-            name = desiredName + (++index);
-        }
+        var name = _localNamespace.Declare(desiredName);
         // Create variable
         var local = new Local(nextLocalIndex++, type, name);
         _locals.Add(local);
-         locals.Add(name, local);
         return local;
     }
 
@@ -88,11 +92,6 @@ public class Subprogram {
     /// <returns>code block</returns>
     public BasicBlock Entrypoint {get; private set;}
 
-    /// <summary>
-    /// Subroutine exit block
-    /// </summary>
-    /// <returns>block</returns>
-    public BasicBlock Exit {get; private set;}
 
     public override string ToString() {
         return Name ?? "Procedure_" + this.ProcedureIndex;

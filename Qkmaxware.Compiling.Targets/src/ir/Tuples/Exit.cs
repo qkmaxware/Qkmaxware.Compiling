@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// An IR exit instruction
@@ -24,7 +24,7 @@ public class Exit : IBranch {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public string RenderString() => $"{Indentation}exit";
+    public string RenderString() => $"exit";
 
     /// <summary>
     /// Print this tuple as a string

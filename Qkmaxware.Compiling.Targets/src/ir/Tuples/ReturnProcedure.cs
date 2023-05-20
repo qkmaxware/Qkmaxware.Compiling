@@ -1,11 +1,9 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// An IR branching instruction
 /// </summary>
 public class ReturnProcedure : IBranch {
-    protected static readonly string Indentation = "    ";
-
     /// <summary>
     /// Description of the tuple's function
     /// </summary>
@@ -24,7 +22,7 @@ public class ReturnProcedure : IBranch {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public string RenderString() => $"{Indentation}return";
+    public string RenderString() => $"return";
 
     /// <summary>
     /// Print this tuple as a string

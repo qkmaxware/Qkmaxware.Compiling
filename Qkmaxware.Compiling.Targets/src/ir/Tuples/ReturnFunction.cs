@@ -1,11 +1,9 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// An IR branching instruction
 /// </summary>
 public class ReturnFunction : IBranch {
-    protected static readonly string Indentation = "    ";
-    
     /// <summary>
     /// Variable whose value is returned
     /// </summary>
@@ -32,7 +30,7 @@ public class ReturnFunction : IBranch {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public string RenderString() => $"{Indentation}return {ReturnVariable}";
+    public string RenderString() => $"return {ReturnVariable.PrintString()}";
 
     /// <summary>
     /// Print this tuple as a string

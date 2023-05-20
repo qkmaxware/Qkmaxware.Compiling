@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// increment memory location
@@ -19,5 +19,5 @@ public class IncDeref : UnaryOperatorTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}*{Result} := {Operand} + 1";
+    public override string PrintString() => $"*{Result.PrintString()} := {Operand.PrintString()} + 1";
 }

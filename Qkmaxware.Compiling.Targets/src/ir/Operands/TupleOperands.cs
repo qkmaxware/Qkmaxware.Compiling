@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Base class for operands to tuple operations
@@ -14,6 +14,11 @@ public abstract class TupleOperand {
     /// Internal operand constructor to prevent unwanted sub-classing
     /// </summary>
     internal TupleOperand() {}
+    /// <summary>
+    /// Render this tuple to string
+    /// </summary>
+    /// <returns>string</returns>
+    public abstract string PrintString();
 }
 
 /// <summary>

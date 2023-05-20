@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Call a value returning program
@@ -43,7 +43,7 @@ public class CallFunction : Tuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString()        => $"{Indentation}{ReturnVariable} := {Called}({string.Join(',', this.Arguments)})";
+    public override string PrintString()        => $"{ReturnVariable.PrintString()} := {Called}({string.Join(',', this.Arguments.Select(x => x.PrintString()))})";
     /// <summary>
     /// Print this tuple as a string
     /// </summary>

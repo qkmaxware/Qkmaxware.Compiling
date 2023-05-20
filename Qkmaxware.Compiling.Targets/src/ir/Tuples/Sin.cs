@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Sin of a number
@@ -19,5 +19,5 @@ public class Sin : BuiltinFunctionTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := SIN({Operand})";
+    public override string PrintString() => $"{Result.PrintString()} := SIN({Operand.PrintString()})";
 }

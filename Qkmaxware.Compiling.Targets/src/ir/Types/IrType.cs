@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+namespace Qkmaxware.Compiling.Ir.TypeSystem;
 
 /// <summary>
 /// A type for a value within the IR

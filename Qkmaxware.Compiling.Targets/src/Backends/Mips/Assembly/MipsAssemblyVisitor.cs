@@ -1,5 +1,5 @@
-using Qkmaxware.Compiling.Targets.Ir;
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 using Qkmaxware.Compiling.Targets.Mips.Assembly;
 using Qkmaxware.Compiling.Targets.Mips.Assembly.Instructions;
 using Qkmaxware.Compiling.Targets.Mips.Bytecode.Instructions;

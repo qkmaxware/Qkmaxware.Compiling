@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Export modules to GraphViz .Dot format text files
@@ -53,7 +53,7 @@ class BlockDotExporter : BasicBlockWalker {
         Tuple? previous = null;
         uint index = 0;
         foreach (var instr in block.Instructions) {
-            writer.WriteLine($"            \"{blockName}_inst_{index}\" [\"label\"=\"{instr.RenderString()}\"]"); 
+            writer.WriteLine($"            \"{blockName}_inst_{index}\" [\"label\"=\"{instr.PrintString()}\"]"); 
             // If this is a flow change, goto the flow change
             if (previous != null) {
                 if (previous is CallProcedure proc) {

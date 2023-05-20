@@ -1,24 +1,20 @@
 using System.Collections;
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 // http://marvin.cs.uidaho.edu/Teaching/CS445/c-Grammar.pdf
-
 public class Module : IEnumerable<Subprogram> {
-    private Dictionary<string, Declaration> _globals = new Dictionary<string, Declaration>();
-    public IEnumerable<Declaration> Globals => _globals.Values;
+    private Namespace _globalNamespace = new Namespace();
+    private List<Global> _globals = new List<Global>();
+    public IEnumerable<Global> Globals => _globals.AsReadOnly();
     uint nextGlobalInd = 0U;
     public Global MakeGlobal(IrType type, string desiredName) {
         // Make "unique" name
-        var name = desiredName;
-        int index = 0;
-        while (_globals.ContainsKey(name)) {
-            name = desiredName + (++index);
-        }
+        var name = _globalNamespace.Declare(desiredName);
         // Create variable
         var def = new Global(nextGlobalInd++, type, name);
-        _globals.Add(name, def);
+        _globals.Add(def);
         return def;
     }
 
@@ -31,8 +27,8 @@ public class Module : IEnumerable<Subprogram> {
     /// </summary>
     /// <param name="args">list of procedure arguments</param>
     /// <returns>subprogram</returns>
-    public Subprogram MakeProcedure(params IrType[] args) {
-        var sub = new Subprogram(nextProcedureInd++);
+    public Subprogram MakeProcedure(string name, params IrType[] args) {
+        var sub = new Subprogram(nextProcedureInd++, _globalNamespace.Declare(name));
         foreach (var arg in args) {
             sub.MakeLocal(arg, "arg").SetAsArgument(true);
         }
@@ -46,14 +42,14 @@ public class Module : IEnumerable<Subprogram> {
     /// <param name="returns">type of the return value</param>
     /// <param name="args">list of function arguments</param>
     /// <returns>subprogram</returns>
-    public Subprogram MakeFunction(IrType returns, params IrType[] args) {
-        var sub = new Subprogram(nextProcedureInd++);
+    public Subprogram MakeFunction(string name, IrType returns, params IrType[] args) {
+        var sub = new Subprogram(nextProcedureInd++, _globalNamespace.Declare(name));
         foreach (var arg in args) {
             sub.MakeLocal(arg, "arg").SetAsArgument(true);
         }
         var ret = sub.MakeLocal(returns, "return");
         sub.ReturnLocal = ret;
-        sub.Exit.Transition = new ReturnFunction(ret); // Last instruction is to load the return value before the we exit the subprogram
+        sub.Entrypoint.Transition = new ReturnFunction(ret); // Last instruction is to load the return value before the we exit the subprogram
         _subprograms.Add(sub);
         return sub;
     }

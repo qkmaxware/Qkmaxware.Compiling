@@ -1,6 +1,6 @@
-using Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+using Qkmaxware.Compiling.Ir.TypeSystem;
 
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// A 32bit floating point value
@@ -15,6 +15,12 @@ public sealed partial class LiteralF32 : Literal<float> {
     /// </summary>
     /// <param name="i">value of the literal</param>
     public LiteralF32(float i) : base(i) {}
+
+    /// <summary>
+    /// Render this tuple to string
+    /// </summary>
+    /// <returns>string</returns>
+    public override string PrintString() => Value.ToString();
 
     public override string ToString() => Value.ToString();
 }

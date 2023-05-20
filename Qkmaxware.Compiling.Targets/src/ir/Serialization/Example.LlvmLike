@@ -1,0 +1,27 @@
+; Example of serialization if it was in a custom language like LLVM has
+; Advantages: Super short compared with other serializers, promotes writing in the language since it reads like code (also useful in debugging)
+; Disadvantages: Have to write a whole lexer/parser for deserialization along with some static analysers
+
+global 'pi':F32
+
+define F32 'square'('number':F32) {
+    local 'return':F32
+
+    // Block anchor
+    #block_1412 {
+        // Block instructions (almost all instructions save results to a local)
+        'return' := 'number' * 'number' // (need a distinction between globals and locals)
+        return 'return'
+    } ondone exit   // Block events, the ondone event is required as it indicates how blocks transition to other blocks
+} 
+
+define F32 'area'('radius':F32) {
+    local 'return':F32
+    local 'radius^2':F32
+    
+    #block_1413 {
+        'radius^2' := 'square'('radius', 'radius') // call 'square' 'radius' 'radius'
+        'return' := 'pi' * 'radius^2'              // * 'return' 'pi' 'radius^2'
+        return 'return'
+    } ondone exit
+}

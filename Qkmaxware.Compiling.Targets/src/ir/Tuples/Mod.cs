@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Modulo instruction
@@ -19,5 +19,5 @@ public class Mod : BinaryOperatorTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := {LeftOperand} mod {RightOperand}";
+    public override string PrintString() => $"{Result.PrintString()} := {LeftOperand.PrintString()} mod {RightOperand.PrintString()}";
 }

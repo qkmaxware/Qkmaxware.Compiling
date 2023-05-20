@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir.TypeSystem;
+namespace Qkmaxware.Compiling.Ir.TypeSystem;
 
 public class U32ToU1 : TypeConversion {
     public override IrType From => IrType.U32;

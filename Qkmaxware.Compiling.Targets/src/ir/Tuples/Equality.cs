@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Equality comparison returning a number
@@ -19,7 +19,7 @@ public class Equality : BinaryOperatorTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := {LeftOperand}=={RightOperand} ? 1 : 0";
+    public override string PrintString() => $"{Result.PrintString()} := {LeftOperand.PrintString()}=={RightOperand.PrintString()} ? 1 : 0";
 }
 
 /// <summary>
@@ -41,5 +41,5 @@ public class Inequality : BinaryOperatorTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := {LeftOperand}!={RightOperand} ? 1 : 0";
+    public override string PrintString() => $"{Result.PrintString()} := {LeftOperand.PrintString()}!={RightOperand.PrintString()} ? 1 : 0";
 }

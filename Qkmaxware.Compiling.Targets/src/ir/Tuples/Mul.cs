@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Multiplication instruction
@@ -19,5 +19,5 @@ public class Mul : BinaryOperatorTuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString() => $"{Indentation}{Result} := {LeftOperand}×{RightOperand}";
+    public override string PrintString() => $"{Result.PrintString()} := {LeftOperand.PrintString()}*{RightOperand.PrintString()}";
 }

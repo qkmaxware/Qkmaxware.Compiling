@@ -1,4 +1,4 @@
-namespace Qkmaxware.Compiling.Targets.Ir;
+namespace Qkmaxware.Compiling.Ir;
 
 /// <summary>
 /// Simple value copy
@@ -24,7 +24,7 @@ public class Copy : Tuple {
     /// </summary>
     /// <param name="from">source variable</param>
     /// <param name="to">target variable</param>
-    public Copy(ValueOperand from, Declaration to) {
+    public Copy(Declaration to, ValueOperand from) {
         this.From = from;
         this.To = to;
     }
@@ -37,10 +37,10 @@ public class Copy : Tuple {
     /// Render this tuple to string
     /// </summary>
     /// <returns>string</returns>
-    public override string RenderString()        => $"{Indentation}{To} := {From}";
+    public override string PrintString()        => $"{To.PrintString()} := {From.PrintString()}";
     /// <summary>
     /// Print this tuple as a string
     /// </summary>
     /// <returns>string</returns>
-    public override string ToString()   => $"({this.GetType().Name},{From},{To})";
+    public override string ToString()   => $"({this.GetType().Name},{To},{From})";
 }
